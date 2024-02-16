@@ -15,5 +15,12 @@
     "nodemon": "^2.0.20",
     "ts-node": "^10.9.1",
     "typescript": "^4.7.4"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "startjs": "npm run build && npm run start-server",
+    "startts": "cd src && nodemon --files index.ts",
+    "start-server": "cd server && node index.js",
+    "build": "cd src && npx tsc"
   }
 }
