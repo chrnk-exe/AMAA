@@ -1,8 +1,9 @@
 import React from 'react';
 import {Routes, Route, Navigate} from 'react-router';
-import AppPage from './AppPage';
+// import AppPage from './AppPage';
 import {useGetDeviceListQuery} from '../store/services/deviceApi';
-
+import Dashboard from './Dashboard';
+import AppPage from './AppPage';
 
 function AppRoutes() {
 	const { data } = useGetDeviceListQuery();
@@ -10,7 +11,7 @@ function AppRoutes() {
 
 	return (
 		<Routes>
-			<Route path="/" element={<AppPage devices={data || []}/>}/>
+			<Route path="/" element={<Dashboard> <AppPage devices={data || []}/> </Dashboard>}/>
 			<Route path="*" element={<Navigate to={'/'}/> }/>
 		</Routes>);
 
