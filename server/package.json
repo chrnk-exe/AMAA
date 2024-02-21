@@ -1,6 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
+
   "dependencies": {
     "express": "^4.18.1",
     "frida": "^16.2.1",
@@ -20,7 +21,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "startjs": "npm run build && npm run start-server",
-    "startts": "cd src && nodemon --files index.ts",
+    "startts": "cd src && nodemon --files app.ts",
     "start-server": "cd server && node index.js",
     "build": "cd src && npx tsc"
   }
