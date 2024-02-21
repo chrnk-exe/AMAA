@@ -1,11 +1,16 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import mobileSocketReducer from './slices/mobileReducer'
-
+import mobileSocketReducer from './slices/mobileReducer';
+import {deviceApi} from './services/deviceApi';
 
 export const store = configureStore({
-    reducer: {
-        mobileSocket: mobileSocketReducer
-    }
+	reducer: {
+		mobileSocket: mobileSocketReducer,
+		[deviceApi.reducerPath]: deviceApi.reducer
+	},
+	middleware: getDefaultMiddleware =>
+		getDefaultMiddleware()
+			.concat(deviceApi.middleware)
+			// .concat(qwe.middleware) // another middleware
 });
 
 export type AppDispatch = typeof store.dispatch;
