@@ -1,24 +1,27 @@
 import { Router, Response, Request } from 'express';
 import { enumerateDevices } from 'frida';
+import getDeviceApps from '../frida-services/getDeviceApps';
+import appRoutes from './appApi';
+import cookieParser from 'cookie-parser';
 
 const router = Router();
 
+const filteredDevices = ['socket', 'local'];
+
 // Get list of active devices
-// todo: Remove empty devices from response
 router.get('/device', async (req: Request, res: Response) => {
 	const devices = await enumerateDevices();
-	res.status(200).json(devices);
+	const result = devices.filter(device => !filteredDevices.includes(device.id));
+	res.status(200).json(result);
 });
 
-// Select device
-router.post('/device', async (req: Request<unknown, {id: number}>, res: Response) => {
-	const { id } = req.body;
-	const devices = await enumerateDevices();
-	// todo: get data from device by deviceId
 
-	res.status(200).json(devices[id]);
+// Select Device :ok
+router.get('/device/:deviceId', async (req: Request<{deviceId: string}>, res: Response) => {
+	const { deviceId } = req.params;
+	res.cookie('deviceId', deviceId);
+	res.status(301).redirect('/api/apps');
 });
-
 
 
 export default router;
