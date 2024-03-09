@@ -2,7 +2,7 @@ import express, { Express, Response, Request, NextFunction } from 'express';
 import cookieParser from 'cookie-parser';
 import deviceRoute from './routes/devicesApi';
 import appRoutes from './routes/appApi';
-import router from './routes/devicesApi';
+// import router from './routes/devicesApi';
 
 const app: Express = express();
 
@@ -12,7 +12,8 @@ app.use(cookieParser('mega_super_secret_key_for_super_mega_secret_encrypting'));
 // disable in prod
 app.use((req: Request, res: Response, next: NextFunction) => {
 	console.log(req.path);
-	res.header('Access-Control-Allow-Origin', '*');
+	res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+	res.header('Access-Control-Allow-Credentials', 'true');
 	next();
 });
 

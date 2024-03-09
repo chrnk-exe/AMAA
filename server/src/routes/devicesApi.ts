@@ -7,6 +7,8 @@ import cookieParser from 'cookie-parser';
 const router = Router();
 
 const filteredDevices = ['socket', 'local'];
+// const filteredDevices = [''];
+
 
 // Get list of active devices
 router.get('/device', async (req: Request, res: Response) => {
@@ -19,7 +21,7 @@ router.get('/device', async (req: Request, res: Response) => {
 // Select Device :ok
 router.get('/device/:deviceId', async (req: Request<{deviceId: string}>, res: Response) => {
 	const { deviceId } = req.params;
-	res.cookie('deviceId', deviceId);
+	res.cookie('deviceId', deviceId, {sameSite: 'none', httpOnly: true, secure: true});
 	res.status(301).redirect('/api/apps');
 });
 
