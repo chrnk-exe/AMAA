@@ -4,13 +4,10 @@ import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import MuiDrawer from '@mui/material/Drawer';
 import NavigationBar from './NavigationBar';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import Button from '@mui/material/Button';
-import LogoutIcon from '@mui/icons-material/Logout';
+import Header from './Header';
+
 // import { Link } from 'react-router-dom';
 
 interface AppBarProps extends MuiAppBarProps {
@@ -75,36 +72,10 @@ export default function PrimarySearchAppBar({
 
 	return (
 		<Box display={'flex'} sx={{ flexGrow: 1 }}>
+			{/*Here place for та хрень*/}
 			<AppBar position="absolute" open={open}>
 				<Toolbar>
-					<Box
-						sx={{ width: '100%' }}
-						display="flex"
-						justifyContent="space-between">
-						<Box display="flex" alignItems='center' justifyContent='flex-start'>
-							<IconButton
-								size="large"
-								edge="start"
-								color="inherit"
-								// aria-label="open drawer"
-								onClick={drawerToggle}
-								sx={{ mr: 2 }}>
-								{open ? (
-									<ChevronLeftIcon />
-								) : (
-									<ChevronRightIcon />
-								)}
-							</IconButton>
-							<Typography
-								variant="h5"
-								noWrap
-								component="div">
-								Analyze your app!
-							</Typography>
-						</Box>
-
-
-					</Box>
+					<Header open={open} drawerToggle={drawerToggle}/>
 				</Toolbar>
 			</AppBar>
 			<Drawer

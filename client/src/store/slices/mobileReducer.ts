@@ -1,6 +1,8 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
+// import { appsApi } from '../services/appApi';
+import { deviceApi } from '../services/deviceApi';
 
-const initialState: Device[] = [];
+const initialState: Devices = [];
 
 export const mobileDevicesSlice = createSlice({
 	name: 'mobile',
