@@ -7,10 +7,21 @@ export const appsApi = createApi({
 		credentials: 'include'
 	}),
 	endpoints: (build) => ({
-		getApps: build.query<Apps, void>({
-			query: () => '/'
+		getApps: build.query<App[], void>({
+			query: () => '/?type=apps'
+		}),
+		getProcesses: build.query<Process[], void>({
+			query: () => '/?type=processes'
+		}),
+		spawnApplication: build.query<number, string>({
+			query: (appPackageName) => `/${appPackageName}/start`
 		})
 	}),
 });
 
-export const {useGetAppsQuery} = appsApi;
+export const {
+	useGetAppsQuery,
+	useLazyGetAppsQuery,
+	useLazyGetProcessesQuery,
+	useLazySpawnApplicationQuery
+} = appsApi;

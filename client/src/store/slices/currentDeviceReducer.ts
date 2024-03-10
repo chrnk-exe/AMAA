@@ -1,13 +1,13 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
-const initialState: object = {};
+const initialState: Device | object = {};
 
 export const currentDeviceSlice = createSlice({
 	name: 'currentDeviceSlice',
 	initialState,
 	reducers: {
 		setDevice: (state: Device | object, action: PayloadAction<Device>) => {
-			state = action.payload;
+			return action.payload;
 		},
 	}
 });

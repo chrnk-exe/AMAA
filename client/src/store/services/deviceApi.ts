@@ -11,8 +11,8 @@ export const deviceApi = createApi({
 			query: () => ''
 		}),
 		// it selects device and redirects to /api/apps with cookies. Device ID in cookies
-		selectDevice: build.query<Apps, string>({
-			query: (deviceId) => `/${deviceId}`
+		selectDevice: build.query<Apps, { deviceId: string, type: 'apps' | 'processes' }>({
+			query: ({ deviceId, type }) => `/${deviceId}?type=${type}`
 		})
 	}),
 
