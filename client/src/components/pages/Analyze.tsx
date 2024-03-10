@@ -57,14 +57,10 @@ const Analyze: FC = () => {
 	const showProcessesHandler = (e: ChangeEvent<HTMLInputElement>) => {
 		const IsShowProcesses = e.target.checked as boolean;
 		if (IsShowProcesses){
-			if(processes.length === 0){
-				getProcesses();
-			}
+			if(processes.length === 0) getProcesses();
 			setShowProcesses(true);
 		} else {
-			if(apps.length === 0){
-				getApps();
-			}
+			if(apps.length === 0) getApps();
 			setShowProcesses(false);
 		}
 	};
