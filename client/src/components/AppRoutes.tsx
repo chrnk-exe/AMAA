@@ -4,17 +4,18 @@ import {Routes, Route, Navigate} from 'react-router';
 import {useGetDeviceListQuery} from '../store/services/deviceApi';
 import Dashboard from './Dashboard';
 import AppPage from './AppPage';
+import Analyze from './Analyze';
 
 function AppRoutes() {
-	const { data } = useGetDeviceListQuery();
-
-
 	return (
-		<Routes>
-			<Route path="/" element={<Dashboard> <AppPage devices={data || []}/> </Dashboard>}/>
-			<Route path="*" element={<Navigate to={'/'}/> }/>
-		</Routes>);
+		<Dashboard>
+			<Routes>
+				<Route path="/main" element={<AppPage devices={[]}/> }/>
+				<Route path="/device" element={<Analyze />}/>
+				<Route path="*" element={<Navigate to={'/main'}/> }/>
 
+			</Routes>
+		</Dashboard>);
 }
 
 export default AppRoutes;

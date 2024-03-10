@@ -23,7 +23,7 @@ npm install
 Эмуляторы:
 * Genymotion
 * AndroidStudio
-* [WSA](https://github.com/LSPosed/MagiskOnWSALocal) ([Гайд по уставке](https://habr.com/ru/companies/dsec/articles/685410/))
+* [WSA](https://github.com/LSPosed/MagiskOnWSALocal) ([Гайд по установке](https://habr.com/ru/companies/dsec/articles/685410/))
 
 
 И после этого запустить приложение:

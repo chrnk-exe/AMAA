@@ -22,9 +22,6 @@ const AppRoutes: FC<Props> = ({devices}) => {
 				<Typography variant={'h4'}>
 					Анализатор защищённости Android приложений.
 				</Typography>
-				<Typography variant={'subtitle1'}>
-					Для работы с этим инструментом стоит изучить материал ниже.
-				</Typography>
 			</Box>
 			{/* Instructions */}
 			<Box>
