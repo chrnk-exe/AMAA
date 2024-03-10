@@ -1,6 +1,6 @@
 import React, {FC} from 'react';
-import logo from '../assets/logo.svg';
-import '../styles/App.css';
+import logo from '../../assets/logo.svg';
+import '../../styles/App.css';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Link from '@mui/material/Link';
@@ -25,8 +25,8 @@ const AppRoutes: FC<Props> = ({devices}) => {
 			</Box>
 			{/* Instructions */}
 			<Box>
-				<Typography>
-					1. Необходимо решить, в какой среде будет тестироваться приложение:
+				<Box>
+					<Typography>1. Необходимо решить, в какой среде будет тестироваться приложение:</Typography>
 					<List>
 						<ListItem>
 							<ListItemIcon><TerminalIcon/></ListItemIcon>
@@ -46,7 +46,7 @@ const AppRoutes: FC<Props> = ({devices}) => {
 							<ListItemText>Зарутованное живое устройство (Рекомендуется)</ListItemText>
 						</ListItem>
 					</List>
-				</Typography>
+				</Box>
 			</Box>
 			<Box>
 				<Typography>

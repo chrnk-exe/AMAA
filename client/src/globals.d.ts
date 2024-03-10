@@ -1,6 +1,11 @@
 // todo: change declaration on
 
 declare type Devices = Device[]
+declare interface Process {
+    pid: number
+    name: string
+    parameters: object
+}
 
 declare interface Device {
     impl: Impl

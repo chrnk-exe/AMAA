@@ -1,0 +1,1 @@
+type enumerateTypes = 'apps' | 'processes'

@@ -3,8 +3,8 @@ import {Routes, Route, Navigate} from 'react-router';
 // import AppPage from './AppPage';
 import {useGetDeviceListQuery} from '../store/services/deviceApi';
 import Dashboard from './Dashboard';
-import AppPage from './AppPage';
-import Analyze from './Analyze';
+import AppPage from './pages/AppPage';
+import Analyze from './pages/Analyze';
 
 function AppRoutes() {
 	return (
