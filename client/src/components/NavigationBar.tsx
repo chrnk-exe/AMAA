@@ -1,4 +1,4 @@
-import React, {type FC} from 'react';
+import React, {type FC, useState} from 'react';
 import { Box, Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import {useAppSelector} from '../hooks/typedReduxHooks';
 import { useLocation, useNavigate } from 'react-router';
@@ -27,7 +27,12 @@ export const NavigationList = [
 	{
 		text: 'Testing',
 		link: '/testing',
-		icon: <QuizIcon />
+		icon: <QuizIcon />,
+		subitems: Array.from([...Array(10).keys()], (x) => ({
+			link: `/testing/${x+1}`,
+			text: `M${x+1}`
+		}))
+
 	},
 	{
 		text: 'Pre-scan results',
@@ -51,6 +56,13 @@ const NavigationBar: FC<Props> = ({open}) => {
 	const location = useLocation();
 	const navigate = useNavigate();
 
+	const [openTestingFolder, setOpenTestingFolder] = useState<boolean>();
+
+	const onTestingClick = () => {
+		navigate('/testing');
+		setOpenTestingFolder(!openTestingFolder);
+	};
+
 	return (
 		<Box
 			display="flex"
@@ -61,18 +73,53 @@ const NavigationBar: FC<Props> = ({open}) => {
 				<List sx={{width: '100%'}}>
 					{
 						NavigationList.map((item, index) => (
-							<ListItem key={item.link} sx={
-								{
-									px: open ? undefined : 0,
-									py: 0,
-									transition: '0.15s padding ease'
-								}
-							}>
-								<ListItemButton onClick={() => navigate(item.link)} selected={item.link === location.pathname}>
-									<ListItemIcon>{item.icon}</ListItemIcon>
-									<ListItemText sx={{whiteSpace: 'nowrap'}}>{item.text}</ListItemText>
-								</ListItemButton>
-							</ListItem>
+							!item.subitems
+								?
+								(<ListItem key={item.link} sx={
+									{
+										px: open ? undefined : 0,
+										py: 0,
+										transition: '0.15s padding ease'
+									}
+								}>
+									<ListItemButton onClick={() => navigate(item.link)} selected={item.link === location.pathname}>
+										<ListItemIcon>{item.icon}</ListItemIcon>
+										<ListItemText sx={{whiteSpace: 'nowrap'}}>{item.text}</ListItemText>
+									</ListItemButton>
+								</ListItem>)
+								: (<React.Fragment key={item.link}>
+									<ListItem sx={
+										{
+											px: open ? undefined : 0,
+											py: 0,
+											transition: '0.15s padding ease'
+										}
+									}>
+										<ListItemButton onClick={onTestingClick} selected={item.link === location.pathname}>
+											<ListItemIcon>{item.icon}</ListItemIcon>
+											<ListItemText sx={{whiteSpace: 'nowrap'}}>{item.text}</ListItemText>
+										</ListItemButton>
+									</ListItem>
+									<Collapse in={openTestingFolder} >
+										<Box m={1}>
+											{
+												item.subitems.map((subitem, index) => (
+													<ListItem key={subitem.link} sx={
+														{
+															px: open ? undefined : 0,
+															py: 0,
+															transition: '0.15s padding ease'
+														}}>
+														<ListItemButton onClick={() => navigate(subitem.link)}>
+															<ListItemText>{subitem.text}</ListItemText>
+														</ListItemButton>
+													</ListItem>
+												))
+											}
+										</Box>
+									</Collapse>
+								</React.Fragment>)
+
 						))
 					}
 				</List>
