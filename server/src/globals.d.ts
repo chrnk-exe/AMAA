@@ -1,1 +1,1 @@
-type enumerateTypes = 'apps' | 'processes'
+declare type enumerateTypes = 'apps' | 'processes'

@@ -37,7 +37,7 @@ const device = frida.getDevice(deviceId)
 				cwd: '/',
 				aslr: 'auto'
 			});
-			const subprocess = child_process.fork('shell_child.js', ['RZ8M42Z7H5P']);1;
+			const subprocess = child_process.fork('shellChild.js', ['RZ8M42Z7H5P']);
 			const consoleInstance = { output: [], session: null, subprocess, pid };
 			consoles.push(consoleInstance);
 
@@ -61,7 +61,7 @@ const device = frida.getDevice(deviceId)
 			});
 			const processToKill = consoles.find(console => console.pid === +consolePid);
 			if(processToKill){
-				processToKill.kill('SIGHUP');
+				processToKill.kill();
 				// + УНАРНЫЙ ПЛЮС ОБРАТИ ВНИМАНИЕ!!!
 				await device.kill(+consolePid);
 				consoles.filter(console => console.pid !== consolePid);
@@ -78,7 +78,8 @@ const device = frida.getDevice(deviceId)
 			});
 			// console.log(`[executing ${cmd}]`);
 			const consoleInstance = consoles.find(console => console.pid === +consolePid);
-			const { subprocess } = consoleInstance;
+			const { subprocess } = consoleInstance;1;
+
 			const result = await subprocess.send(cmd);
 			// console.log(consoleInstance.output.join('\n'));
 		};

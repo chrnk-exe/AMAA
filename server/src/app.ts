@@ -2,6 +2,7 @@ import express, { Express, Response, Request, NextFunction } from 'express';
 import cookieParser from 'cookie-parser';
 import deviceRoute from './routes/devicesApi';
 import appRoutes from './routes/appApi';
+import shellRoutes from './routes/shellApi';
 // import router from './routes/devicesApi';
 
 const app: Express = express();
@@ -17,7 +18,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 	next();
 });
 
-app.use('/api', deviceRoute, appRoutes);
+app.use('/api', deviceRoute, appRoutes, shellRoutes);
 
 app.get('/', (req: Request, res: Response) => {
 	console.log(req.cookies);
