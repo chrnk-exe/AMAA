@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response } from 'express';
-import { getDevice, Stdio } from 'frida';
+import { Request, Response, Router } from 'express';
+import { getDevice } from 'frida';
 import { fork , ChildProcess } from 'child_process';
-import router from './devicesApi';
+import deviceController from '../controllers/deviceController';
 
 interface shell {
 	subprocess: ChildProcess
@@ -13,15 +13,12 @@ interface shell {
 // Просто потому что могу
 // А иначе никак и не сделать, не могу же я child process в бд хранить))
 let shells: shell[] = [];
+let count = 0;
+
+const router = Router();
 
 // deviceId controller
-router.use((req: Request, res: Response, next: NextFunction) => {
-	const {deviceId} = req.cookies;
-	getDevice(deviceId)
-		.then(() => next())
-		.catch(() => res.status(400).json({'message':'device not found'}));
-
-});
+router.use(deviceController);
 
 router.get('/shells', async (req: Request, res: Response) => {
 	const { deviceId } = req.cookies;
@@ -52,17 +49,12 @@ router.get('/shell', async (req: Request<void, {pid: string}>, res: Response) =>
 
 router.post('/shell', async (req: Request, res: Response) => {
 	const { deviceId } = req.cookies;
-	const device = await getDevice(deviceId);
 
-	const pid = await device.spawn('/bin/sh', {
-		stdio: 'pipe' as Stdio,
-		cwd: '/',
-		aslr: 'auto'
-	});
+	count = count + 1;
 
 	// create Subprocess
 	const subprocess = fork(__dirname + '/../frida-services/shellChild.js', [deviceId]);
-	const shellInstance: shell = { output: [], subprocess, pid, deviceId };
+	const shellInstance: shell = { output: [], subprocess, pid: count, deviceId };
 	// Save subprocess in GLOBAL VARIABLE LIST
 	shells.push(shellInstance);
 

@@ -2,6 +2,8 @@ import { Router, Response, Request } from 'express';
 import getDeviceApps from '../frida-services/getDeviceApps';
 import getDeviceProcesses from '../frida-services/getDeviceProcesses';
 import spawnApplication from '../frida-services/spawnApplication';
+import applicationController from '../controllers/applicationController';
+import getApkFile from '../frida-services/getApkFile.js';
 
 const router = Router();
 
@@ -35,9 +37,11 @@ router.get('/apps/:appPackageName/start', async (req: Request<{appPackageName: s
 	const {appPackageName} = req.params;
 	const {deviceId} = req.cookies;
 	try {
-		const newProcessId = spawnApplication(deviceId, appPackageName);
+		const newProcessId = await spawnApplication(deviceId, appPackageName);
+		res.cookie('app', newProcessId.name);
+		res.cookie('pid', await newProcessId.pid);
 		res.status(200).json({
-			processId: await newProcessId
+			processInfo: newProcessId
 		});
 	}
 	catch {
@@ -45,11 +49,13 @@ router.get('/apps/:appPackageName/start', async (req: Request<{appPackageName: s
 	}
 });
 
-router.get('/apps/:appPackageName/get_apk', (req: Request<{appPackageName: string}>, res) => {
-	const {appPackageName} = req.params;
+router.use(applicationController);
 
+router.get('/apps/get_apk', async (req: Request, res) => {
+	const {app, deviceId, pid} = req.cookies;
+	// const apkFile = await getApkFile(deviceId, pid, app);
 
-	res.send(200);
+	res.status(200).json({app, deviceId, pid});
 });
 
 export default router;

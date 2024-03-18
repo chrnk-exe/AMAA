@@ -19,7 +19,11 @@ frida.getDevice(process.argv[2])
 
 		// input command to sh (process input -> device input)
 		process.on('message', async (cmd) => {
-			device.input(pid, Buffer.from(cmd + '\n'));
+			if (cmd === 'getConsolePid'){
+				process.send(pid);
+			} else {
+				device.input(pid, Buffer.from(cmd + '\n'));
+			}
 		});
 
 		const session = await device.attach(pid);
