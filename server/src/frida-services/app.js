@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-var-requires,no-undef
 const frida = require('frida');
 
 const main = async (deviceId, appPackageName) => {
