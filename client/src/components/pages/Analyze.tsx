@@ -1,11 +1,11 @@
-import React, { FC, useState, ChangeEvent } from 'react';
+import React, { FC, useState, ChangeEvent, useEffect } from 'react';
 import {
 	Box, Button,
 	FormControl, FormControlLabel,
 	SelectChangeEvent, Switch,
 
 } from '@mui/material';
-import { useGetDeviceListQuery, useLazySelectDeviceQuery } from '../../store/services/deviceApi';
+import { useGetDeviceListQuery, useLazySelectDeviceQuery, useLazyGetDeviceListQuery } from '../../store/services/deviceApi';
 import { useLazyGetAppsQuery, useLazyGetProcessesQuery } from '../../store/services/appApi';
 import { InputLabel, MenuItem, Select } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../hooks/typedReduxHooks';
@@ -21,9 +21,11 @@ const Analyze: FC = () => {
 	// React states
 	const [deviceLabel, setDeviceLabel] = useState<string>('');
 	const [showProcesses, setShowProcesses] = useState<boolean>(false);
+	const [devices, setDevices] = useState<Device[]>([]);
 
 	// Getting device list
 	const { data } = useGetDeviceListQuery();
+	const [getDevices] = useLazyGetDeviceListQuery();
 
 	// Select device function, redirects to get apps
 	const [selectDevice, selectedDevice] = useLazySelectDeviceQuery();
@@ -34,9 +36,13 @@ const Analyze: FC = () => {
 	const dispatch = useAppDispatch();
 	const apps = useAppSelector(state => state.apps.apps);
 	const processes = useAppSelector(state => state.apps.processes);
-
-
 	// const device = useAppSelector(state => state.device) as Device;
+
+	useEffect(() => {
+		if(data){
+			setDevices(data);
+		}
+	}, []);
 
 
 	// On select device - get his apps and save info, clear last data
@@ -71,11 +77,18 @@ const Analyze: FC = () => {
 		getProcesses();
 	};
 
+	const refreshDevicesHandler = async () => {
+		const { data } = await getDevices();
+		if(data) {
+			setDevices(data);
+		}
+	};
+
 
 	return (
 		<Box sx={{m: 2}}>
 			<Box display={'flex'} justifyContent={'flex-start'} flexDirection={'row'} alignItems={'center'} gap={1}>
-				<FormControl sx={{minWidth: '180px'}}>
+				<FormControl sx={{minWidth: '180px'}} onClick={refreshDevicesHandler}>
 					<InputLabel id="SelectDevice">Select Device</InputLabel>
 					<Select
 						labelId="SelectDevice"
@@ -86,7 +99,7 @@ const Analyze: FC = () => {
 						sx={{bgcolor: '#FFFFFF'}}
 					>
 						{
-							data && data.map(device =>
+							devices && devices.map(device =>
 								(<MenuItem key={device.impl.id} value={device.impl.id}>
 									<Image image={device.impl.icon?.image.data} deviceId={device.impl.id} w={16} h={16}/>
 									{device.impl.name}

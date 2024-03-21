@@ -18,4 +18,8 @@ export const deviceApi = createApi({
 
 });
 
-export const {useGetDeviceListQuery, useLazySelectDeviceQuery} = deviceApi;
+export const {
+	useGetDeviceListQuery,
+	useLazySelectDeviceQuery,
+	useLazyGetDeviceListQuery
+} = deviceApi;
