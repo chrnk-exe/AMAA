@@ -4,6 +4,7 @@ import Dashboard from './Dashboard';
 import AppPage from './pages/AppPage';
 import Analyze from './pages/Analyze';
 import Testing from './pages/Testing';
+import ShellExec from './pages/ShellExec';
 
 function AppRoutes() {
 	return (
@@ -14,6 +15,7 @@ function AppRoutes() {
 				<Route path="/testing" element={<Testing/>}>
 					<Route path="/testing/1" element={<Testing/>} />
 				</Route>
+				<Route path="/shellExec" element={<ShellExec/>}/>
 				<Route path="*" element={<Navigate to={'/main'}/> }/>
 
 			</Routes>

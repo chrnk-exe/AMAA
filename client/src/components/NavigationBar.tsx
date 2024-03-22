@@ -8,6 +8,7 @@ import QuizIcon from '@mui/icons-material/Quiz';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import JavascriptIcon from '@mui/icons-material/Javascript';
 import FolderIcon from '@mui/icons-material/Folder';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 interface Props {
 	open: boolean
@@ -48,6 +49,11 @@ export const NavigationList = [
 		text: 'App files',
 		link: '/filesystem',
 		icon: <FolderIcon />
+	},
+	{
+		text: 'Shell exec',
+		link: '/shellExec',
+		icon: <ArrowForwardIosIcon/>
 	}
 ];
 
