@@ -2,10 +2,36 @@ import express, { Express, Response, Request, NextFunction } from 'express';
 import cookieParser from 'cookie-parser';
 import deviceRoute from './routes/devicesApi';
 import appRoutes from './routes/appApi';
-import shellRoutes from './routes/shellApi';
+import shellRoutes from './routes/shellApiHttp';
 import deviceController from './controllers/deviceController';
+import {createServer} from 'http';
+import SocketSingleton from './utils/socketSingleton';
+import onConnection from './utils/onConnection';
+import { Server } from 'socket.io';
 
 const app: Express = express();
+const server = createServer(app);
+
+SocketSingleton.configure(server, {
+	cors: {
+		origin: 'http://localhost:3000',
+		credentials: true
+	},
+	serveClient: false
+});
+
+
+
+if (SocketSingleton.io) {
+	SocketSingleton.io.on('connection', (socket) => {
+		// why? SocketSingleton.io here is not undefined!!
+		onConnection(SocketSingleton.io as Server, socket);
+	});
+	SocketSingleton.io.on('error', () => {
+		console.log('a user disconnected');
+	});
+}
+
 
 app.use(express.json());
 app.use(cookieParser('mega_super_secret_key_for_super_mega_secret_encrypting'));
@@ -36,6 +62,8 @@ app.get('/', (req: Request, res: Response) => {
 	res.send('Hello world!');
 });
 
-app.listen(31337);
+server.listen(31337, () => {
+	console.log(`App listening on port: ${31337}`);
+});
 
 
