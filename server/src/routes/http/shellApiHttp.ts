@@ -1,7 +1,8 @@
 import { Request, Response, Router } from 'express';
 import { getDevice } from 'frida';
 import { fork , ChildProcess } from 'child_process';
-import deviceController from '../controllers/deviceController';
+import deviceController from '../../controllers/deviceController';
+
 
 interface shell {
 	subprocess: ChildProcess

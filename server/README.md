@@ -59,7 +59,7 @@ Request:
 ```
 Response (может быть несколько, в зависимости от вывода):
 ```json
-{"pid": 1,"output": "uid=0(root)..."}
+{"pid": 1,"commandOutput": "uid=0(root)..."}
 ```
 
 * kill - удаление шелла, указывается его pid (идентфикатор), ответ удачный или нет в killResult

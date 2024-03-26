@@ -1,6 +1,6 @@
 import { Router, Response, Request } from 'express';
 import { enumerateDevices } from 'frida';
-import getDeviceApps from '../frida-services/getDeviceApps';
+import getDeviceApps from '../../frida-services/getDeviceApps';
 import appRoutes from './appApi';
 import cookieParser from 'cookie-parser';
 
