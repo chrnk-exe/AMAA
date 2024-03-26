@@ -4,12 +4,14 @@ import { useParams } from 'react-router';
 import { useAppSelector, useAppDispatch } from '../../../hooks/typedReduxHooks';
 import { execCommand } from '../../../store/slices/shellSlice';
 import Typography from '@mui/material/Typography';
+import { useSendCommandMutation } from '../../../store/services/shellApiWs';
 import '../../../styles/shellExecInput.css';
 
 function ShellPanel() {
 	const {pid} = useParams();
 	const [command, setCommand] = useState<string>('');
 	const dispatch = useAppDispatch();
+	const [sendCommand] = useSendCommandMutation();
 
 	const shell = useAppSelector(state => state.shells.find(shell => pid && shell.pid === +pid));
 
@@ -19,6 +21,9 @@ function ShellPanel() {
 				pid: +pid,
 				command
 			}));
+			sendCommand({
+				pid: +pid, cmd: command
+			});
 			setCommand('');
 		}
 	};

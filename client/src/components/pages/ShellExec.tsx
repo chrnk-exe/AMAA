@@ -4,9 +4,11 @@ import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
-import {useGetMessagesQuery} from '../../store/services/shellApiWs';
+import CloseIcon from '@mui/icons-material/Close';
 import { useAppSelector } from '../../hooks/typedReduxHooks';
 import { Outlet, useNavigate, useParams } from 'react-router';
+import {useGetShellsMutation, useSpawnShellMutation, useKillShellMutation} from '../../store/services/shellApiWs';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function samePageLinkNavigation(
 	event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
@@ -28,10 +30,18 @@ interface LinkTabProps {
 	label?: string;
 	href?: string;
 	selected?: boolean;
+	pid: number;
 }
 
 function LinkTab(props: LinkTabProps) {
 	const navigate = useNavigate();
+
+	const handleRemoveShell = () => {
+		const {pid} = props;
+		console.log(pid);
+		alert('Not implemented!');
+	};
+
 	return (
 		<Tab
 			component="a"
@@ -43,6 +53,8 @@ function LinkTab(props: LinkTabProps) {
 				navigate(`/shellExec/${props.href}`);
 			}}
 			aria-current={props.selected && 'page'}
+			icon={<IconButton onClick={handleRemoveShell} sx={{p:0}}><CloseIcon/></IconButton>}
+			iconPosition={'end'}
 			{...props}
 		/>
 	);
@@ -53,14 +65,16 @@ const ShellExec: FC = () => {
 	// const {pid} = useParams();
 	// console.log(`[SHELLEXEC] ${pid}`);
 	const shells = useAppSelector(state => state.shells);
+	const [spawnShell, { isLoading }] = useSpawnShellMutation();
 
 
 	const handleChange = (event: React.SyntheticEvent, newValue: number) => {
 		if (newValue !== -1) setValue(newValue);
 	};
 
-	const handleAddShell = () => {
-		alert('Not implemented!');
+	const handleAddShell = async () => {
+		const result = await spawnShell();
+		console.log(result);
 	};
 
 	return (
@@ -73,13 +87,16 @@ const ShellExec: FC = () => {
 					scrollButtons="auto">
 					{
 						shells.map((shell, index) => (
-							<LinkTab label={`shell ${shell.pid}`} key={index} href={shell.pid.toString()}/>
+							<LinkTab label={`shell ${shell.pid}`} key={index} href={shell.pid.toString()} pid={shell.pid}/>
 						))
 					}
 					<Tab
-						value={-1}
+						value={0}
 						icon={<IconButton onClick={handleAddShell}><AddIcon/></IconButton>}
 						iconPosition={'end'}/>
+					{
+						isLoading && <Tab icon={<CircularProgress/>}/>
+					}
 				</Tabs>
 			</Box>
 			<Box>
