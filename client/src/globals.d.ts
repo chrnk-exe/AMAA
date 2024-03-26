@@ -1,5 +1,7 @@
 // todo: change declaration on
 
+declare module '*.css';
+
 declare type Devices = Device[]
 declare interface Process {
     pid: number
@@ -55,4 +57,10 @@ declare interface App {
     name: string,
     pid: number,
     parameters: object
+}
+
+declare interface shell {
+    pid: number // id
+    output: string[]
+    deviceId: string
 }
