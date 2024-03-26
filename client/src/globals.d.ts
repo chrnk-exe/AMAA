@@ -64,3 +64,31 @@ declare interface shell {
     output: string[]
     deviceId: string
 }
+
+declare interface CommandRequest {
+    pid: number,
+    cmd: string
+}
+
+declare interface KillShellRequest {
+    pid: number
+}
+
+declare interface CommandResultResponse {
+    pid: number
+    commandOutput: string
+}
+
+declare interface SpawnedShellsResponse {
+    pid: number,
+    deviceId: string,
+    output: string
+}
+
+declare type ShellsListResponse = SpawnedShellsResponse[]
+
+declare interface KillMessageResponse {
+    pid?: number
+    message: string
+}
+

@@ -1,25 +1,14 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
-let pids = 2;
-
-const initialState: shell[] = [{
-	pid: 1,
-	output: ['>>>whoami','root'],
-	deviceId: 'barebone'
-}, {
-	pid: 2,
-	output: ['>>>id','uid=0(root) gid=0(root) groups=0(root) context=u:r:magisk:s0'],
-	deviceId: 'barebone'
-}];
+const initialState: shell[] = [];
 
 
 const shellSlice = createSlice({
 	name: 'shellSlice',
 	initialState,
 	reducers: {
-		addShell: (state: shell[]) => {
-			pids = pids + 1;
-			return [...state, { pid: pids, output: [''], deviceId: 'barebone' }];
+		addShell: (state: shell[], action: PayloadAction<SpawnedShellsResponse>) => {
+			return [...state, { ...action.payload, output: [action.payload.output] }];
 		},
 		removeShell: (state: shell[], action: PayloadAction<number>) => {
 			return state.filter(shell => shell.pid != action.payload);
@@ -28,10 +17,21 @@ const shellSlice = createSlice({
 			const {pid, command} = action.payload;
 			const currentShell = state.find(shell => shell.pid === pid);
 			if (currentShell){
-				const output = command === 'whoami' ? 'root' : 'uid=0(root) gid=0(root) groups=0(root) context=u:r:magisk:s0';
 				currentShell.output.push(`>>>${command}`);
-				currentShell.output = [...currentShell.output, output];
 			}
+		},
+		recieveCommandOutput: (state: shell[], action: PayloadAction<CommandResultResponse>) => {
+			const {commandOutput, pid} = action.payload;
+			const shell = state.find(shell => shell.pid === +pid);
+			const oldShells = state.filter(shell => shell.pid !== +pid);
+			// const output = [];
+			if (shell) {
+				const { deviceId } = shell;
+				return [...oldShells, {pid, output: [...shell.output, commandOutput], deviceId}];
+			} else {
+				return state;
+			}
+
 		}
 	}
 });
@@ -39,6 +39,7 @@ const shellSlice = createSlice({
 export const {
 	addShell,
 	removeShell,
-	execCommand
+	execCommand,
+	recieveCommandOutput
 } = shellSlice.actions;
 export default shellSlice.reducer;
