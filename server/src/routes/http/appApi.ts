@@ -1,9 +1,10 @@
 import { Router, Response, Request } from 'express';
-import getDeviceApps from '../frida-services/getDeviceApps';
-import getDeviceProcesses from '../frida-services/getDeviceProcesses';
-import spawnApplication from '../frida-services/spawnApplication';
-import applicationController from '../controllers/applicationController';
-import getApkFile from '../frida-services/getApkFile.js';
+import getDeviceApps from '../../frida-services/getDeviceApps';
+import getDeviceProcesses from '../../frida-services/getDeviceProcesses';
+import spawnApplication from '../../frida-services/spawnApplication';
+import applicationController from '../../controllers/applicationController';
+import getApkFile from '../../frida-services/getApkFile.js';
+
 
 const router = Router();
 

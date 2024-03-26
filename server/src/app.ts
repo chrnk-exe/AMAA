@@ -1,8 +1,8 @@
 import express, { Express, Response, Request, NextFunction } from 'express';
 import cookieParser from 'cookie-parser';
-import deviceRoute from './routes/devicesApi';
-import appRoutes from './routes/appApi';
-import shellRoutes from './routes/shellApiHttp';
+import deviceRoute from './routes/http/devicesApi';
+import appRoutes from './routes/http/appApi';
+import shellRoutes from './routes/http/shellApiHttp';
 import deviceController from './controllers/deviceController';
 import {createServer} from 'http';
 import SocketSingleton from './utils/socketSingleton';
@@ -20,7 +20,8 @@ SocketSingleton.configure(server, {
 	serveClient: false
 });
 
-
+app.use(express.json());
+app.use(cookieParser('mega_super_secret_key_for_super_mega_secret_encrypting'));
 
 if (SocketSingleton.io) {
 	SocketSingleton.io.on('connection', (socket) => {
@@ -31,10 +32,6 @@ if (SocketSingleton.io) {
 		console.log('a user disconnected');
 	});
 }
-
-
-app.use(express.json());
-app.use(cookieParser('mega_super_secret_key_for_super_mega_secret_encrypting'));
 
 // disable in prod (no)
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -58,7 +55,7 @@ app.use('/api',
 );
 
 app.get('/', (req: Request, res: Response) => {
-	console.log(req.cookies);
+	// console.log(req.cookies);
 	res.send('Hello world!');
 });
 
