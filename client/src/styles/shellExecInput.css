@@ -1,0 +1,9 @@
+.shellExecInput {
+    border: none;
+    font-size: large;
+    padding: 3px
+}
+
+.shellExecInput:focus {
+    outline: none
+}

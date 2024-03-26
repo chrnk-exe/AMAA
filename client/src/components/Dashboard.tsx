@@ -7,6 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import MuiDrawer from '@mui/material/Drawer';
 import NavigationBar from './NavigationBar';
 import Header from './Header';
+import ScrollToTop from 'react-scroll-to-top';
 
 // import { Link } from 'react-router-dom';
 
@@ -114,6 +115,7 @@ export default function PrimarySearchAppBar({
 				}}>
 				{children}
 			</Box>
+			<ScrollToTop smooth className={'scrollToTopButtonLeft'}/>
 		</Box>
 	);
 }

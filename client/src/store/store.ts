@@ -5,11 +5,13 @@ import { deviceApi } from './services/deviceApi';
 import { appsApi } from './services/appApi';
 import { testingApi } from './services/testingApi';
 import { shellApiWs } from './services/shellApiWs';
+import shellReducer from './slices/shellSlice';
 
 export const store = configureStore({
 	reducer: {
 		device: deviceReducer,
 		apps: appsReducer,
+		shells: shellReducer,
 		[deviceApi.reducerPath]: deviceApi.reducer,
 		[appsApi.reducerPath]: appsApi.reducer,
 		[testingApi.reducerPath]: testingApi.reducer,

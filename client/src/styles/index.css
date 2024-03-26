@@ -18,3 +18,7 @@ html, body {
   margin: 0;
   box-sizing: border-box;
   min-height: 100vh; }
+
+.scrollToTopButtonLeft {
+  left: 50px;
+}
