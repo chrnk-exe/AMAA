@@ -5,10 +5,12 @@ import Tabs from '@mui/material/Tabs';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import { useAppSelector } from '../../hooks/typedReduxHooks';
+import { useAppSelector, useAppDispatch } from '../../hooks/typedReduxHooks';
 import { Outlet, useNavigate, useParams } from 'react-router';
+import { removeShell } from '../../store/slices/shellSlice';
 import {useGetShellsMutation, useSpawnShellMutation, useKillShellMutation} from '../../store/services/shellApiWs';
-import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
+import { Button } from '@mui/material';
 
 function samePageLinkNavigation(
 	event: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
@@ -35,11 +37,16 @@ interface LinkTabProps {
 
 function LinkTab(props: LinkTabProps) {
 	const navigate = useNavigate();
+	const {pid} = useParams();
+	const dispatch = useAppDispatch();
+
+	const [killShell] = useKillShellMutation();
 
 	const handleRemoveShell = () => {
 		const {pid} = props;
-		console.log(pid);
-		alert('Not implemented!');
+		dispatch(removeShell(pid));
+		killShell(pid);
+		navigate('/shellExec');
 	};
 
 	return (
@@ -52,8 +59,9 @@ function LinkTab(props: LinkTabProps) {
 				}
 				navigate(`/shellExec/${props.href}`);
 			}}
-			aria-current={props.selected && 'page'}
+			value={+props.pid}
 			icon={<IconButton onClick={handleRemoveShell} sx={{p:0}}><CloseIcon/></IconButton>}
+			aria-current={pid && (+pid) === props.pid ? 'page' : undefined}
 			iconPosition={'end'}
 			{...props}
 		/>
@@ -62,45 +70,60 @@ function LinkTab(props: LinkTabProps) {
 
 const ShellExec: FC = () => {
 	const [value, setValue] = useState(0);
-	// const {pid} = useParams();
-	// console.log(`[SHELLEXEC] ${pid}`);
+	const {pid} = useParams();
 	const shells = useAppSelector(state => state.shells);
-	const [spawnShell, { isLoading }] = useSpawnShellMutation();
-
+	const [spawnShell] = useSpawnShellMutation();
+	const [getShells] = useGetShellsMutation();
 
 	const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-		if (newValue !== -1) setValue(newValue);
+		// console.log(event.currentTarget)
+		console.log(`Value: ${newValue}`);
+		setValue(newValue);
 	};
 
-	const handleAddShell = async () => {
-		const result = await spawnShell();
-		console.log(result);
+	const handleAddShell = () => {
+		spawnShell();
+	};
+
+	const getShellsHandler = () => {
+		getShells();
 	};
 
 	return (
 		<Box sx={{ width: '100%', bgcolor: '#FFFFFF', height: '100%' }}>
-			<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+			<Box display={'flex'}  alignItems={'center'} justifyContent={'flex-start'} sx={{ borderBottom: 1, borderColor: 'divider' }}>
 				<Tabs
 					value={value}
 					onChange={handleChange}
 					variant="scrollable"
 					scrollButtons="auto">
 					{
-						shells.map((shell, index) => (
-							<LinkTab label={`shell ${shell.pid}`} key={index} href={shell.pid.toString()} pid={shell.pid}/>
+						shells.map((shell) => (
+							<LinkTab label={`Shell ${shell.pid}`} key={shell.pid} href={shell.pid.toString()} pid={shell.pid}/>
 						))
 					}
-					<Tab
-						value={0}
-						icon={<IconButton onClick={handleAddShell}><AddIcon/></IconButton>}
-						iconPosition={'end'}/>
-					{
-						isLoading && <Tab icon={<CircularProgress/>}/>
-					}
 				</Tabs>
+				<Box sx={{height: '100%'}} display={'flex'} alignItems={'center'} justifyContent={'center'}>
+					<IconButton onClick={handleAddShell}><AddIcon/></IconButton>
+				</Box>
 			</Box>
-			<Box>
-				<Outlet />
+			<Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'}>
+				{pid
+					? <Outlet />
+					:<Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} mt={10} gap={2}>
+						<Typography>
+							To use shell click {'+'} button!
+						</Typography>
+						<Button variant={'contained'} onClick={getShellsHandler}>
+							Click here to receive all shells
+						</Button>
+						<Typography color={'red'}>
+							Ввод {'"http://localhost:31337/shellExec"'} в строку URI приводит к потере почти всего вывода всех команд!
+						</Typography>
+						<Typography color={'red'}>
+							Для перехода на эту страницу используй кнопку в меню слева.
+						</Typography>
+					</Box>}
 			</Box>
 		</Box>
 	);

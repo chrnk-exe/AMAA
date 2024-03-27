@@ -8,7 +8,7 @@ import ShellExec from './pages/ShellExec';
 import ShellPanel from './pages/shellExecComponents/shellPanel';
 import socket from '../socket';
 import { useAppDispatch } from '../hooks/typedReduxHooks';
-import { addShell, recieveCommandOutput, removeShell } from '../store/slices/shellSlice';
+import { addShell, recieveCommandOutput, removeShell, setShells } from '../store/slices/shellSlice';
 
 function AppRoutes() {
 	const dispatch = useAppDispatch();
@@ -19,6 +19,7 @@ function AppRoutes() {
 	// killResult - удачное или неудачное убийство процесса шелла
 	useEffect(() => {
 		console.log('APP ROUTES MOUNTED!');
+
 
 		socket.on('connect', () => {
 			console.log('Connected successfully');
@@ -35,10 +36,13 @@ function AppRoutes() {
 			// what i need to do?
 			// Нужно сохранить старый output + посмотреть соответствие пидам и девайс id
 			// dispatch(addShell(data));
+			// а пока просто все шеллы заменю на пришедшие)))
+			dispatch(setShells(data));
+
 		});
 
 		socket.on('killResult', (data: KillMessageResponse) => {
-			console.log('Current shell list: ', data);
+			console.log('Kill shell result: ', data);
 			if (data.pid){
 				dispatch(removeShell(data.pid));
 			}
@@ -48,6 +52,11 @@ function AppRoutes() {
 			console.log('Received command output:', data);
 			dispatch(recieveCommandOutput(data));
 		});
+
+		return () => {
+			socket.removeAllListeners();
+			console.log('Socket removed listeners!');
+		};
 
 	}, []);
 
