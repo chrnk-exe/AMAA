@@ -31,8 +31,9 @@ export default function shellHandlers(io: Server, socket: Socket) {
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				const commandOutput = Buffer.from(data).toString();
-				shellInstance.output = commandOutput as string;
-				socket.emit('commandResult', { commandOutput, pid: count });
+
+				shellInstance.output = commandOutput;
+				socket.emit('commandResult', { commandOutput, pid: shellInstance.pid });
 			});
 
 			socket.emit('spawnedShell', JSON.stringify({pid: count, deviceId, output: ''}));
