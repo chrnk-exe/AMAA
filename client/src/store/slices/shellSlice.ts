@@ -11,7 +11,7 @@ const shellSlice = createSlice({
 			return [...state, { ...action.payload, output: [action.payload.output] }];
 		},
 		removeShell: (state: shell[], action: PayloadAction<number>) => {
-			return state.filter(shell => shell.pid != action.payload);
+			return state.filter(shell => +shell.pid !== +action.payload);
 		},
 		execCommand: (state: shell[], action: PayloadAction<{pid: number, command: string}>) => {
 			const {pid, command} = action.payload;
@@ -27,11 +27,14 @@ const shellSlice = createSlice({
 			// const output = [];
 			if (shell) {
 				const { deviceId } = shell;
-				return [...oldShells, {pid, output: [...shell.output, commandOutput], deviceId}];
+				// const transformedOutput =
+				return [...oldShells, {pid, output: [...shell.output, commandOutput], deviceId}].sort((a, b) => (+a.pid) - (+b.pid));
 			} else {
 				return state;
 			}
-
+		},
+		setShells: (state: shell[], action: PayloadAction<ShellsListResponse>) => {
+			return action.payload.map((shell) => ({...shell, output: [shell.output]}));
 		}
 	}
 });
@@ -40,6 +43,7 @@ export const {
 	addShell,
 	removeShell,
 	execCommand,
-	recieveCommandOutput
+	recieveCommandOutput,
+	setShells
 } = shellSlice.actions;
 export default shellSlice.reducer;

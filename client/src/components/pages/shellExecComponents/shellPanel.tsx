@@ -1,4 +1,4 @@
-import React, {useState, KeyboardEvent} from 'react';
+import React, {useState, KeyboardEvent, useEffect} from 'react';
 import Box from '@mui/material/Box';
 import { useParams } from 'react-router';
 import { useAppSelector, useAppDispatch } from '../../../hooks/typedReduxHooks';
@@ -14,6 +14,13 @@ function ShellPanel() {
 	const [sendCommand] = useSendCommandMutation();
 
 	const shell = useAppSelector(state => state.shells.find(shell => pid && shell.pid === +pid));
+
+	useEffect(() => {
+		window.scrollTo({
+			top: 99999999,
+			behavior: 'smooth'
+		});
+	}, [shell]);
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
 		if(e.key === 'Enter' && pid){
@@ -41,9 +48,9 @@ function ShellPanel() {
 						<Typography>Shell device id: {shell && shell.deviceId}</Typography>
 					</Box>
 					{shell && shell.output.map((outputString, index) => (
-						<Typography key={index}>
+						<pre key={index}>
 							{outputString}
-						</Typography>
+						</pre>
 					))}
 					<Box mt={1}>
 						{'>>>'}<input className={'shellExecInput'} value={command} onChange={(e) => setCommand(e.target.value)} onKeyDown={handleKeyDown}/>
