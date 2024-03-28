@@ -10,7 +10,7 @@ export default class DeviceFileBrowser {
 	private socket: Socket;
 
 	constructor(deviceId: string, socket: Socket) {
-		this.deviceId = deviceId;
+		this.deviceId = deviceId as string;
 		this.socket = socket;
 
 
@@ -21,7 +21,8 @@ export default class DeviceFileBrowser {
 			this.getFile(path);
 		});
 
-		this.subprocessDirectory = fork(__dirname + '\\..\\frida-services\\shellChild.js', [deviceId]);
+
+		this.subprocessDirectory = fork(__dirname + '\\..\\..\\frida-services\\shellChild.js', [deviceId]);
 		this.subprocessDirectory.on('message', (data) => {
 			// todo: Разобраться, что не так с data
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -29,7 +30,8 @@ export default class DeviceFileBrowser {
 			socket.emit('directoryContent', this.prepareDirectories(Buffer.from(data).toString()));
 		});
 
-		this.subprocessFile = fork(__dirname + '\\..\\frida-services\\shellChild.js', [deviceId]);
+
+		this.subprocessFile = fork(__dirname + '\\..\\..\\frida-services\\shellChild.js', [deviceId]);
 		this.subprocessFile.on('message', (data) => {
 			// concat received data
 			// todo: Разобраться, что не так с data
