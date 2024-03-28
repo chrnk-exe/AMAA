@@ -49,7 +49,7 @@ const AppRoutes: FC<Props> = ({devices}) => {
 				</Box>
 			</Box>
 			<Box>
-				<Typography>
+				<Typography color={'textPrimary'}>
 					2. Неоходимо с помощью <Link href={'https://developer.android.com/tools/releases/platform-tools'}>ADB</Link> установить
 					на эмулятор/живое устройство <Link href={'https://github.com/frida/frida/releases'}>frida-server</Link>.
 					Сервер необходимо подбирать под архитектуру своего устройства, узнать её можно командой <code>uname -m</code>

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Box, Button } from '@mui/material';
-import {useParams} from 'react-router';
-import { useNavigate } from 'react-router';
+import {useParams, Outlet, useNavigate} from 'react-router';
 
 // path - url encoded path, это нужно для кодирования '/' символа,
 // всё для того, чтобы по кнопке <назад> можно было вернуться на папку назад)))
@@ -15,11 +14,15 @@ const AppFiles = () => {
 	};
 
 
+
+
 	if (path) {
+		// Тут надо показывать файлики и их содержимое
 		return (
-			<Box>Here will be path and files!</Box>
+			<Outlet/>
 		);
 	} else {
+		// Тут должна быть заглушка
 		return (
 			<Box sx={{width: '100%', height: '100%', bgcolor: '#FFFFFF'}}>
 				Here instructions and link to root folder (/)!

@@ -11,10 +11,11 @@ import { InputLabel, MenuItem, Select } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../hooks/typedReduxHooks';
 import { setDevice } from '../../store/slices/currentDeviceReducer';
 import Image from '../Image';
+import socket from '../../socket';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import CircularProgress from '@mui/material/CircularProgress';
-import AppsTable from './AnalyzeTables/AppsTable';
-import ProcessesTable from './AnalyzeTables/ProcessesTable';
+import AppsTable from './AnalyzeComponents/AppsTable';
+import ProcessesTable from './AnalyzeComponents/ProcessesTable';
 
 
 const Analyze: FC = () => {
@@ -44,6 +45,13 @@ const Analyze: FC = () => {
 		}
 	}, []);
 
+	useEffect(() => {
+		return () => {
+			socket.disconnect();
+			socket.connect();
+		};
+	}, []);
+
 
 	// On select device - get his apps and save info, clear last data
 	const onSelectDevice = async (e: SelectChangeEvent<string>) => {
@@ -55,6 +63,7 @@ const Analyze: FC = () => {
 				dispatch(setDevice(deviceToSet));
 				setDeviceLabel(deviceId);
 				selectDevice({ deviceId, type: showProcesses ? 'processes' : 'apps'});
+
 			}
 		}
 	};
