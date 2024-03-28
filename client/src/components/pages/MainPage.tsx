@@ -66,6 +66,11 @@ const AppRoutes: FC<Props> = ({devices}) => {
 					<code>./data/local/tmp/frida-server</code>
 				</Box>
 			</Box>
+			<Box mt={1}>
+				<Typography>
+					Устройство выбирается в Select-меню во вкладке Analyze, далее в остальных вкладках выбирается именно оно.
+				</Typography>
+			</Box>
 		</Box>
 	);
 };

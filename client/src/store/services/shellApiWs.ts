@@ -6,12 +6,6 @@ import socket from '../../socket';
 // spawn - создание шелла
 // shells - запрос шеллов в shellsList
 // command - выполнение команды, ответ приходит в commandResult
-// Request:
-//
-// {"pid": 1,"cmd": "id"}
-// Response (может быть несколько, в зависимости от вывода):
-//
-// {"pid": 1,"commandOutput": "uid=0(root)..."}
 // kill - удаление шелла, указывается его pid (идентфикатор), ответ удачный или нет в killResult
 export const shellApiWs = createApi({
 	reducerPath: 'shellApiWs',

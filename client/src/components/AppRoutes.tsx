@@ -9,6 +9,7 @@ import ShellPanel from './pages/shellExecComponents/shellPanel';
 import socket from '../socket';
 import { useAppDispatch } from '../hooks/typedReduxHooks';
 import { addShell, recieveCommandOutput, removeShell, setShells } from '../store/slices/shellSlice';
+import AppFiles from './pages/AppFiles';
 
 function AppRoutes() {
 	const dispatch = useAppDispatch();
@@ -17,10 +18,13 @@ function AppRoutes() {
 	// spawnedShell - информация об удачном спавне шелла
 	// shellsList - список текущих шеллов
 	// killResult - удачное или неудачное убийство процесса шелла
+
+	//
 	useEffect(() => {
 		console.log('APP ROUTES MOUNTED!');
 
 
+		// shell socket commands
 		socket.on('connect', () => {
 			console.log('Connected successfully');
 		});
@@ -53,6 +57,18 @@ function AppRoutes() {
 			dispatch(recieveCommandOutput(data));
 		});
 
+		// files commands
+
+		socket.on('directoryContent', (data) => {
+			console.log('Directory content: ', data);
+		});
+
+		socket.on('fileContent', (data) => {
+			console.log('File content: ', data);
+		});
+
+
+		// clear listners
 		return () => {
 			socket.removeAllListeners();
 			console.log('Socket removed listeners!');
@@ -69,6 +85,8 @@ function AppRoutes() {
 				<Route path="/testing" element={<Testing/>}>
 					<Route path="/testing/1" element={<Testing/>} />
 				</Route>
+				<Route path={'/filesystem'} element={<AppFiles/>}/>
+				<Route path={'/filesystem/:path'} element={<AppFiles/>}/>
 				<Route path="/shellExec" element={<ShellExec />}>
 					<Route path={'/shellExec/:pid'} element={<ShellPanel />}></Route>
 				</Route>

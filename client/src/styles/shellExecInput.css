@@ -1,7 +1,8 @@
 .shellExecInput {
     border: none;
     font-size: large;
-    padding: 3px
+    padding: 3px;
+    width: 90%;
 }
 
 .shellExecInput:focus {
