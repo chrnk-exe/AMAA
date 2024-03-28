@@ -1,13 +1,9 @@
 import { Router, Response, Request } from 'express';
 import { enumerateDevices } from 'frida';
-import getDeviceApps from '../../frida-services/getDeviceApps';
-import appRoutes from './appApi';
-import cookieParser from 'cookie-parser';
 
 const router = Router();
 
 const filteredDevices = ['socket', 'local'];
-// const filteredDevices = [''];
 
 
 // Get list of active devices
