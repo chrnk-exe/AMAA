@@ -7,12 +7,14 @@ import Testing from './pages/Testing';
 import ShellExec from './pages/ShellExec';
 import ShellPanel from './pages/shellExecComponents/shellPanel';
 import socket from '../socket';
-import { useAppDispatch } from '../hooks/typedReduxHooks';
+import { useAppDispatch, useAppSelector } from '../hooks/typedReduxHooks';
 import { addShell, recieveCommandOutput, removeShell, setShells } from '../store/slices/shellSlice';
 import AppFiles from './pages/AppFiles';
+import Files from './pages/AppFilesComponents/Files';
 
 function AppRoutes() {
 	const dispatch = useAppDispatch();
+	const device = useAppSelector(state => state.device);
 
 	// commandResult - вывод команды вместе с индексом консоли
 	// spawnedShell - информация об удачном спавне шелла
@@ -22,6 +24,7 @@ function AppRoutes() {
 	//
 	useEffect(() => {
 		console.log('APP ROUTES MOUNTED!');
+
 
 
 		// shell socket commands
@@ -74,7 +77,7 @@ function AppRoutes() {
 			console.log('Socket removed listeners!');
 		};
 
-	}, []);
+	}, [device]);
 
 
 	return (
@@ -85,8 +88,9 @@ function AppRoutes() {
 				<Route path="/testing" element={<Testing/>}>
 					<Route path="/testing/1" element={<Testing/>} />
 				</Route>
-				<Route path={'/filesystem'} element={<AppFiles/>}/>
-				<Route path={'/filesystem/:path'} element={<AppFiles/>}/>
+				<Route path={'/filesystem'} element={<AppFiles/>}>
+					<Route path={'/filesystem/:path'} element={<Files />}/>
+				</Route>
 				<Route path="/shellExec" element={<ShellExec />}>
 					<Route path={'/shellExec/:pid'} element={<ShellPanel />}></Route>
 				</Route>
