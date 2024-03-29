@@ -7,10 +7,12 @@ import Testing from './pages/Testing';
 import ShellExec from './pages/ShellExec';
 import ShellPanel from './pages/shellExecComponents/shellPanel';
 import socket from '../socket';
-import { useAppDispatch, useAppSelector } from '../hooks/typedReduxHooks';
-import { addShell, recieveCommandOutput, removeShell, setShells } from '../store/slices/shellSlice';
+import {useAppDispatch, useAppSelector} from '../hooks/typedReduxHooks';
+import {addShell, recieveCommandOutput, removeShell, setShells} from '../store/slices/shellSlice';
+import {addToFilesystem} from '../store/slices/dirSlice';
 import AppFiles from './pages/AppFiles';
 import Files from './pages/AppFilesComponents/Files';
+import {appendFileData} from '../store/slices/fileSlice';
 
 function AppRoutes() {
 	const dispatch = useAppDispatch();
@@ -24,7 +26,6 @@ function AppRoutes() {
 	//
 	useEffect(() => {
 		console.log('APP ROUTES MOUNTED!');
-
 
 
 		// shell socket commands
@@ -50,7 +51,7 @@ function AppRoutes() {
 
 		socket.on('killResult', (data: KillMessageResponse) => {
 			console.log('Kill shell result: ', data);
-			if (data.pid){
+			if (data.pid) {
 				dispatch(removeShell(data.pid));
 			}
 		});
@@ -62,12 +63,14 @@ function AppRoutes() {
 
 		// files commands
 
-		socket.on('directoryContent', (data) => {
+		socket.on('directoryContent', (data: Directory[]) => {
 			console.log('Directory content: ', data);
+			dispatch(addToFilesystem(data));
 		});
 
-		socket.on('fileContent', (data) => {
+		socket.on('fileContent', (data: DeviceFile) => {
 			console.log('File content: ', data);
+			dispatch(appendFileData(data));
 		});
 
 
@@ -83,18 +86,18 @@ function AppRoutes() {
 	return (
 		<Dashboard>
 			<Routes>
-				<Route path="/main" element={<AppPage devices={[]}/> }/>
-				<Route path="/device" element={<Analyze />} />
+				<Route path="/main" element={<AppPage devices={[]}/>}/>
+				<Route path="/device" element={<Analyze/>}/>
 				<Route path="/testing" element={<Testing/>}>
-					<Route path="/testing/1" element={<Testing/>} />
+					<Route path="/testing/1" element={<Testing/>}/>
 				</Route>
 				<Route path={'/filesystem'} element={<AppFiles/>}>
-					<Route path={'/filesystem/:path'} element={<Files />}/>
+					<Route path={'/filesystem/:path'} element={<Files/>}/>
 				</Route>
-				<Route path="/shellExec" element={<ShellExec />}>
-					<Route path={'/shellExec/:pid'} element={<ShellPanel />}></Route>
+				<Route path="/shellExec" element={<ShellExec/>}>
+					<Route path={'/shellExec/:pid'} element={<ShellPanel/>}></Route>
 				</Route>
-				<Route path="*" element={<Navigate to={'/main'}/> }/>
+				<Route path="*" element={<Navigate to={'/main'}/>}/>
 
 			</Routes>
 		</Dashboard>);

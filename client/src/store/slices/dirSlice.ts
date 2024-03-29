@@ -9,11 +9,19 @@ const directoriesSlice = createSlice({
 	reducers: {
 		setFilesystem: (state, action: PayloadAction<Directory[]>) => {
 			return action.payload;
+		},
+		clearFilesystem: () => {
+			return [];
+		},
+		addToFilesystem: (state, action: PayloadAction<Directory[]>) => {
+			return [...state, ...action.payload];
 		}
 	}
 });
 
 export const {
-	setFilesystem
+	setFilesystem,
+	clearFilesystem,
+	addToFilesystem
 } = directoriesSlice.actions;
 export default directoriesSlice.reducer;
