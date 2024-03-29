@@ -1,6 +1,5 @@
-import { ChildProcess, fork } from 'child_process';
-import { Socket } from 'socket.io';
-// testing, delete later
+import {ChildProcess, fork} from 'child_process';
+import {Socket} from 'socket.io';
 
 
 export default class DeviceFileBrowser {
@@ -8,11 +7,21 @@ export default class DeviceFileBrowser {
 	private subprocessDirectory: ChildProcess;
 	private subprocessFile: ChildProcess;
 	private socket: Socket;
+	private fileData: {
+		name: string,
+		data: any
+	};
 
 	constructor(deviceId: string, socket: Socket) {
 		this.deviceId = deviceId as string;
 		this.socket = socket;
+		this.fileData = {
+			name: 'mockupname',
+			data: ''
+		};
 
+		this.setSubprocessDirectory(deviceId);
+		this.setSubprocessFile(deviceId);
 
 		socket.on('listDirectories', (path) => {
 			this.getDirectory(path);
@@ -20,24 +29,46 @@ export default class DeviceFileBrowser {
 		socket.on('fileContent', (path) => {
 			this.getFile(path);
 		});
+	}
 
-
+	private setSubprocessDirectory(deviceId: string) {
 		this.subprocessDirectory = fork(__dirname + '\\..\\..\\frida-services\\shellChild.js', [deviceId]);
 		this.subprocessDirectory.on('message', (data) => {
+			// if (typeof data !== 'object')
 			// todo: Разобраться, что не так с data
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			socket.emit('directoryContent', this.prepareDirectories(Buffer.from(data).toString()));
+			this.socket.emit('directoryContent', this.prepareDirectories(Buffer.from(data).toString()));
 		});
 
 
+		// todo: сделать хуйню чтоб отправлялся эмит с уведомлением проверь тельчик!
+		this.subprocessDirectory.on('error', (err) => {
+			console.log('ERROR', err);
+		});
+		this.subprocessDirectory.on('exit', (signal) => {
+			console.log('Signal', signal);
+		});
+	}
+
+	private setSubprocessFile(deviceId: string) {
 		this.subprocessFile = fork(__dirname + '\\..\\..\\frida-services\\shellChild.js', [deviceId]);
 		this.subprocessFile.on('message', (data) => {
-			// concat received data
-			// todo: Разобраться, что не так с data
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			socket.emit('fileContent', this.prepareFile(Buffer.from(data).toString()));
+
+			this.socket.emit('fileContent', {
+				name: this.fileData.name,
+				// todo: Разобраться, что не так с data
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				data: this.prepareFile(Buffer.from(data).toString())
+			});
+		});
+
+		this.subprocessFile.on('error', (err) => {
+			console.log('ERROR', err);
+		});
+		this.subprocessFile.on('exit', (signal) => {
+			console.log('Signal', signal);
 		});
 	}
 
@@ -49,7 +80,16 @@ export default class DeviceFileBrowser {
 	// для сейва - на клиенте, НО возможно это будет не так просто
 	getFile(path: string) {
 		this.subprocessFile.send(`cat ${path} | base64`);
+		const pathname = path.split('/');
+		this.fileData.name = pathname[pathname.length - 1];
 	}
+
+	// todo: oстальные действия
+	// modify file (rm + echo {content} >> file)
+	// delete file (rm )
+	// create file (touch)
+	// create directory (mkdir)
+	// delete directory (rm -rf)
 
 	private prepareFile(file: string) {
 		return file;

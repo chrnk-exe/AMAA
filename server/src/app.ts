@@ -1,4 +1,4 @@
-import express, { Express, Response, Request, NextFunction } from 'express';
+import express, {Express, Response, Request, NextFunction} from 'express';
 import cookieParser from 'cookie-parser';
 import deviceRoute from './routes/http/devicesApi';
 import appRoutes from './routes/http/appApi';
@@ -7,7 +7,8 @@ import deviceController from './controllers/deviceController';
 import {createServer} from 'http';
 import SocketSingleton from './utils/socketSingleton';
 import onConnection from './utils/onConnection';
-import { Server } from 'socket.io';
+import {Server} from 'socket.io';
+
 
 const app: Express = express();
 const server = createServer(app);
