@@ -3,92 +3,116 @@
 declare module '*.css';
 
 declare type Devices = Device[]
+
 declare interface Process {
-    pid: number
-    name: string
-    parameters: object
+	pid: number;
+	name: string;
+	parameters: object;
 }
 
 declare interface Device {
-    impl: Impl
-    bus: Bus
-    spawnAdded: NamedSignals<'spawn-added'>
-    spawnRemoved: NamedSignals<'spawn-removed'>
-    childAdded: NamedSignals<'child-added'>
-    childRemoved: NamedSignals<'child-removed'>
-    processCrashed: NamedSignals<'process-crashed'>
-    output: NamedSignals<'output'>
-    uninjected: NamedSignals<'uninjected'>
-    lost: NamedSignals<'lost'>
+	impl: Impl;
+	bus: Bus;
+	spawnAdded: NamedSignals<'spawn-added'>;
+	spawnRemoved: NamedSignals<'spawn-removed'>;
+	childAdded: NamedSignals<'child-added'>;
+	childRemoved: NamedSignals<'child-removed'>;
+	processCrashed: NamedSignals<'process-crashed'>;
+	output: NamedSignals<'output'>;
+	uninjected: NamedSignals<'uninjected'>;
+	lost: NamedSignals<'lost'>;
 }
 
 declare interface NamedSignals<signalName> {
-    signals: Signals
-    name: signalName
+	signals: Signals;
+	name: signalName;
 }
+
 declare interface Impl {
-    id: string
-    name: string
-    icon?: Icon
-    type: string
-    bus: Bus
-    isLost: boolean
-    signals: Signals
+	id: string;
+	name: string;
+	icon?: Icon;
+	type: string;
+	bus: Bus;
+	isLost: boolean;
+	signals: Signals;
 }
 
 declare interface Icon {
-    format: string
-    width: number
-    height: number
-    image: Image
+	format: string;
+	width: number;
+	height: number;
+	image: Image;
 }
 
 declare interface Image {
-    type: string
-    data: number[]
+	type: string;
+	data: number[];
 }
 
-declare interface Signals {any}
+declare interface Signals {
+	any;
+}
 
 declare type Apps = App[]
 
 declare interface App {
-    identifier: string,
-    name: string,
-    pid: number,
-    parameters: object
+	identifier: string,
+	name: string,
+	pid: number,
+	parameters: object
 }
 
 declare interface shell {
-    pid: number // id
-    output: string[]
-    deviceId: string
+	pid: number; // id
+	output: string[];
+	deviceId: string;
 }
 
 declare interface CommandRequest {
-    pid: number,
-    cmd: string
+	pid: number,
+	cmd: string
 }
 
 declare interface KillShellRequest {
-    pid: number
+	pid: number;
 }
 
 declare interface CommandResultResponse {
-    pid: number
-    commandOutput: string
+	pid: number;
+	commandOutput: string;
 }
 
 declare interface SpawnedShellsResponse {
-    pid: number,
-    deviceId: string,
-    output: string
+	pid: number,
+	deviceId: string,
+	output: string
 }
 
 declare type ShellsListResponse = SpawnedShellsResponse[]
 
 declare interface KillMessageResponse {
-    pid?: number
-    message: string
+	pid?: number;
+	message: string;
 }
 
+declare type objectType = 'directory' | 'link' | 'file'
+
+declare interface Directory {
+	objectType?: objectType;
+	rules: string;
+	numberOfLinksToTheContent: number;
+	owner: string;
+	ownerGroup: string;
+	size: number;
+	modifiedDate: string;
+	modifiedTime: string;
+	fileName: string;
+	arrow?: string;
+	link?: string;
+}
+
+declare interface DeviceFile {
+	name: string;
+	data: string;
+}

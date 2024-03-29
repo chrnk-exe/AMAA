@@ -1,19 +1,17 @@
 import React from 'react';
-import { Box, Button } from '@mui/material';
+import {Box, Button} from '@mui/material';
 import {useParams, Outlet, useNavigate} from 'react-router';
 
 // path - url encoded path, это нужно для кодирования '/' символа,
 // всё для того, чтобы по кнопке <назад> можно было вернуться на папку назад)))
 const AppFiles = () => {
-	const { path } = useParams();
+	const {path} = useParams();
 	const navigate = useNavigate();
 
 
 	const goToRootDirectory = () => {
 		navigate('/filesystem/%2F');
 	};
-
-
 
 
 	if (path) {
