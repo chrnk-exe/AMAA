@@ -16,7 +16,7 @@ export default class DeviceFileBrowser {
 		this.deviceId = deviceId as string;
 		this.socket = socket;
 		this.fileData = {
-			name: 'mockupname',
+			name: '',
 			data: ''
 		};
 
