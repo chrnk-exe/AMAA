@@ -32,6 +32,10 @@
       "error",
       "single"
     ],
+    "no-mixed-spaces-and-tabs": [
+      "warn",
+      "smart-tabs"
+    ],
     "semi": [
       "error",
       "always"

@@ -1,7 +1,7 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 // import { io } from 'socket.io-client';
 
-import socket from '../../socket';
+import socket from '../../utils/socket';
 
 // spawn - создание шелла
 // shells - запрос шеллов в shellsList

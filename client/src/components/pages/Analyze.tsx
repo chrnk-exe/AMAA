@@ -1,17 +1,21 @@
-import React, { FC, useState, ChangeEvent, useEffect } from 'react';
+import React, {FC, useState, ChangeEvent, useEffect} from 'react';
 import {
 	Box, Button,
 	FormControl, FormControlLabel,
 	SelectChangeEvent, Switch,
 
 } from '@mui/material';
-import { useGetDeviceListQuery, useLazySelectDeviceQuery, useLazyGetDeviceListQuery } from '../../store/services/deviceApi';
-import { useLazyGetAppsQuery, useLazyGetProcessesQuery } from '../../store/services/appApi';
-import { InputLabel, MenuItem, Select } from '@mui/material';
-import { useAppDispatch, useAppSelector } from '../../hooks/typedReduxHooks';
-import { setDevice } from '../../store/slices/currentDeviceReducer';
+import {
+	useGetDeviceListQuery,
+	useLazySelectDeviceQuery,
+	useLazyGetDeviceListQuery
+} from '../../store/services/deviceApi';
+import {useLazyGetAppsQuery, useLazyGetProcessesQuery} from '../../store/services/appApi';
+import {InputLabel, MenuItem, Select} from '@mui/material';
+import {useAppDispatch, useAppSelector} from '../../hooks/typedReduxHooks';
+import {setDevice} from '../../store/slices/currentDeviceReducer';
 import Image from '../Image';
-import socket from '../../socket';
+import socket from '../../utils/socket';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import CircularProgress from '@mui/material/CircularProgress';
 import AppsTable from './AnalyzeComponents/AppsTable';
@@ -25,7 +29,7 @@ const Analyze: FC = () => {
 	const [devices, setDevices] = useState<Device[]>([]);
 
 	// Getting device list
-	const { data } = useGetDeviceListQuery();
+	const {data} = useGetDeviceListQuery();
 	const [getDevices] = useLazyGetDeviceListQuery();
 
 	// Select device function, redirects to get apps
@@ -40,7 +44,7 @@ const Analyze: FC = () => {
 	// const device = useAppSelector(state => state.device) as Device;
 
 	useEffect(() => {
-		if(data){
+		if (data) {
 			setDevices(data);
 		}
 	}, []);
@@ -57,12 +61,12 @@ const Analyze: FC = () => {
 	const onSelectDevice = async (e: SelectChangeEvent<string>) => {
 		// console.log('clearing apps');
 		const deviceId = e.target.value as string;
-		if (data){
+		if (data) {
 			const deviceToSet = data.find(device => device.impl.id === deviceId);
-			if(deviceToSet){
+			if (deviceToSet) {
 				dispatch(setDevice(deviceToSet));
 				setDeviceLabel(deviceId);
-				selectDevice({ deviceId, type: showProcesses ? 'processes' : 'apps'});
+				selectDevice({deviceId, type: showProcesses ? 'processes' : 'apps'});
 
 			}
 		}
@@ -71,11 +75,11 @@ const Analyze: FC = () => {
 	// on tumbler - check a data in storage - show data. If no data in storage - get data and show it.
 	const showProcessesHandler = (e: ChangeEvent<HTMLInputElement>) => {
 		const IsShowProcesses = e.target.checked as boolean;
-		if (IsShowProcesses){
-			if(processes.length === 0) getProcesses();
+		if (IsShowProcesses) {
+			if (processes.length === 0) getProcesses();
 			setShowProcesses(true);
 		} else {
-			if(apps.length === 0) getApps();
+			if (apps.length === 0) getApps();
 			setShowProcesses(false);
 		}
 	};
@@ -87,8 +91,8 @@ const Analyze: FC = () => {
 	};
 
 	const refreshDevicesHandler = async () => {
-		const { data } = await getDevices();
-		if(data) {
+		const {data} = await getDevices();
+		if (data) {
 			setDevices(data);
 		}
 	};
@@ -127,7 +131,8 @@ const Analyze: FC = () => {
 					Refresh all
 				</Button>
 				{
-					(selectedDevice.isFetching || getAppsState.isFetching || getProcessesState.isFetching) && <CircularProgress/>
+					(selectedDevice.isFetching || getAppsState.isFetching || getProcessesState.isFetching) &&
+					<CircularProgress/>
 				}
 			</Box>
 			{

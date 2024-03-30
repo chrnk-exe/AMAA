@@ -6,7 +6,7 @@ import Analyze from './pages/Analyze';
 import Testing from './pages/Testing';
 import ShellExec from './pages/ShellExec';
 import ShellPanel from './pages/shellExecComponents/shellPanel';
-import socket from '../socket';
+import socket from '../utils/socket';
 import {useAppDispatch, useAppSelector} from '../hooks/typedReduxHooks';
 import {addShell, recieveCommandOutput, removeShell, setShells} from '../store/slices/shellSlice';
 import {addToFilesystem} from '../store/slices/dirSlice';

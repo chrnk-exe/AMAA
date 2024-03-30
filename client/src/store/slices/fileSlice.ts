@@ -1,10 +1,7 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
 
-const initialState: DeviceFile[] = [{
-	name: 'Hello.txt',
-	data: 'TW9ja3VwIGZpbGU='
-}];
+const initialState: DeviceFile[] = [];
 
 
 const fileSlice = createSlice({
@@ -25,6 +22,9 @@ const fileSlice = createSlice({
 			} else {
 				return [...state, action.payload];
 			}
+		},
+		deleteFile: (state, action: PayloadAction<string>) => {
+			return state.filter(fileContent => fileContent.name !== action.payload);
 		}
 	}
 });
@@ -32,6 +32,7 @@ const fileSlice = createSlice({
 export const {
 	setFileContents,
 	addFile,
-	appendFileData
+	appendFileData,
+	deleteFile
 } = fileSlice.actions;
 export default fileSlice.reducer;
