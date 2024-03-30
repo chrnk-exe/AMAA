@@ -1,11 +1,14 @@
 import {ChildProcess, fork} from 'child_process';
 import {Socket} from 'socket.io';
 
+const temp_dir = '/data/local/tmp/temp_zip_archives';
 
 export default class DeviceFileBrowser {
 	deviceId: string;
 	private subprocessDirectory: ChildProcess;
 	private subprocessFile: ChildProcess;
+	private subprocessCreate: ChildProcess;
+	// private subprocessDownload: ChildProcess;
 	private socket: Socket;
 	private fileData: {
 		name: string,
@@ -23,11 +26,32 @@ export default class DeviceFileBrowser {
 		this.setSubprocessDirectory(deviceId);
 		this.setSubprocessFile(deviceId);
 
+		this.subprocessCreate = fork(__dirname + '\\..\\..\\frida-services\\shellChild.js', [deviceId]);
+		this.subprocessCreate.on('message', (data) => {
+			socket.emit('message', data);
+		});
+
+		// папка, куда буду складывать все зип ахривы
+		this.subprocessCreate.send(`mkdir ${temp_dir}`);
+
 		socket.on('listDirectories', (path) => {
 			this.getDirectory(path);
 		});
 		socket.on('fileContent', (path) => {
 			this.getFile(path);
+		});
+
+		socket.on('touchFile', (path) => {
+			this.createFile(path);
+		});
+		socket.on('makeDirectory', (path) => {
+			this.createDirectory(path);
+		});
+		socket.on('deleteFile', (path) => {
+			this.deleteFile(path);
+		});
+		socket.on('deleteDirectory', (path) => {
+			this.deleteDirectory(path);
 		});
 	}
 
@@ -84,12 +108,24 @@ export default class DeviceFileBrowser {
 		this.fileData.name = pathname[pathname.length - 1];
 	}
 
+	createFile(path: string) {
+		this.subprocessCreate.send(`touch ${path}`);
+	}
+
+	createDirectory(path: string) {
+		this.subprocessCreate.send(`mkdir -p ${path}`);
+	}
+
+	deleteDirectory(path: string) {
+		this.subprocessCreate.send(`rm -rf ${path}`);
+	}
+
+	deleteFile(path: string) {
+		this.subprocessCreate.send(`rm ${path}`);
+	}
+
 	// todo: oстальные действия
 	// modify file (rm + echo {content} >> file)
-	// delete file (rm )
-	// create file (touch)
-	// create directory (mkdir)
-	// delete directory (rm -rf)
 
 	private prepareFile(file: string) {
 		return file;

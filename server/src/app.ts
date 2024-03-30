@@ -8,6 +8,8 @@ import {createServer} from 'http';
 import SocketSingleton from './utils/socketSingleton';
 import onConnection from './utils/onConnection';
 import {Server} from 'socket.io';
+import fileUpload from 'express-fileupload';
+import router from './routes/http/devicesApi';
 
 
 const app: Express = express();
@@ -21,7 +23,17 @@ SocketSingleton.configure(server, {
 	serveClient: false
 });
 
+
+// disable in prod (no)
+app.use((req: Request, res: Response, next: NextFunction) => {
+	console.log(req.path);
+	res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+	res.header('Access-Control-Allow-Credentials', 'true');
+	next();
+});
+
 app.use(express.json());
+app.use(fileUpload());
 app.use(cookieParser('mega_super_secret_key_for_super_mega_secret_encrypting'));
 
 if (SocketSingleton.io) {
@@ -34,14 +46,15 @@ if (SocketSingleton.io) {
 	});
 }
 
-// disable in prod (no)
-app.use((req: Request, res: Response, next: NextFunction) => {
-	console.log(req.path);
-	res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-	res.header('Access-Control-Allow-Credentials', 'true');
-	next();
-});
 
+/**
+ * Get file from device
+ */
+app.post('/upload_file', async (req: Request, res: Response) => {
+	console.log(req.files);
+	console.log(req.body);
+	res.status(200).send('ok');
+});
 
 /**
  * Api main route
