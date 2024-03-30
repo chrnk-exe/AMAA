@@ -1,5 +1,5 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
-import socket from '../../socket';
+import socket from '../../utils/socket';
 
 export const fileApiWs = createApi({
 	reducerPath: 'fileApiWs',
@@ -32,12 +32,12 @@ export const fileApiWs = createApi({
 				});
 			}
 		}),
-		deleteFile: build.mutation<string, void>({
-			queryFn: () => {
+		deleteFile: build.mutation<string, string>({
+			queryFn: (filename) => {
 				return new Promise((resolve, reject) => {
 					try {
-						socket.emit('spawn');
-						resolve({data: 'spawn message sent'});
+						socket.emit('deleteFile', filename);
+						resolve({data: 'deleteFile message sent'});
 					} catch (err) {
 						reject({error: err});
 					}
@@ -45,46 +45,46 @@ export const fileApiWs = createApi({
 			}
 		}),
 		deleteDirectory: build.mutation<string, void>({
-			queryFn: () => {
+			queryFn: (dirname) => {
 				return new Promise((resolve, reject) => {
 					try {
-						socket.emit('spawn');
-						resolve({data: 'spawn message sent'});
+						socket.emit('deleteDirectory', dirname);
+						resolve({data: 'deleteDirectory message sent'});
 					} catch (err) {
 						reject({error: err});
 					}
 				});
 			}
 		}),
-		createFile: build.mutation<string, void>({
-			queryFn: () => {
+		createFile: build.mutation<string, string>({
+			queryFn: (newFilename) => {
 				return new Promise((resolve, reject) => {
 					try {
-						socket.emit('spawn');
-						resolve({data: 'spawn message sent'});
+						socket.emit('touchFile', newFilename);
+						resolve({data: 'touchFile message sent'});
 					} catch (err) {
 						reject({error: err});
 					}
 				});
 			}
 		}),
-		createDirectory: build.mutation<string, void>({
-			queryFn: () => {
+		createDirectory: build.mutation<string, string>({
+			queryFn: (newDirname) => {
 				return new Promise((resolve, reject) => {
 					try {
-						socket.emit('spawn');
-						resolve({data: 'spawn message sent'});
+						socket.emit('makeDirectory', newDirname);
+						resolve({data: 'makeDirectory message sent'});
 					} catch (err) {
 						reject({error: err});
 					}
 				});
 			}
 		}),
-		modifyFile: build.mutation<string, void>({
-			queryFn: () => {
+		modifyFile: build.mutation<string, { filename: string, newData: string }>({
+			queryFn: ({filename, newData}) => {
 				return new Promise((resolve, reject) => {
 					try {
-						socket.emit('spawn');
+						socket.emit('modifyFile', {filename, data: newData});
 						resolve({data: 'spawn message sent'});
 					} catch (err) {
 						reject({error: err});
