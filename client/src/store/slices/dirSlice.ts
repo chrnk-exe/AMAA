@@ -15,6 +15,9 @@ const directoriesSlice = createSlice({
 		},
 		addToFilesystem: (state, action: PayloadAction<Directory[]>) => {
 			return [...state, ...action.payload];
+		},
+		deleteFileOrDirectory: (state, action: PayloadAction<string>) => {
+			return state.filter(file => file.fileName !== action.payload);
 		}
 	}
 });
@@ -22,6 +25,7 @@ const directoriesSlice = createSlice({
 export const {
 	setFilesystem,
 	clearFilesystem,
-	addToFilesystem
+	addToFilesystem,
+	deleteFileOrDirectory
 } = directoriesSlice.actions;
 export default directoriesSlice.reducer;
