@@ -47,10 +47,11 @@ interface TabPanelProps {
 	children: string;
 	index: number;
 	value: number;
+	size: number | undefined;
 }
 
 const CustomTabPanel: FC<TabPanelProps> = (props) => {
-	const {children, value, index, ...other} = props;
+	const {children, value, index, size, ...other} = props;
 
 	return (
 		<div
@@ -62,8 +63,7 @@ const CustomTabPanel: FC<TabPanelProps> = (props) => {
 		>
 			{value === index && (
 				<Box sx={{p: 3}}>
-					<FileContent data={children}/>
-					{/*<Typography>{children}</Typography>*/}
+					<FileContent data={children} size={size}/>
 				</Box>
 			)}
 		</div>
@@ -118,7 +118,7 @@ const Files = () => {
 	}, [path]);
 
 	// Open file or folder or link
-	const clickHandler = (objType: objectType | undefined, filename: string, link?: string) => {
+	const clickHandler = (objType: objectType | undefined, filename: string, link: string | undefined, size: number) => {
 		if (objType && path) {
 			const resultPath = encodeURIComponent(generateFilename(path, filename));
 			if (objType === 'directory') {
@@ -126,7 +126,11 @@ const Files = () => {
 			} else if (objType === 'file') {
 				if (fileContents.find(fileContent => fileContent.name === filename)) dispatch(deleteFile(filename));
 				setValue(fileContents.length);
-				getFileContent(decodeURIComponent(resultPath));
+				if (size < 1000000) {
+					getFileContent(decodeURIComponent(resultPath));
+				} else {
+					alert('File too large');
+				}
 			} else {
 				if (link) {
 					const resultLinkPath = encodeURIComponent(generateFilename(path, link));
@@ -160,21 +164,27 @@ const Files = () => {
 	};
 
 	const onFilenameInputHandler = (e: ChangeEvent<HTMLInputElement>) => {
-		const format = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+/;
+		const format = /[!@#$%^&*()+\-=[\]{};':"\\|,<>/?]+/;
 		if (!format.test(e.target.value)) {
 			setWarning(e.target.value === '');
 			setName(e.target.value);
 		}
-
 	};
 
 	const onCreateObjectHandler = () => {
 		if (openModalFile) {
 			createFile(generateFilename(path, name));
+			setOpenModalFile(false);
 		}
 		if (openModalDirectory) {
 			createDirectory(generateFilename(path, name));
+			setOpenModalDirectory(false);
 		}
+		// Сделал с задеркой чтобы процесс не падал
+		setTimeout(() => {
+			dispatch(clearFilesystem());
+			getDirectories(path ? path : '/');
+		}, 500);
 	};
 
 
@@ -220,7 +230,7 @@ const Files = () => {
 					<List>
 						{files.map((file, index) => (
 							<ListItemButton key={index}
-								onClick={() => clickHandler(file?.objectType, file.fileName, file.link)}
+								onClick={() => clickHandler(file?.objectType, file.fileName, file.link, file.size)}
 								onContextMenu={(e) => rightClickHandler(e, file)}
 							>
 								<ListItemIcon>
@@ -228,13 +238,13 @@ const Files = () => {
 										file?.objectType && icons[file?.objectType]
 									}
 								</ListItemIcon>
-								<ListItemText>{file.fileName} {file?.link && `(${file?.link})`}</ListItemText>
+								<ListItemText>{file.fileName} {file?.link && `(${file?.link})`} {file.size == 0 ? '(empty)' : `(${file.size})`}</ListItemText>
 							</ListItemButton>
 						))}
 					</List>
 				</Box>
 			</Box>
-			<Box ml={1}>
+			<Box ml={2} pt={2}>
 				<Typography variant={'h6'}>File content</Typography>
 				<Box sx={{borderBottom: 1, borderColor: 'divider'}}>
 					<Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="auto">
@@ -250,7 +260,8 @@ const Files = () => {
 				</Box>
 				{
 					fileContents.map((fileContent, index) => (
-						<CustomTabPanel key={index} index={index} value={value}>
+						<CustomTabPanel key={index} index={index} value={value}
+							size={files.find(file => file.fileName === fileContent.name)?.size}>
 							{fileContent.data}
 						</CustomTabPanel>
 					))

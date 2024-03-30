@@ -44,7 +44,7 @@ export const fileApiWs = createApi({
 				});
 			}
 		}),
-		deleteDirectory: build.mutation<string, void>({
+		deleteDirectory: build.mutation<string, string>({
 			queryFn: (dirname) => {
 				return new Promise((resolve, reject) => {
 					try {

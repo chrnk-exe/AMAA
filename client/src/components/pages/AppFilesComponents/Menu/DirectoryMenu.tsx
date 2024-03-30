@@ -5,7 +5,11 @@ import ClearIcon from '@mui/icons-material/Clear';
 import DownloadIcon from '@mui/icons-material/Download';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import {useParams, useNavigate} from 'react-router';
+import {useDeleteDirectoryMutation} from '../../../../store/services/fileApiWs';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import {deleteFileOrDirectory} from '../../../../store/slices/dirSlice';
+import {useAppDispatch} from '../../../../hooks/typedReduxHooks';
+import generateFilename from '../../../../utils/genFilename';
 
 // * Remove (rm -rf)
 // * zip and download (!)
@@ -20,6 +24,8 @@ interface props {
 const DirectoryMenu: FC<props> = ({filename, onClose}) => {
 	const {path} = useParams();
 	const navigate = useNavigate();
+	const [deleteRemoteDirectory] = useDeleteDirectoryMutation();
+	const dispatch = useAppDispatch();
 
 	const onOpenDirHandler = () => {
 		navigate(`/filesystem/${encodeURIComponent(path && path[path.length - 1] !== '/' ? path + '/' + filename : path + filename)}`);
@@ -27,7 +33,8 @@ const DirectoryMenu: FC<props> = ({filename, onClose}) => {
 
 	// Также сделать warning, если удаляется важная папка и что пользователь берёт все риски на себя
 	const onRemoveFolderHandler = () => {
-		alert('Remove Folder');
+		dispatch(deleteFileOrDirectory(filename));
+		deleteRemoteDirectory(generateFilename(path, filename));
 	};
 
 	// Также сделать warning, если качается большая папка и что пользователь берёт все риски на себя
