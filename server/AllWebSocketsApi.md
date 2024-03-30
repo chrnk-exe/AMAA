@@ -59,5 +59,21 @@ listDirectories - вывод содержимого директории (отв
 
 fileContent - вывод содержимого файла (ответ в fileContent)
 
+##### todo:
+
+Папки:
+
+* Remove (rm -rf)
+* zip and download (!)
+* rename (mv)
+* create directory (mkdir)
+
+Файлы:
+
+* modify file (rm + echo {content} >> file)
+* delete file (rm )
+* create file (touch)
+* download file 
+
 
 
