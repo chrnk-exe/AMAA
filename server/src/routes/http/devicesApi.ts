@@ -1,5 +1,5 @@
-import { Router, Response, Request } from 'express';
-import { enumerateDevices } from 'frida';
+import {Router, Response, Request} from 'express';
+import {enumerateDevices} from 'frida';
 
 const router = Router();
 
@@ -14,9 +14,9 @@ router.get('/device', async (req: Request, res: Response) => {
 });
 
 // Select Device :ok
-router.get('/device/:deviceId', async (req: Request<{deviceId: string}, {type: enumerateTypes}>, res: Response) => {
-	const { deviceId } = req.params;
-	const { type } = req.query;
+router.get('/device/:deviceId', async (req: Request<{ deviceId: string }, { type: enumerateTypes }>, res: Response) => {
+	const {deviceId} = req.params;
+	const {type} = req.query;
 	res.cookie('deviceId', deviceId, {sameSite: 'none', httpOnly: true, secure: true});
 	res.status(301).redirect(`/api/apps?type=${type}`);
 });

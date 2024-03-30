@@ -63,17 +63,19 @@ fileContent - вывод содержимого файла (ответ в fileCo
 
 Папки:
 
-* Remove (rm -rf)
 * zip and download (!)
 * rename (mv)
-* create directory (mkdir)
+
+* Remove (rm -rf) (сделано)
+* create directory (mkdir) (сделано)
 
 Файлы:
 
 * modify file (rm + echo {content} >> file)
-* delete file (rm )
-* create file (touch)
-* download file 
+* download file
+
+* delete file (rm ) (сделано)
+* create file (touch) (сделано)
 
 
 
