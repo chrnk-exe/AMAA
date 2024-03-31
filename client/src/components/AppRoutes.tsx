@@ -73,6 +73,13 @@ function AppRoutes() {
 			dispatch(appendFileData(data));
 		});
 
+		//
+
+		socket.on('downloadFinished', () => {
+			console.log('Download finished!');
+			alert('Ахтунг, довнлоад финишед!');
+		});
+
 
 		// clear listners
 		return () => {
