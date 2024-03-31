@@ -9,8 +9,7 @@ import SocketSingleton from './utils/socketSingleton';
 import onConnection from './utils/onConnection';
 import {Server} from 'socket.io';
 import fileUpload from 'express-fileupload';
-import router from './routes/http/devicesApi';
-
+import fs from 'fs';
 
 const app: Express = express();
 const server = createServer(app);
@@ -33,7 +32,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use(express.json());
-app.use(fileUpload());
+// app.use(fileUpload());
 app.use(cookieParser('mega_super_secret_key_for_super_mega_secret_encrypting'));
 
 if (SocketSingleton.io) {
@@ -51,8 +50,13 @@ if (SocketSingleton.io) {
  * Get file from device
  */
 app.post('/upload_file', async (req: Request, res: Response) => {
-	console.log(req.files);
-	console.log(req.body);
+	req.pipe(fs.createWriteStream('./uploadFile'));
+
+	if (SocketSingleton.io) {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		req.on('end', () => SocketSingleton.io.emit('downloadFinished', {message: 'done'}));
+	}
 	res.status(200).send('ok');
 });
 
