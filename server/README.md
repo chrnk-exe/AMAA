@@ -92,6 +92,6 @@ Content-length:$(ls -l | grep file.txt | awk {'print $5'})
 
 /* - самый важный и сложный этап
 
-Отправка файла - [send_file.sh](./send_file.sh)
+Отправка файла - [send_file.sh](src/send_file.sh)
 Только в заголовок нужно пихнуть ещё имя файла, а так с маленькими, заебись
 

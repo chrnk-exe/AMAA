@@ -57,6 +57,7 @@ export const NavigationList = [
 	}
 ];
 
+
 const NavigationBar: FC<Props> = ({open}) => {
 	// const user = useAppSelector(state => state.user);
 	const location = useLocation();
@@ -88,7 +89,7 @@ const NavigationBar: FC<Props> = ({open}) => {
 										transition: '0.15s padding ease'
 									}
 								}>
-									<ListItemButton onClick={() => navigate(item.link)} selected={item.link === location.pathname}>
+									<ListItemButton onClick={() => navigate(item.link)} selected={item.link === location.pathname.split('/')[0]}>
 										<ListItemIcon>{item.icon}</ListItemIcon>
 										<ListItemText sx={{whiteSpace: 'nowrap'}}>{item.text}</ListItemText>
 									</ListItemButton>

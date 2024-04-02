@@ -10,6 +10,7 @@ import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import {deleteFileOrDirectory} from '../../../../store/slices/dirSlice';
 import {useAppDispatch} from '../../../../hooks/typedReduxHooks';
 import generateFilename from '../../../../utils/genFilename';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 // * Remove (rm -rf)
 // * zip and download (!)
@@ -47,11 +48,20 @@ const DirectoryMenu: FC<props> = ({filename, onClose}) => {
 		alert('Renaming folder...');
 	};
 
+	const onCopyNameHandler = () => {
+		alert(filename);
+	};
+
 	const menuItems = [
 		{
 			onClickFunction: onOpenDirHandler,
 			text: 'Open',
 			icon: <FolderOpenIcon/>
+		},
+		{
+			onClickFunction: onCopyNameHandler,
+			text: 'Copy name',
+			icon: <ContentCopyIcon/>
 		},
 		{
 			onClickFunction: onRemoveFolderHandler,
@@ -61,7 +71,7 @@ const DirectoryMenu: FC<props> = ({filename, onClose}) => {
 		},
 		{
 			onClickFunction: onDownloadFolderHandler,
-			text: 'Download (zip)',
+			text: 'Download (tar.gz)',
 			icon: <DownloadIcon/>,
 		},
 		{
