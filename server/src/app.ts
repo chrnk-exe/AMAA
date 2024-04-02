@@ -8,8 +8,9 @@ import {createServer} from 'http';
 import SocketSingleton from './utils/socketSingleton';
 import onConnection from './utils/onConnection';
 import {Server} from 'socket.io';
-import fileUpload from 'express-fileupload';
-import fs from 'fs';
+
+
+
 
 const app: Express = express();
 const server = createServer(app);
@@ -45,21 +46,6 @@ if (SocketSingleton.io) {
 	});
 }
 
-
-/**
- * Get file from device
- */
-app.post('/upload_file', async (req: Request, res: Response) => {
-	req.pipe(fs.createWriteStream('./uploadFile'));
-
-	if (SocketSingleton.io) {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		req.on('end', () => SocketSingleton.io.emit('downloadFinished', {message: 'done'}));
-	}
-	res.status(200).send('ok');
-});
-
 /**
  * Api main route
  * deviceRoute - with no cookie
@@ -79,6 +65,6 @@ app.get('/', (req: Request, res: Response) => {
 
 server.listen(31337, () => {
 	console.log(`App listening on port: ${31337}`);
-});
-
+}).setTimeout(10 * 60 * 1000);
+// 10 minutes
 

@@ -23,6 +23,7 @@ node_modules/
 .vscode
 package-lock.json
 /server/src/dist
+/server/src/storage
 other/
 /other
 swagger/

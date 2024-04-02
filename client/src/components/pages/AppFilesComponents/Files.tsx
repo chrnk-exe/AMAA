@@ -48,10 +48,11 @@ interface TabPanelProps {
 	index: number;
 	value: number;
 	size: number | undefined;
+	filename: string;
 }
 
 const CustomTabPanel: FC<TabPanelProps> = (props) => {
-	const {children, value, index, size, ...other} = props;
+	const {children, value, index, size, filename, ...other} = props;
 
 	return (
 		<div
@@ -63,7 +64,7 @@ const CustomTabPanel: FC<TabPanelProps> = (props) => {
 		>
 			{value === index && (
 				<Box sx={{p: 3}}>
-					<FileContent data={children} size={size}/>
+					<FileContent data={children} size={size} filename={filename}/>
 				</Box>
 			)}
 		</div>
@@ -189,7 +190,7 @@ const Files = () => {
 
 
 	return (
-		<Box display={'grid'} gridTemplateColumns={'3fr 8fr'} height={'100%'}>
+		<Box display={'flex'}  height={'100%'} sx={{'width': '100%'}} >
 			{/*Files popover with absolute position */}
 			<FilesModal coords={popoverCoords} isOpen={!!popover} objectType={popover}
 				onClose={() => setPopover(undefined)}
@@ -214,7 +215,7 @@ const Files = () => {
 				</Box>
 			</Modal>
 
-			<Box p={2} sx={{borderRight: 1, borderColor: 'divider', bgcolor: '#FFF'}}>
+			<Box p={2} sx={{borderRight: 1, borderColor: 'divider', bgcolor: '#FFF', 'maxWidth':'30%'}}>
 				<Box>
 					<Typography variant={'h6'}>
 						Current path: {path}
@@ -238,20 +239,28 @@ const Files = () => {
 										file?.objectType && icons[file?.objectType]
 									}
 								</ListItemIcon>
-								<ListItemText>{file.fileName} {file?.link && `(${file?.link})`} {file.size == 0 ? '(empty)' : `(${file.size})`}</ListItemText>
+								<ListItemText disableTypography>
+									<Typography sx={{
+										whiteSpace: 'normal',
+										wordWrap: 'break-word',
+										lineHeight: 1
+									}}>
+										{file.fileName} {file?.link && `(${file?.link})`} {file.size == 0 ? '(empty)' : `(${file.size})`}
+									</Typography>
+								</ListItemText>
 							</ListItemButton>
 						))}
 					</List>
 				</Box>
 			</Box>
-			<Box ml={2} pt={2}>
+			<Box ml={2} pt={2} sx={{'width': '100%'}}>
 				<Typography variant={'h6'}>File content</Typography>
 				<Box sx={{borderBottom: 1, borderColor: 'divider'}}>
 					<Tabs value={value} onChange={handleChange} variant="scrollable" scrollButtons="auto">
 						{
 							fileContents.map((fileContent, index) => (
 								<Tab key={index} wrapped label={fileContent.name} {...a11yProps(index)}
-									 iconPosition={'end'}
+									 iconPosition={'top'}
 									 icon={<IconButton
 										 onClick={() => handleRemoveFileContent(fileContent.name)}><CloseIcon/></IconButton>}/>
 							))
@@ -261,7 +270,7 @@ const Files = () => {
 				{
 					fileContents.map((fileContent, index) => (
 						<CustomTabPanel key={index} index={index} value={value}
-							size={files.find(file => file.fileName === fileContent.name)?.size}>
+							size={files.find(file => file.fileName === fileContent.name)?.size} filename={fileContent.name}>
 							{fileContent.data}
 						</CustomTabPanel>
 					))

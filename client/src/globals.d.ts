@@ -1,6 +1,8 @@
 // todo: change declaration on
 
 declare module '*.css';
+// react xml viewer
+declare module 'react-xml-viewer'
 
 declare type Devices = Device[]
 
@@ -115,4 +117,9 @@ declare interface Directory {
 declare interface DeviceFile {
 	name: string;
 	data: string;
+}
+
+declare interface DownloadLink {
+	filename: string,
+	link: string,
 }
