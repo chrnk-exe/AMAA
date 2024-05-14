@@ -15,13 +15,25 @@ export const appsApi = createApi({
 		}),
 		spawnApplication: build.query<number, string>({
 			query: (appPackageName) => `/${appPackageName}/start`
+		}),
+		spawnApplicationWithScripts: build.mutation<void, {code?: string, scripts:string[], appPackageName: string}>({
+			query: ({ appPackageName, scripts, code }) => ({
+				url: `/${appPackageName}/start_testing`,
+				method: 'POST',
+				body: {
+					scripts,
+					code
+				}
+			})
 		})
 	}),
 });
+
 
 export const {
 	useGetAppsQuery,
 	useLazyGetAppsQuery,
 	useLazyGetProcessesQuery,
-	useLazySpawnApplicationQuery
+	useLazySpawnApplicationQuery,
+	useSpawnApplicationWithScriptsMutation
 } = appsApi;

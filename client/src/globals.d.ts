@@ -3,6 +3,8 @@
 declare module '*.css';
 // react xml viewer
 declare module 'react-xml-viewer'
+// prismjs for js editor
+declare module 'prismjs/components/prism-core';
 
 declare type Devices = Device[]
 
