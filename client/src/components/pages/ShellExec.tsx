@@ -74,6 +74,7 @@ const ShellExec: FC = () => {
 	const shells = useAppSelector(state => state.shells);
 	const [spawnShell] = useSpawnShellMutation();
 	const [getShells] = useGetShellsMutation();
+	
 
 	const handleChange = (event: React.SyntheticEvent, newValue: number) => {
 		// console.log(event.currentTarget)

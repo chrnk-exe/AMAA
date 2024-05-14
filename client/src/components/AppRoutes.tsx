@@ -13,6 +13,7 @@ import {addToFilesystem} from '../store/slices/dirSlice';
 import AppFiles from './pages/AppFiles';
 import Files from './pages/AppFilesComponents/Files';
 import {appendFileData} from '../store/slices/fileSlice';
+import FridaScripting from './pages/FridaScripting';
 
 function AppRoutes() {
 	const dispatch = useAppDispatch();
@@ -104,6 +105,7 @@ function AppRoutes() {
 				<Route path="/shellExec" element={<ShellExec/>}>
 					<Route path={'/shellExec/:pid'} element={<ShellPanel/>}></Route>
 				</Route>
+				<Route path="/custom-scripts" element={<FridaScripting />}/>
 				<Route path="*" element={<Navigate to={'/main'}/>}/>
 
 			</Routes>
