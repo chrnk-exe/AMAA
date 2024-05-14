@@ -4,8 +4,10 @@
   "dependencies": {
     "@types/cookie": "^0.6.0",
     "@types/cookie-parser": "^1.4.7",
+    "@types/cors": "^2.8.17",
     "@types/express-fileupload": "^1.5.0",
     "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "express": "^4.18.1",
     "express-fileupload": "^1.5.0",
     "frida": "^16.2.1",

@@ -1,6 +1,8 @@
 import {ChildProcess, fork} from 'child_process';
 import {Socket} from 'socket.io';
+import fs from 'fs';
 
+let sum = 0;
 const temp_dir = '/data/local/tmp/temp_zip_archives';
 
 export default class DeviceFileBrowser {
@@ -8,7 +10,8 @@ export default class DeviceFileBrowser {
 	private subprocessDirectory: ChildProcess;
 	private subprocessFile: ChildProcess;
 	private subprocessCreate: ChildProcess;
-	// private subprocessDownload: ChildProcess;
+	private subprocessDownload: ChildProcess;
+	private downloadFilename: string;
 	private socket: Socket;
 	private fileData: {
 		name: string,
@@ -22,6 +25,7 @@ export default class DeviceFileBrowser {
 			name: '',
 			data: ''
 		};
+		this.downloadFilename = 'super file not predictable string';
 
 		this.setSubprocessDirectory(deviceId);
 		this.setSubprocessFile(deviceId);
@@ -34,9 +38,23 @@ export default class DeviceFileBrowser {
 		// папка, куда буду складывать все зип ахривы
 		this.subprocessCreate.send(`mkdir ${temp_dir}`);
 
+		this.subprocessDownload = fork(__dirname + '\\..\\..\\frida-services\\shellChild.js', [deviceId]);
+		this.subprocessDownload.on('message', (data) => {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			const stringdata = Buffer.from(data).toString();
+			sum += stringdata.length;
+			if (stringdata.includes(this.downloadFilename)){
+				console.log(`Filename is ${this.downloadFilename}`);
+			}
+			console.log(`Data received: ${sum}`);
+			console.log(stringdata);
+		});
+
 		socket.on('listDirectories', (path) => {
 			this.getDirectory(path);
 		});
+
 		socket.on('fileContent', (path) => {
 			this.getFile(path);
 		});
@@ -52,6 +70,9 @@ export default class DeviceFileBrowser {
 		});
 		socket.on('deleteDirectory', (path) => {
 			this.deleteDirectory(path);
+		});
+		socket.on('downloadFile', (path) => {
+			this.downloadFile(path);
 		});
 	}
 
@@ -122,6 +143,11 @@ export default class DeviceFileBrowser {
 
 	deleteFile(path: string) {
 		this.subprocessCreate.send(`rm ${path}`);
+	}
+
+	downloadFile(path: string) {
+		this.downloadFilename = path.split('/')[path.split('/').length - 1];
+		this.subprocessDownload.send(`echo ${path} && cat ${path} | base64`);
 	}
 
 	// todo: oстальные действия

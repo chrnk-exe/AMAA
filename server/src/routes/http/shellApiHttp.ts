@@ -21,6 +21,7 @@ const router = Router();
 // deviceId controller
 router.use(deviceController);
 
+
 router.get('/shells', async (req: Request, res: Response) => {
 	const { deviceId } = req.cookies;
 	const responseShells = shells.filter(shell => shell.deviceId === deviceId);

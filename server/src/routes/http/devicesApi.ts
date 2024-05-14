@@ -28,6 +28,7 @@ router.get('/device/:deviceId', async (req: Request<{ deviceId: string }, { type
 
 /**
  * Get file from device
+ * @Deprecated
  */
 router.post('/upload_file', async (req: Request, res: Response) => {
 	const filenameHeader = req.headers['x-file-name'];
