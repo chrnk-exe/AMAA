@@ -23,7 +23,6 @@ export default function shellHandlers(io: Server, socket: Socket) {
 			count = count + 1;
 			const subprocess = fork(__dirname + '\\..\\..\\frida-services\\shellChild.js', [deviceId]);
 			const shellInstance: shell = {output: '', subprocess, pid: count, deviceId};
-
 			shells.push(shellInstance);
 
 			subprocess.on('message', (data) => {

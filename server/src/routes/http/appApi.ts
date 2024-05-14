@@ -6,6 +6,7 @@ import applicationController from '../../controllers/applicationController';
 import getApkFile from '../../frida-services/getApkFile.js';
 
 
+
 const router = Router();
 
 router.get('/apps', async (req: Request<void, {type: enumerateTypes}>, res: Response) => {
@@ -48,6 +49,36 @@ router.get('/apps/:appPackageName/start', async (req: Request<{appPackageName: s
 	catch {
 		res.send(500).json('{"message":"App not found"}');
 	}
+});
+
+/**
+ * Start app with frida scripts
+ */
+router.post('/apps/:appPackageName/start_testing', async (req: Request<{appPackageName: string}, any, {code: string, scripts: string[]}>, res)=> {
+	const {appPackageName} = req.params;
+	const {deviceId} = req.cookies;
+
+	const defaultFridaTypes = [
+		'Root detect',
+		'SSL Pinning',
+		'React Native Emulator',
+		'Stacktrace Activities',
+		'File access logging'
+	];
+
+	const {code, scripts} = req.body;
+
+	const selectedScripts = defaultFridaTypes.filter(defaultType => scripts.includes(defaultType));
+	
+	console.log(`Starting ${appPackageName} on ${deviceId} with code: ${code.substring(0,10)}... and scripts: ${selectedScripts.join(',')}`);
+
+	const resultstr = `Starting ${appPackageName} on ${deviceId} with code: ${code.substring(0,10)}... and scripts: ${selectedScripts.join(',')}`;
+
+	// todo: Start app with frida scripts, (local and received)
+	// todo: create webSocket stream with console output (on client - subscribe on 1 more event)
+	
+	res.status(200).json({message: resultstr});
+
 });
 
 router.use(applicationController);

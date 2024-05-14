@@ -11,6 +11,8 @@ export default function shellHandlers(io: Server, socket: Socket) {
 		const cookies = myCookieParse(socket.request.headers.cookie);
 		const deviceId = cookies.deviceId as string;
 
+		
+		// remove socket from fileBrowser
 		const FileBrowser = new DeviceFileBrowser(deviceId, socket);
 		socket.on('disconnect', () => {
 			FileBrowser.clear();

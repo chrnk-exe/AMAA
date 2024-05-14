@@ -16,7 +16,8 @@ const menu = [
 	'5.Interactive shell',
 	''];
 
-const deviceId = 'RZ8M42Z7H5P';
+
+const deviceId = '9688973b0604';
 const device = frida.getDevice(deviceId)
 	.then(async (device) => {
 		const consoles = [];
