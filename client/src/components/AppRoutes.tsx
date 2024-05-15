@@ -24,7 +24,7 @@ function AppRoutes() {
 	// shellsList - список текущих шеллов
 	// killResult - удачное или неудачное убийство процесса шелла
 
-	//
+	//onStartApp
 	useEffect(() => {
 		console.log('APP ROUTES MOUNTED!');
 
@@ -74,12 +74,14 @@ function AppRoutes() {
 			dispatch(appendFileData(data));
 		});
 
-		//
+		// todo: Download file
 
 		socket.on('downloadFinished', () => {
 			console.log('Download finished!');
 			alert('Ахтунг, довнлоад финишед!');
 		});
+
+
 
 
 		// clear listners
