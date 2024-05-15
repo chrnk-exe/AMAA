@@ -2,7 +2,7 @@ import {Router, Response, Request} from 'express';
 import {enumerateDevices} from 'frida';
 import SocketSingleton from '../../utils/socketSingleton';
 import fs from 'fs';
-import path from 'path';
+import { getAvailableScripts } from '../../utils/scripts';
 
 // creating folders
 
@@ -18,6 +18,11 @@ router.get('/device', async (req: Request, res: Response) => {
 	res.status(200).json(result);
 });
 
+// get available scripts
+router.get('/device/available_scripts', async (req: Request, res: Response) => {
+	res.status(200).json(getAvailableScripts()[0]);
+});
+
 // Select Device :ok
 router.get('/device/:deviceId', async (req: Request<{ deviceId: string }, { type: enumerateTypes }>, res: Response) => {
 	const {deviceId} = req.params;
@@ -26,11 +31,13 @@ router.get('/device/:deviceId', async (req: Request<{ deviceId: string }, { type
 	res.status(301).redirect(`/api/apps?type=${type}`);
 });
 
+
+
 /**
  * Get file from device
  * @Deprecated
  */
-router.post('/upload_file', async (req: Request, res: Response) => {
+router.post('/device/upload_file', async (req: Request, res: Response) => {
 	const filenameHeader = req.headers['x-file-name'];
 
 	console.log(req.headers);

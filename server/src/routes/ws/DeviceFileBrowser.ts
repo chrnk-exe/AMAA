@@ -40,15 +40,20 @@ export default class DeviceFileBrowser {
 
 		this.subprocessDownload = fork(__dirname + '\\..\\..\\frida-services\\shellChild.js', [deviceId]);
 		this.subprocessDownload.on('message', (data) => {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			const stringdata = Buffer.from(data).toString();
-			sum += stringdata.length;
-			if (stringdata.includes(this.downloadFilename)){
-				console.log(`Filename is ${this.downloadFilename}`);
+			try {
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				const stringdata = Buffer.from(data).toString();
+				sum += stringdata.length;
+				if (stringdata.includes(this.downloadFilename)){
+					console.log(`Filename is ${this.downloadFilename}`);
+				}
+				console.log(`Data received: ${sum}`);
+				console.log(stringdata);
+			} catch {
+				console.log('Some error occured with data...');
 			}
-			console.log(`Data received: ${sum}`);
-			console.log(stringdata);
+
 		});
 
 		socket.on('listDirectories', (path) => {
@@ -79,11 +84,15 @@ export default class DeviceFileBrowser {
 	private setSubprocessDirectory(deviceId: string) {
 		this.subprocessDirectory = fork(__dirname + '\\..\\..\\frida-services\\shellChild.js', [deviceId]);
 		this.subprocessDirectory.on('message', (data) => {
-			// if (typeof data !== 'object')
-			// todo: Разобраться, что не так с data
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			this.socket.emit('directoryContent', this.prepareDirectories(Buffer.from(data).toString()));
+			try {
+				// todo: Разобраться, что не так с data
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore
+				this.socket.emit('directoryContent', this.prepareDirectories(Buffer.from(data).toString()));
+			} catch {
+				console.log('Some error occured with data...');
+			}
+
 		});
 
 
@@ -100,13 +109,19 @@ export default class DeviceFileBrowser {
 		this.subprocessFile = fork(__dirname + '\\..\\..\\frida-services\\shellChild.js', [deviceId]);
 		this.subprocessFile.on('message', (data) => {
 
-			this.socket.emit('fileContent', {
-				name: this.fileData.name,
+			let prepared_data = '';
+			try {
 				// todo: Разобраться, что не так с data
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
-				data: this.prepareFile(Buffer.from(data).toString())
-			});
+				prepared_data = Buffer.from(data).toString();
+				this.socket.emit('fileContent', {
+					name: this.fileData.name,
+					data: this.prepareFile(prepared_data)
+				});
+			} catch {
+				console.log('some error...');
+			}
 		});
 
 		this.subprocessFile.on('error', (err) => {
