@@ -4,6 +4,7 @@ import getDeviceProcesses from '../../frida-services/getDeviceProcesses';
 import spawnApplication from '../../frida-services/spawnApplication';
 import applicationController from '../../controllers/applicationController';
 import getApkFile from '../../frida-services/getApkFile.js';
+import { getAvailableScripts, getScriptByName } from '../../utils/scripts';
 
 
 
@@ -54,25 +55,36 @@ router.get('/apps/:appPackageName/start', async (req: Request<{appPackageName: s
 /**
  * Start app with frida scripts
  */
-router.post('/apps/:appPackageName/start_testing', async (req: Request<{appPackageName: string}, any, {code: string, scripts: string[]}>, res)=> {
+router.post('/apps/:appPackageName/start_testing', async (req: Request<{appPackageName: string}, any, {code?: string, scripts: string[]}>, res)=> {
 	const {appPackageName} = req.params;
 	const {deviceId} = req.cookies;
 
-	const defaultFridaTypes = [
-		'Root detect',
-		'SSL Pinning',
-		'React Native Emulator',
-		'Stacktrace Activities',
-		'File access logging'
-	];
-
 	const {code, scripts} = req.body;
 
-	const selectedScripts = defaultFridaTypes.filter(defaultType => scripts.includes(defaultType));
-	
-	console.log(`Starting ${appPackageName} on ${deviceId} with code: ${code.substring(0,10)}... and scripts: ${selectedScripts.join(',')}`);
+	const { pid, device } = await spawnApplication(deviceId, appPackageName);
 
-	const resultstr = `Starting ${appPackageName} on ${deviceId} with code: ${code.substring(0,10)}... and scripts: ${selectedScripts.join(',')}`;
+	const session = await device.attach(await pid);
+
+	const scriptDatas = [];
+
+	scripts.forEach((scriptName) => {
+		scriptDatas.push(getScriptByName(scriptName));
+	});
+
+	if (code) {
+		scriptDatas.push(code);
+	}
+
+	for (const script of scriptDatas) {
+		const newScript = await session.createScript(script);
+		await newScript.load();
+	}
+
+
+	console.log(`Starting ${appPackageName} on ${deviceId} with code: ${code?.substring(0,10)}... and scripts: ${scripts}`);
+
+	const resultstr = `Starting ${appPackageName} on ${deviceId} with code: ${code?.substring(0,10)}... and scripts: ${scripts}`;
+
 
 	// todo: Start app with frida scripts, (local and received)
 	// todo: create webSocket stream with console output (on client - subscribe on 1 more event)

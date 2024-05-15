@@ -28,12 +28,11 @@ app.use(cors({
 	origin:'http://localhost:3000',
 	credentials: true
 }));
-// app.use((req: Request, res: Response, next: NextFunction) => {
-// 	console.log(req.path);
-// 	res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
-// 	res.header('Access-Control-Allow-Credentials', 'true');
-// 	next();
-// });
+
+app.use((req, res, next) => {
+	console.log(req.path);
+	next();
+});
 
 app.use(express.json());
 // app.use(fileUpload());

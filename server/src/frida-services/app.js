@@ -15,6 +15,7 @@ const main = async (deviceId, appPackageName) => {
 
 let pid = 0;
 
+
 main('RZ8M42Z7H5P', 'com.android.insecurebankv2')
 	.then(res => console.log(res));
 
