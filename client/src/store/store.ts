@@ -10,6 +10,7 @@ import dirReducer from './slices/dirSlice';
 import fileReducer from './slices/fileSlice';
 import {fileApiWs} from './services/fileApiWs';
 import downloadableFilesReducer from './slices/downloadableFiles';
+import avaiableScripts from './slices/avaiableScripts';
 
 export const store = configureStore({
 	reducer: {
@@ -19,6 +20,7 @@ export const store = configureStore({
 		files: dirReducer,
 		fileContents: fileReducer,
 		downloadLinks: downloadableFilesReducer,
+		scripts: avaiableScripts,
 		[deviceApi.reducerPath]: deviceApi.reducer,
 		[appsApi.reducerPath]: appsApi.reducer,
 		[testingApi.reducerPath]: testingApi.reducer,

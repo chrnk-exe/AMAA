@@ -30,19 +30,14 @@ const MenuProps = {
 	},
 };
 
-const bypasses = [
-	'Root detect',
-	'SSL Pinning',
-	'React Native Emulator',
-	'Stacktrace Activities',
-	'File access logging'
-];
-
 const FridaScripting: FC = () => {
 
 	const apps = useAppSelector(state => state.apps.apps);
 	const [selectedApp, setSelectedApp] = useState('');
 	const [spawnApp] = useSpawnApplicationWithScriptsMutation();
+
+	const bypasses = useAppSelector(state => state.scripts);
+	console.log(bypasses);
 
 	const [includeFollowingScript, setIncludeScript] = useState(false);
 	const [selectedBypasses, setSelectedBypasses] = useState<string[]>([]);

@@ -8,7 +8,7 @@ import {
 import {
 	useGetDeviceListQuery,
 	useLazySelectDeviceQuery,
-	useLazyGetDeviceListQuery
+	useLazyGetDeviceListQuery, useAvailableScriptsQuery,useLazyAvailableScriptsQuery
 } from '../../store/services/deviceApi';
 import {useLazyGetAppsQuery, useLazyGetProcessesQuery} from '../../store/services/appApi';
 import {InputLabel, MenuItem, Select} from '@mui/material';
@@ -31,6 +31,8 @@ const Analyze: FC = () => {
 	// Getting device list
 	const {data} = useGetDeviceListQuery();
 	const [getDevices] = useLazyGetDeviceListQuery();
+	// глупое дерьмо
+	const [getScripts] = useLazyAvailableScriptsQuery();
 
 	// Select device function, redirects to get apps
 	const [selectDevice, selectedDevice] = useLazySelectDeviceQuery();
@@ -66,8 +68,9 @@ const Analyze: FC = () => {
 			if (deviceToSet) {
 				dispatch(setDevice(deviceToSet));
 				setDeviceLabel(deviceId);
-				selectDevice({deviceId, type: showProcesses ? 'processes' : 'apps'});
-
+				await selectDevice({deviceId, type: showProcesses ? 'processes' : 'apps'});
+				// просто получу скрипты и всё.
+				getScripts();
 			}
 		}
 	};

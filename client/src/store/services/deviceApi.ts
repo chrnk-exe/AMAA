@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
+
 export const deviceApi = createApi({
 	reducerPath: 'devicesApi',
 	baseQuery: fetchBaseQuery({
@@ -13,6 +14,9 @@ export const deviceApi = createApi({
 		// it selects device and redirects to /api/apps with cookies. Device ID in cookies
 		selectDevice: build.query<Apps, { deviceId: string, type: 'apps' | 'processes' }>({
 			query: ({ deviceId, type }) => `/${deviceId}?type=${type}`
+		}),
+		availableScripts: build.query<string[], void>({
+			query: () => '/available_scripts'
 		})
 	}),
 
@@ -21,5 +25,7 @@ export const deviceApi = createApi({
 export const {
 	useGetDeviceListQuery,
 	useLazySelectDeviceQuery,
-	useLazyGetDeviceListQuery
+	useLazyGetDeviceListQuery,
+	useAvailableScriptsQuery,
+	useLazyAvailableScriptsQuery
 } = deviceApi;

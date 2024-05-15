@@ -62,6 +62,7 @@ const Drawer = styled(MuiDrawer, {
 	},
 }));
 
+
 export default function PrimarySearchAppBar({
 	children,
 }: {
