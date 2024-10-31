@@ -90,7 +90,7 @@ const Analyze: FC = () => {
 			setShowProcesses(false);
 		}
 	};
-
+	//
 	// Refresh apps and processes.
 	const refreshHandler = () => {
 		getApps();
