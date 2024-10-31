@@ -103,7 +103,7 @@ const FridaScripting: FC = () => {
 
 	return (
 		<Box p={1}>
-			<Typography variant={'h3'}>JS Editor</Typography>
+			<Typography variant={'h3'}>Комплекс динамического тестирования</Typography>
 			<Box>
 				<Typography>
 					Вы можете написать свой скрипт и добавить его вместе с используемыми.

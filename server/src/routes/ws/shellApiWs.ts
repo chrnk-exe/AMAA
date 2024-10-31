@@ -17,24 +17,29 @@ const shells: shell[] = [];
 export default function shellHandlers(io: Server, socket: Socket) {
 	if (socket.request.headers.cookie) {
 		const cookies = myCookieParse(socket.request.headers.cookie);
-		const deviceId = cookies.deviceId as string;
+		const deviceId = decodeURIComponent(cookies.deviceId as string);
 
 		socket.on('spawn', async () => {
+			console.log('DEVICE ID ON SPAWN:', deviceId);
 			count = count + 1;
 			const subprocess = fork(__dirname + '\\..\\..\\frida-services\\shellChild.js', [deviceId]);
 			const shellInstance: shell = {output: '', subprocess, pid: count, deviceId};
 			shells.push(shellInstance);
 
 			subprocess.on('message', (data) => {
-				// todo: Разобраться, что не так с data
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				const commandOutput = Buffer.from(data as Buffer).toString();
-
+				let commandOutput = '';
+				try {
+					console.log('DATA ON SUBPROCESS MESSAGE EVENT!', data);
+					// todo: Разобраться, что не так с data
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					commandOutput = Buffer.from(data as Buffer).toString();
+				} catch {
+					console.log('Some error occured with data...');
+				}
 
 				shellInstance.output = commandOutput;
 				socket.emit('commandResult', {commandOutput, pid: shellInstance.pid});
-
 			});
 
 			// todo: сделать хуйню чтоб отправлялся эмит с уведомлением проверь тельчик!
@@ -42,7 +47,7 @@ export default function shellHandlers(io: Server, socket: Socket) {
 				console.log('ERROR', err);
 			});
 			subprocess.on('exit', (signal) => {
-				console.log('Signal', signal);
+				console.log('[shell] Signal', signal);
 			});
 
 			socket.emit('spawnedShell', JSON.stringify({pid: count, deviceId, output: ''}));
@@ -55,6 +60,7 @@ export default function shellHandlers(io: Server, socket: Socket) {
 
 
 		socket.on('command', async ({cmd, pid}: { cmd?: string, pid: string }) => {
+			console.log(`Executing command ${cmd} on shell with ${pid}`);
 			if (cmd && !Number.isNaN(Number(pid))) {
 				const shell = shells.find(shell => shell.pid === +pid && shell.deviceId === deviceId);
 				if (shell) {
@@ -69,6 +75,7 @@ export default function shellHandlers(io: Server, socket: Socket) {
 			if (!Number.isNaN(Number(pid))) {
 				const shell = shells.find(shell => shell.pid === +pid && shell.deviceId === deviceId);
 				if (shell) {
+					console.log(deviceId, shell.deviceId);
 					const {subprocess} = shell;
 					subprocess.send('exit');
 					subprocess.kill(9);

@@ -49,7 +49,11 @@ const Analyze: FC = () => {
 		if (data) {
 			setDevices(data);
 		}
-	}, []);
+	}, [data]);
+
+	useEffect(() => {
+		// Если devices изменились, принудительно перерисуем компонент Select
+	}, [devices]);
 
 	useEffect(() => {
 		return () => {
@@ -104,7 +108,7 @@ const Analyze: FC = () => {
 	return (
 		<Box sx={{m: 2}}>
 			<Box display={'flex'} justifyContent={'flex-start'} flexDirection={'row'} alignItems={'center'} gap={1}>
-				<FormControl sx={{minWidth: '180px'}} onClick={refreshDevicesHandler}>
+				<FormControl sx={{minWidth: '180px'}} onClick={refreshDevicesHandler} >
 					<InputLabel id="SelectDevice">Select Device</InputLabel>
 					<Select
 						labelId="SelectDevice"
@@ -115,12 +119,16 @@ const Analyze: FC = () => {
 						sx={{bgcolor: '#FFFFFF'}}
 					>
 						{
-							devices && devices.map(device =>
-								(<MenuItem key={device.impl.id} value={device.impl.id}>
-									<Image image={device.impl.icon?.image.data} deviceId={device.impl.id} w={16} h={16}/>
-									{device.impl.name}
-								</MenuItem>)
-							)
+							devices.length !== 0
+								?
+								devices.map(device =>
+									(<MenuItem key={device.impl.id} value={device.impl.id}>
+										<Image image={device.impl.icon?.image.data} deviceId={device.impl.id} w={16} h={16}/>
+										{device.impl.name}
+									</MenuItem>)
+								) : (<Box display={'flex'} justifyContent={'center'} alignItems={'center'}>
+									<CircularProgress/>
+								</Box>)
 						}
 					</Select>
 				</FormControl>
