@@ -17,7 +17,7 @@ const menu = [
 	''];
 
 
-const deviceId = '9688973b0604';
+const deviceId = '127.0.0.1:58526';
 const device = frida.getDevice(deviceId)
 	.then(async (device) => {
 		const consoles = [];
@@ -38,11 +38,12 @@ const device = frida.getDevice(deviceId)
 				cwd: '/',
 				aslr: 'auto'
 			});
-			const subprocess = child_process.fork('shellChild.js', ['RZ8M42Z7H5P']);
+			const subprocess = child_process.fork('shellChild.js', [deviceId]);
 			const consoleInstance = { output: [], session: null, subprocess, pid };
 			consoles.push(consoleInstance);
 
 			subprocess.on('message', (data) => {
+				// console.log(data);
 				console.log(Buffer.from(data).toString());
 				consoleInstance.output.push(Buffer.from(data).toString());
 			});

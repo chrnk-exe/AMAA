@@ -9,7 +9,7 @@ import DeviceFileBrowser from './DeviceFileBrowser';
 export default function shellHandlers(io: Server, socket: Socket) {
 	if (socket.request.headers.cookie) {
 		const cookies = myCookieParse(socket.request.headers.cookie);
-		const deviceId = cookies.deviceId as string;
+		const deviceId = decodeURIComponent(cookies.deviceId as string);
 
 		
 		// remove socket from fileBrowser

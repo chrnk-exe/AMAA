@@ -84,6 +84,7 @@ export default class DeviceFileBrowser {
 	private setSubprocessDirectory(deviceId: string) {
 		this.subprocessDirectory = fork(__dirname + '\\..\\..\\frida-services\\shellChild.js', [deviceId]);
 		this.subprocessDirectory.on('message', (data) => {
+			console.log('subprocessDirectory', data);
 			try {
 				// todo: Разобраться, что не так с data
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
