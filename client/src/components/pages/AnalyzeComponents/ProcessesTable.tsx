@@ -1,29 +1,50 @@
-import React, {FC} from 'react';
-import { Table, TableBody, TableCell, TableHead, TableRow, Tooltip } from '@mui/material';
+import React, { FC, useState } from 'react';
+import { Table, TableBody, TableCell, TableHead, TableRow, Tooltip, TextField, Box } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import SendIcon from '@mui/icons-material/Send';
-import LockOpenIcon from '@mui/icons-material/LockOpen';
-import AdbIcon from '@mui/icons-material/Adb';
 import skullLogo from '../../../assets/skull_red.svg';
+import { useLazyKillProcessQuery } from '../../../store/services/processApi';
+import { useAppSelector, useAppDispatch } from '../../../hooks/typedReduxHooks';
+import { removeProcess } from '../../../store/slices/appsReducer';
 
 interface props {
-	processes: Process[]
+	processes?: Process[]
 }
 
-const ProcessesTable: FC<props> = ({ processes }) => {
+const ProcessesTable: FC<props> = () => {
+	const [filterString, setFilterString] = useState<string>('');
+	const [killProcess] = useLazyKillProcessQuery();
+
+	const dispatch = useAppDispatch();
+	const processes = useAppSelector(state => state.apps.processes);
+
+	
+	const killProcessFn = async (pid: number) => {
+		const result = await killProcess(pid.toString());
+		if (result.status === 'rejected') {
+			alert('Error! Process doesn\'t exist!');
+		} else if (result.status === 'fulfilled') {
+			dispatch(removeProcess(pid));
+		}
+	};
+
 	return (
 		<Table sx={{bgcolor: '#FFFFFF', my: 1, borderRadius:2}}>
 			<TableHead>
 				<TableCell>№</TableCell>
 				<TableCell>PID</TableCell>
-				<TableCell>Process Name</TableCell>
+				<TableCell>
+					<Box display={'flex'} justifyContent={'flex-start'} alignItems={'center'} gap={2}>
+						Process Name
+						<TextField
+							placeholder={'Process name filter'}
+							onChange={(e) => setFilterString(e.target.value)}/>
+					</Box> </TableCell>
 				{/*<TableCell>Parameters</TableCell>*/}
 				<TableCell>Actions</TableCell>
 			</TableHead>
 			<TableBody>
 				{
-					processes.map((process, index) =>(
+					processes.filter((process) => process.name.includes(filterString)).map((process, index) =>(
 						<TableRow key={process.pid}>
 							<TableCell>{index+1}</TableCell>
 							<TableCell>{process.pid}</TableCell>
@@ -31,7 +52,7 @@ const ProcessesTable: FC<props> = ({ processes }) => {
 							<TableCell>
 								{/*todo: start app*/}
 								<Tooltip title={'Try to kill'} placement={'top'}>
-									<IconButton onClick={() => alert('Not implemented!')}>
+									<IconButton onClick={() => killProcessFn(process.pid)}>
 										<img src={skullLogo} alt={''} height={24}/>
 										{/*<SvgIcon htmlColor={'lightgreen'}/>*/}
 									</IconButton>

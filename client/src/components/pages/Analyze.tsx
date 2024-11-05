@@ -148,7 +148,7 @@ const Analyze: FC = () => {
 			</Box>
 			{
 				showProcesses
-					? <ProcessesTable processes={processes}/>
+					? <ProcessesTable />
 					: <AppsTable apps={apps}/>
 			}
 

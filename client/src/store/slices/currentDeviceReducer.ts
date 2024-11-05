@@ -12,5 +12,6 @@ export const currentDeviceSlice = createSlice({
 	}
 });
 
+
 export const { setDevice } = currentDeviceSlice.actions;
 export default currentDeviceSlice.reducer;

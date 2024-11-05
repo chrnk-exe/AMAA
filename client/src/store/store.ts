@@ -11,6 +11,7 @@ import fileReducer from './slices/fileSlice';
 import {fileApiWs} from './services/fileApiWs';
 import downloadableFilesReducer from './slices/downloadableFiles';
 import avaiableScripts from './slices/avaiableScripts';
+import {processApi} from './services/processApi';
 
 export const store = configureStore({
 	reducer: {
@@ -25,7 +26,8 @@ export const store = configureStore({
 		[appsApi.reducerPath]: appsApi.reducer,
 		[testingApi.reducerPath]: testingApi.reducer,
 		[shellApiWs.reducerPath]: shellApiWs.reducer,
-		[fileApiWs.reducerPath]: fileApiWs.reducer
+		[fileApiWs.reducerPath]: fileApiWs.reducer,
+		[processApi.reducerPath]: processApi.reducer
 	},
 	middleware: getDefaultMiddleware =>
 		getDefaultMiddleware()
@@ -34,6 +36,7 @@ export const store = configureStore({
 			.concat(testingApi.middleware)
 			.concat(shellApiWs.middleware)
 			.concat(fileApiWs.middleware)
+			.concat(processApi.middleware)
 	// .concat(qwe.middleware) // another middleware
 });
 

@@ -13,7 +13,7 @@ interface props {
 }
 
 const AppsTable: FC<props> = ({ apps }) => {
-	const [spawnApp, spawnAppState] = useLazySpawnApplicationQuery();
+	const [spawnApp] = useLazySpawnApplicationQuery();
 
 	const onSimpleStart = async (appPackageName: string) => {
 		const pid = await spawnApp(appPackageName);

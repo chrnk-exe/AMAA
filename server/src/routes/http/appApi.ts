@@ -54,6 +54,11 @@ router.get('/apps/:appPackageName/start', async (req: Request<{appPackageName: s
 
 /**
  * Start app with frida scripts
+ * @route GET /api/apps/:applicationId/start_testing
+ * @group Application Start With frida script!
+ * @param {Request} req - request object
+ * @param {Response} res - response object
+ * @return status codes
  */
 router.post('/apps/:appPackageName/start_testing', async (req: Request<{appPackageName: string}, any, {code?: string, scripts: string[]}>, res)=> {
 	const {appPackageName} = req.params;
@@ -80,17 +85,21 @@ router.post('/apps/:appPackageName/start_testing', async (req: Request<{appPacka
 		await newScript.load();
 	}
 
-
 	console.log(`Starting ${appPackageName} on ${deviceId} with code: ${code?.substring(0,10)}... and scripts: ${scripts}`);
 
 	const resultstr = `Starting ${appPackageName} on ${deviceId} with code: ${code?.substring(0,10)}... and scripts: ${scripts}`;
 
-
 	// todo: Start app with frida scripts, (local and received)
 	// todo: create webSocket stream with console output (on client - subscribe on 1 more event)
+
+	await device.resume(await pid);
 	
 	res.status(200).json({message: resultstr});
 
+});
+
+router.delete('/:pid', async (req: Request<{pid: string}>, res) => {
+	const {deviceId} = req.cookies;
 });
 
 router.use(applicationController);

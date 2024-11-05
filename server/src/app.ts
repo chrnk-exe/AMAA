@@ -9,6 +9,7 @@ import SocketSingleton from './utils/socketSingleton';
 import onConnection from './utils/onConnection';
 import {Server} from 'socket.io';
 import cors from 'cors';
+import processRoutes from './routes/http/processApi';
 
 
 const app: Express = express();
@@ -56,6 +57,7 @@ if (SocketSingleton.io) {
 app.use('/api',
 	deviceRoute,
 	deviceController,
+	processRoutes,
 	shellRoutes,
 	appRoutes,
 );

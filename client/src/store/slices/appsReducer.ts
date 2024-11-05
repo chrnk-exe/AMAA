@@ -22,6 +22,9 @@ export const appsSlice = createSlice({
 		updatePid: (state, action: PayloadAction<{ packageName: string, pid: number }>) => {
 			console.log('Change PID');
 		},
+		removeProcess: (state, action: PayloadAction<number>) => {
+			return {apps: state.apps, processes: state.processes.filter(process => process.pid != action.payload)};
+		}
 	},
 	extraReducers: (builder) => {
 		builder.addMatcher(deviceApi.endpoints.selectDevice.matchFulfilled, (state, action) => {
@@ -39,5 +42,5 @@ export const appsSlice = createSlice({
 	}
 });
 
-export const {setApps, clearApps} = appsSlice.actions;
+export const {setApps, clearApps, removeProcess} = appsSlice.actions;
 export default appsSlice.reducer;
