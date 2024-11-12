@@ -33,11 +33,17 @@ const staticAnalyze = async (filename: string) => {
 				// Извлекаем файл и записываем его на диск
 				const content = await file.async('nodebuffer');
 				fs.writeFileSync(fullPath, content);
+				console.log(`Writing ${fullPath}`);
 			}
 		})
 	);
 
+	const androidManifestPath = __dirname + '/files/AndroidManifest.xml';
+
+
 	console.log('Starting static analyze');
+
+
 };
 
 export default staticAnalyze;
