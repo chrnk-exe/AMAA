@@ -13,7 +13,10 @@ import {addToFilesystem} from '../store/slices/dirSlice';
 import AppFiles from './pages/AppFiles';
 import Files from './pages/AppFilesComponents/Files';
 import {appendFileData} from '../store/slices/fileSlice';
+import {addConsoleState} from '../store/slices/fridaConsoleState';
 import FridaScripting from './pages/FridaScripting';
+import HTTPSProxy from './pages/HTTPSProxy';
+import StaticAnalyzer from './pages/StaticAnalyzer';
 
 function AppRoutes() {
 	const dispatch = useAppDispatch();
@@ -81,6 +84,11 @@ function AppRoutes() {
 			alert('Ахтунг, довнлоад финишед!');
 		});
 
+		socket.on('fridaConsoleEvent', (data: string) => {
+			console.log('Console frida event!');
+			dispatch(addConsoleState(data));
+		});
+
 
 
 
@@ -108,6 +116,8 @@ function AppRoutes() {
 					<Route path={'/shellExec/:pid'} element={<ShellPanel/>}></Route>
 				</Route>
 				<Route path="/custom-scripts" element={<FridaScripting />}/>
+				<Route path="/proxy" element={<HTTPSProxy />}/>
+				<Route path="/static-analyzer" element={<StaticAnalyzer />}/>
 				<Route path="*" element={<Navigate to={'/main'}/>}/>
 
 			</Routes>

@@ -42,3 +42,4 @@ frida.getDevice(process.argv[2])
 	.catch(err => process.send(err));
 
 
+

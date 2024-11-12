@@ -28,6 +28,13 @@ other/
 /other
 swagger/
 
+/server/src/static-analyze/apks/
+/server/src/static-analyze/raw_apks/
+/server/src/static-analyze/files/
+/server/src/static-analyze/decompiled/
+/server/src/static-analyze./
+/server/src/test/
+
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

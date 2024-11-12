@@ -9,6 +9,8 @@ import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
 import JavascriptIcon from '@mui/icons-material/Javascript';
 import FolderIcon from '@mui/icons-material/Folder';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import MultipleStopIcon from '@mui/icons-material/MultipleStop';
+import SourceIcon from '@mui/icons-material/Source';
 
 interface Props {
 	open: boolean
@@ -46,14 +48,29 @@ export const NavigationList = [
 		icon: <JavascriptIcon />
 	},
 	{
-		text: 'App files',
+		text: 'App files (ls)',
 		link: '/filesystem',
+		icon: <FolderIcon />
+	},
+	{
+		text: 'App files (Java)',
+		link: '/filesystemJava',
 		icon: <FolderIcon />
 	},
 	{
 		text: 'Shell exec',
 		link: '/shellExec',
 		icon: <ArrowForwardIosIcon/>
+	},
+	{
+		text: 'Proxy',
+		link: '/proxy',
+		icon: <MultipleStopIcon/>
+	},
+	{
+		text: 'Static Analyzer',
+		link: '/static-analyzer',
+		icon: <SourceIcon/>
 	}
 ];
 

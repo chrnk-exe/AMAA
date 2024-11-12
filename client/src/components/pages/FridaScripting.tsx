@@ -16,7 +16,8 @@ import {
 	OutlinedInput,
 	Select, SelectChangeEvent,
 } from '@mui/material';
-import { useAppSelector } from '../../hooks/typedReduxHooks'; //Example style, you can use another
+import { useAppSelector, useAppDispatch } from '../../hooks/typedReduxHooks'; //Example style, you can use another
+import { clearConsoleState } from '../../store/slices/fridaConsoleState';
 import { useSpawnApplicationWithScriptsMutation } from '../../store/services/appApi';
 
 const ITEM_HEIGHT = 48;
@@ -32,12 +33,17 @@ const MenuProps = {
 
 const FridaScripting: FC = () => {
 
+	// Подписка на всякие штуки
 	const apps = useAppSelector(state => state.apps.apps);
+	const fridaConsoleState = useAppSelector(state => state.fridaConsoleState);
+
+	const dispatch = useAppDispatch();
 	const [selectedApp, setSelectedApp] = useState('');
 	const [spawnApp] = useSpawnApplicationWithScriptsMutation();
 
+
+
 	const bypasses = useAppSelector(state => state.scripts);
-	console.log(bypasses);
 
 	const [includeFollowingScript, setIncludeScript] = useState(false);
 	const [selectedBypasses, setSelectedBypasses] = useState<string[]>([]);
@@ -71,6 +77,7 @@ const FridaScripting: FC = () => {
 		'\n' +
 		'});\n');
 
+	// Хэндлер для выбора скриптов
 	const handleChangeBypasses = (event: SelectChangeEvent<typeof selectedBypasses>) => {
 		const {
 			target: { value },
@@ -81,6 +88,7 @@ const FridaScripting: FC = () => {
 		);
 	};
 
+	// Хендлер выбора аппки
 	const handleChangeApp = (event: SelectChangeEvent<string>) => {
 		const {
 			target: { value },
@@ -89,6 +97,7 @@ const FridaScripting: FC = () => {
 		setSelectedApp(value);
 	};
 
+	// Хендлер старта приложения
 	const handleStart = async () => {
 		const currentCode = includeFollowingScript ? code : undefined;
 		const currentScripts = selectedBypasses;
@@ -98,6 +107,7 @@ const FridaScripting: FC = () => {
 			scripts: currentScripts,
 			appPackageName
 		});
+		dispatch(clearConsoleState());
 		console.log(result);
 	};
 
@@ -173,6 +183,19 @@ const FridaScripting: FC = () => {
 							Start application!
 						</Button>
 					</Box>
+				</Box>
+			</Box>
+			<Box mt={1}>
+				<Typography variant={'h6'}> Вывод скриптов в консоль </Typography>
+				<Box sx={{
+					bgcolor: '#FFF',
+					minHeight: '200px',
+					maxHeight: '300px',
+					overflowY: 'scroll'
+				}}>
+					<pre>
+						{fridaConsoleState}
+					</pre>
 				</Box>
 			</Box>
 		</Box>

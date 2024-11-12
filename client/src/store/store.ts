@@ -12,6 +12,8 @@ import {fileApiWs} from './services/fileApiWs';
 import downloadableFilesReducer from './slices/downloadableFiles';
 import avaiableScripts from './slices/avaiableScripts';
 import {processApi} from './services/processApi';
+import fridaConsoleStateReducer from './slices/fridaConsoleState';
+import {staticAnalyzeApi} from './services/staticAnalyzeApi';
 
 export const store = configureStore({
 	reducer: {
@@ -22,12 +24,14 @@ export const store = configureStore({
 		fileContents: fileReducer,
 		downloadLinks: downloadableFilesReducer,
 		scripts: avaiableScripts,
+		fridaConsoleState: fridaConsoleStateReducer,
 		[deviceApi.reducerPath]: deviceApi.reducer,
 		[appsApi.reducerPath]: appsApi.reducer,
 		[testingApi.reducerPath]: testingApi.reducer,
 		[shellApiWs.reducerPath]: shellApiWs.reducer,
 		[fileApiWs.reducerPath]: fileApiWs.reducer,
-		[processApi.reducerPath]: processApi.reducer
+		[processApi.reducerPath]: processApi.reducer,
+		[staticAnalyzeApi.reducerPath]: staticAnalyzeApi.reducer,
 	},
 	middleware: getDefaultMiddleware =>
 		getDefaultMiddleware()

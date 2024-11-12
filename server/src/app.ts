@@ -1,15 +1,16 @@
 import express, {Express, Response, Request, NextFunction} from 'express';
 import cookieParser from 'cookie-parser';
+import {Server} from 'socket.io';
+import cors from 'cors';
+import {createServer} from 'http';
+import deviceController from './controllers/deviceController';
+import onConnection from './utils/onConnection';
 import deviceRoute from './routes/http/devicesApi';
 import appRoutes from './routes/http/appApi';
 import shellRoutes from './routes/http/shellApiHttp';
-import deviceController from './controllers/deviceController';
-import {createServer} from 'http';
-import SocketSingleton from './utils/socketSingleton';
-import onConnection from './utils/onConnection';
-import {Server} from 'socket.io';
-import cors from 'cors';
 import processRoutes from './routes/http/processApi';
+import staticAnalyzeRoute from './routes/http/staticAnalyzeRoute';
+import SocketSingleton from './utils/socketSingleton';
 
 
 const app: Express = express();
@@ -55,6 +56,7 @@ if (SocketSingleton.io) {
  * app, shell, testing, (files) routes - only with cookie deviceId
  */
 app.use('/api',
+	staticAnalyzeRoute,
 	deviceRoute,
 	deviceController,
 	processRoutes,

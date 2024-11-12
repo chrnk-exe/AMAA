@@ -4,7 +4,6 @@
 	Run with:
 	frida -U -f <APP_ID> -l frida_multiple_unpinning.js [--no-pause]
 */
-
 setTimeout(function() {
 	Java.perform(function() {
 		console.log('');

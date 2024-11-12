@@ -3,6 +3,7 @@ import getDeviceApps from '../../frida-services/getDeviceApps';
 import getDeviceProcesses from '../../frida-services/getDeviceProcesses';
 import spawnApplication from '../../frida-services/spawnApplication';
 import applicationController from '../../controllers/applicationController';
+import SocketSingleton from '../../utils/socketSingleton';
 import getApkFile from '../../frida-services/getApkFile.js';
 import { getAvailableScripts, getScriptByName } from '../../utils/scripts';
 
@@ -60,6 +61,7 @@ router.get('/apps/:appPackageName/start', async (req: Request<{appPackageName: s
  * @param {Response} res - response object
  * @return status codes
  */
+
 router.post('/apps/:appPackageName/start_testing', async (req: Request<{appPackageName: string}, any, {code?: string, scripts: string[]}>, res)=> {
 	const {appPackageName} = req.params;
 	const {deviceId} = req.cookies;
@@ -68,34 +70,47 @@ router.post('/apps/:appPackageName/start_testing', async (req: Request<{appPacka
 
 	const { pid, device } = await spawnApplication(deviceId, appPackageName);
 
-	const session = await device.attach(await pid);
+	const currentPid = +(await pid);
 
-	const scriptDatas = [];
+	await device.resume(currentPid);
+
+	const session = await device.attach(currentPid);
+
+	const scriptData = [];
 
 	scripts.forEach((scriptName) => {
-		scriptDatas.push(getScriptByName(scriptName));
+		scriptData.push(getScriptByName(scriptName));
 	});
 
 	if (code) {
-		scriptDatas.push(code);
+		scriptData.push(code);
 	}
 
-	for (const script of scriptDatas) {
+	// Строка для добавления в начало каждого скрипта
+	const customConsoleLog = 'console.log = (message) => { send(message); };\n';
+
+	// Добавляем строку в начало каждого скрипта
+	const modifiedScriptData = scriptData.map(script => customConsoleLog + script);
+
+	for (const script of modifiedScriptData) {
 		const newScript = await session.createScript(script);
+		newScript.message.connect(message => {
+			if (message.type === 'send') {
+				if(SocketSingleton.io) {
+					SocketSingleton.io.emit('fridaConsoleEvent', message.payload);
+				}
+				// console.log('Message from script:', message.payload);  // выводим лог
+			} else if (message.type === 'error') {
+				console.error('Script error:', message.stack);
+			}
+		});
 		await newScript.load();
 	}
 
-	console.log(`Starting ${appPackageName} on ${deviceId} with code: ${code?.substring(0,10)}... and scripts: ${scripts}`);
+	// console.log(`Starting ${appPackageName} on ${deviceId} with code: ${code?.substring(0,10)}... and scripts: ${scripts}`);
 
 	const resultstr = `Starting ${appPackageName} on ${deviceId} with code: ${code?.substring(0,10)}... and scripts: ${scripts}`;
-
-	// todo: Start app with frida scripts, (local and received)
-	// todo: create webSocket stream with console output (on client - subscribe on 1 more event)
-
-	await device.resume(await pid);
-	
 	res.status(200).json({message: resultstr});
-
 });
 
 router.delete('/:pid', async (req: Request<{pid: string}>, res) => {
