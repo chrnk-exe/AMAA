@@ -1,6 +1,9 @@
 import fs from 'fs';
 import JSZip from 'jszip';
 import path from 'path';
+import manifestAnalyze from './manifest-analyze';
+import cleanDirectory from './utils/cleanDirectory';
+import certAnalyze from './cert-analyze/cert-analyze';
 
 const staticAnalyze = async (filename: string) => {
 	const apkData = fs.readFileSync(filename);
@@ -9,9 +12,14 @@ const staticAnalyze = async (filename: string) => {
 
 	const outputDir = path.join(__dirname, 'files');
 
+
+
 	if (!fs.existsSync(outputDir)) {
 		fs.mkdirSync(outputDir, { recursive: true });
 	}
+
+	// Очистить перед распаковкой нового apk
+	cleanDirectory(outputDir);
 
 	// Проходимся по всем файлам в ZIP-архиве
 	await Promise.all(
@@ -39,6 +47,12 @@ const staticAnalyze = async (filename: string) => {
 	);
 
 	const androidManifestPath = __dirname + '/files/AndroidManifest.xml';
+
+	const manifestAnalyzingResult = manifestAnalyze(androidManifestPath);
+
+	const certAnalyzeResult = certAnalyze(filename);
+
+
 
 
 	console.log('Starting static analyze');

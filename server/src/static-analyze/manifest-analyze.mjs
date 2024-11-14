@@ -58,12 +58,105 @@ const extractIntents = (application) => {
 	return allIntentFilters;
 }
 
+const extractIntentFilterData = (intentFilterArray) => {
+	const schemes = [];
+	const hosts = [];
+	const paths = [];
+	const pathPrefixes = [];
+	const pathPatterns = [];
+
+	intentFilterArray.forEach(intentFilter => {
+		// Проверяем, что это intent-filter с дочерними элементами
+		if (intentFilter.nodeName === 'intent-filter' && intentFilter.childNodes) {
+			// Перебираем childNodes, чтобы найти элементы "data"
+			intentFilter.childNodes.forEach(childNode => {
+				if (childNode.nodeName === 'data' && childNode.attributes) {
+					childNode.attributes.forEach(attribute => {
+						const name = attribute.nodeName;
+						const value = attribute.value;
+
+						// В зависимости от атрибута добавляем его в соответствующий массив
+						if (name === 'scheme' && value && !schemes.includes(value)) {
+							schemes.push(value);
+						} else if (name === 'host' && value && !hosts.includes(value)) {
+							hosts.push(value);
+						} else if (name === 'path' && value && !paths.includes(value)) {
+							paths.push(value);
+						} else if (name === 'pathPrefix' && value && !pathPrefixes.includes(value)) {
+							pathPrefixes.push(value);
+						} else if (name === 'pathPattern' && value && !pathPatterns.includes(value)) {
+							pathPatterns.push(value);
+						}
+					});
+				}
+			});
+		}
+	});
+
+	return { schemes, hosts, paths, pathPrefixes, pathPatterns };
+}
+
+const getExportedEntities = (application) => {
+	const exportedEntities = [];
+
+	// Перебираем все категории компонентов
+	const categories = ['activities', 'services', 'receivers', 'providers'];
+	categories.forEach(category => {
+		application[category].forEach(component => {
+			// Поиск атрибута exported
+			const exportedAttribute = component.attributes.find(attr => attr.nodeName === 'exported');
+			const hasIntentFilter = component.childNodes.some(child => child.nodeName === 'intent-filter');
+
+			// Логика определения экспортируемости
+			if (
+				(exportedAttribute && exportedAttribute.typedValue.value === true) || // Явно установлен exported=true
+				(!exportedAttribute && hasIntentFilter) // Отсутствие атрибута exported + наличие intent-filter
+			) {
+				exportedEntities.push({
+					category,
+					name: component.attributes.find(attr => attr.nodeName === 'name').value
+				});
+			}
+		});
+	});
+
+	return exportedEntities;
+}
 
 const manifestAnalyze = (pathToManifest) => {
+	// Переменные для результата анализа
+
+	// Опасные привелегии
+	const dangerousPermissionsInAPK = []
+
+
+	// min и target sdk
+	const dangerousMinSDK = {
+		state: false,
+		version: 0
+	}
+	const dangerousTargetSDK = {
+		state: false,
+		version: 0
+	}
+
+	// Критичные атрибуты
+	const criticalAttributes = {
+		allowBackup: false,
+		debuggable: false,
+		usesCleartextTraffic: false
+	}
+
+	// наличие схемы http (без шифрования - угроза mitm)
+
+	let isHttpInSchemes = false;
+
+	// Нужные для обработки манифеста переменные
 	const data = fs.readFileSync(pathToManifest);
 	const reader = new BinaryXML(data);
 	const document = reader.parse();
 
+	const packageName = document.attributes.find(attr => attr.nodeName === 'package').typedValue.value
 	const childNodes = document.childNodes
 
 	const permissions = []
@@ -75,11 +168,7 @@ const manifestAnalyze = (pathToManifest) => {
 		providers: []
 	}
 
-	const criticalAttributes = {
-		allowBackup: false,
-		debuggable: false,
-		usesCleartextTraffic: false
-	}
+
 
 	// PERMISSIONS
 	// ==========================
@@ -132,7 +221,6 @@ const manifestAnalyze = (pathToManifest) => {
 
 	// Анализируем их
 
-	const dangerousPermissionsInAPK = []
 
 	for (let permission of permissions) {
 		const originalPermission = permission.split('.')[permission.split('.').length - 1]
@@ -146,14 +234,7 @@ const manifestAnalyze = (pathToManifest) => {
 
 	// 	После выполнения в dangerousPermissionsInAPK лежит список опасных пермишнс
 
-	const dangerousMinSDK = {
-		state: false,
-		version: 0
-	}
-	const dangerousTargetSDK = {
-		state: false,
-		version: 0
-	}
+
 
 	// Check SDK
 	for( const attr of sdk.attributes) {
@@ -175,11 +256,28 @@ const manifestAnalyze = (pathToManifest) => {
 	//
 	// console.log(application)
 
+	// Grab intent-filters
 	const intentFilters = extractIntents(application)
+	const allIntentFilters = extractIntentFilterData(intentFilters)
 
-	console.log(intentFilters[1])
+	isHttpInSchemes = allIntentFilters.schemes.includes('http')
+
+	// Надо прочекать экспортируемые Application Components
+
+	// console.log(application.activities[0].attributes)
+
+	const exportedEntities = getExportedEntities(application)
+
+	return {
+		permissionsAnalyze: dangerousPermissionsInAPK,
+		exportedEntitiesAnalyze: exportedEntities,
+		intentFiltersAnalyze: intentFilters,
+		criticalAttributesAnalyze: criticalAttributes,
+		SDKAnalyze: {dangerousTargetSDK, dangerousMinSDK}
+	};
+
 };
 
-// manifestAnalyze('./files/AndroidManifestBank.xml')
-manifestAnalyze('./files/AndroidManifestBSPB.xml')
+manifestAnalyze('./files/AndroidManifestBank.xml')
+// manifestAnalyze('./files/AndroidManifestBSPB.xml')
 export default manifestAnalyze;
