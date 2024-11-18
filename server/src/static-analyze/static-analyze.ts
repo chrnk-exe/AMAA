@@ -76,6 +76,8 @@ const staticAnalyze = async (filename: string) => {
 
 	const androidManifestPath = __dirname + '/files/AndroidManifest.xml';
 
+	console.log('Starting static analyze');
+
 	// const manifestAnalyzingResult = manifestAnalyze(androidManifestPath);
 	//
 	// const certAnalyzeResult = certAnalyze(filename);
@@ -86,11 +88,6 @@ const staticAnalyze = async (filename: string) => {
 	const decompiledPath = path.join(__dirname, 'decompiled', 'sources');
 
 	const codeAuditResult = fileAnalyzer(decompiledPath);
-
-
-
-	console.log('Starting static analyze');
-
 
 };
 

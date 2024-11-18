@@ -44,7 +44,7 @@ function processFileInWorker({file, entropyLevel, sensitivityLevel}) {
 	});
 }
 
-async function analyzeJavaApkCode(pathToDecompiledDex, entropyLevel = 4.5, sensitivityLevel = 3) {
+async function analyzeJavaApkCode(pathToDecompiledDex, entropyLevel = 4.6, sensitivityLevel = 3) {
 	console.log(pathToDecompiledDex);
 
 	const javaFilenames = collectJavaFilesSync(pathToDecompiledDex);
