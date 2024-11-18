@@ -9,7 +9,6 @@ const path = require('path');
 function getHardcodedCertKeystore(files) {
 	try {
 		console.info('Getting Hardcoded Certificates/Keystores');
-		appendScanStatus(checksum, 'Getting Hardcoded Certificates/Keystores');
 
 		const findings = [];
 		const certz = [];

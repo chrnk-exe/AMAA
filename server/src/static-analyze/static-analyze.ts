@@ -4,6 +4,29 @@ import path from 'path';
 import manifestAnalyze from './manifest-analyze';
 import cleanDirectory from './utils/cleanDirectory';
 import certAnalyze from './cert-analyze/cert-analyze';
+import { execSync } from 'child_process';
+import fileAnalyzer from './file-analyzer';
+
+const regex = /^classes(\d*)\.dex$/;
+
+const decompileDex = (pathToFolderWithClassesDex: string) => {
+
+	const jadxCLI = path.join(__dirname, 'tools', 'jadx-cli.jar');
+	const outputDirectory = path.join(__dirname, 'decompiled');
+
+	const classesFiles = fs.readdirSync(pathToFolderWithClassesDex).filter(file => regex.test(file));
+
+	const resultClassesFiles = classesFiles.map(classesFilename => path.join(__dirname, 'files', classesFilename));
+
+
+	// decompile with jadx
+	const args = ['java', '-cp', jadxCLI, 'jadx.cli.JadxCLI',
+		'--deobf', '--show-bad-code', '--escape-unicode', '--threads-count 4',
+		'-d', outputDirectory ,...resultClassesFiles];
+
+	execSync(args.join(' '), { stdio: 'pipe' }).toString('utf-8');
+
+};
 
 const staticAnalyze = async (filename: string) => {
 	const apkData = fs.readFileSync(filename);
@@ -11,15 +34,20 @@ const staticAnalyze = async (filename: string) => {
 	console.log(`STATIC ANALYZE: [${__dirname}]`);
 
 	const outputDir = path.join(__dirname, 'files');
-
+	const decompiledDir = path.join(__dirname, 'decompiled');
 
 
 	if (!fs.existsSync(outputDir)) {
 		fs.mkdirSync(outputDir, { recursive: true });
 	}
 
+	if (!fs.existsSync(decompiledDir)) {
+		fs.mkdirSync(decompiledDir, { recursive: true });
+	}
+
 	// Очистить перед распаковкой нового apk
 	cleanDirectory(outputDir);
+	cleanDirectory(decompiledDir);
 
 	// Проходимся по всем файлам в ZIP-архиве
 	await Promise.all(
@@ -48,10 +76,16 @@ const staticAnalyze = async (filename: string) => {
 
 	const androidManifestPath = __dirname + '/files/AndroidManifest.xml';
 
-	const manifestAnalyzingResult = manifestAnalyze(androidManifestPath);
+	// const manifestAnalyzingResult = manifestAnalyze(androidManifestPath);
+	//
+	// const certAnalyzeResult = certAnalyze(filename);
 
-	const certAnalyzeResult = certAnalyze(filename);
+	// decompile and store files in __dirname/decompiled/sources
+	decompileDex(__dirname + '/files');
 
+	const decompiledPath = path.join(__dirname, 'decompiled', 'sources');
+
+	const codeAuditResult = fileAnalyzer(decompiledPath);
 
 
 

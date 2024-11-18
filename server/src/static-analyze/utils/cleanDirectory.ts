@@ -1,8 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 
-const dirPath = path.join(__dirname, 'files');
-
 // Функция для удаления содержимого папки
 function clearDirectory(directory: string): void {
 	// Читаем содержимое папки
@@ -28,9 +26,10 @@ function clearDirectory(directory: string): void {
 					fs.unlink(filePath, (err) => {
 						if (err) {
 							console.error('Ошибка при удалении файла:', err);
-						} else {
-							console.log(`Файл ${file} удалён`);
 						}
+						// else {
+						// 	console.log(`Файл ${file} удалён`);
+						// }
 					});
 				}
 				// Если это папка, рекурсивно очищаем её

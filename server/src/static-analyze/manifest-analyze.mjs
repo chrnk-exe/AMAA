@@ -278,6 +278,6 @@ const manifestAnalyze = (pathToManifest) => {
 
 };
 
-manifestAnalyze('./files/AndroidManifestBank.xml')
+// manifestAnalyze('./files/AndroidManifestBank.xml')
 // manifestAnalyze('./files/AndroidManifestBSPB.xml')
 export default manifestAnalyze;
