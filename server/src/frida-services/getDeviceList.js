@@ -1,6 +1,5 @@
 import {enumerateDevices} from 'frida';
 
-
 let getDevices = async () => {
 	return await enumerateDevices();
 };

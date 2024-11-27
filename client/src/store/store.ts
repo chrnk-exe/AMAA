@@ -1,19 +1,28 @@
 import {configureStore, ThunkAction, Action} from '@reduxjs/toolkit';
+
 import deviceReducer from './slices/currentDeviceReducer';
 import appsReducer from './slices/appsReducer';
+import shellReducer from './slices/shellSlice';
+import downloadableFilesReducer from './slices/lsFS/downloadableFiles';
+import availableScripts from './slices/avaiableScripts';
+import fridaConsoleStateReducer from './slices/fridaConsoleState';
+import currentDeviceReducer from './slices/currentDeviceSlice';
+
+import dirReducer from './slices/lsFS/dirSlice';
+import fileReducer from './slices/lsFS/fileSlice';
+
+import javaFilesReducer from './slices/javaFS/javaFiles';
+import javaPackageInfoReducer from './slices/javaFS/javaPackageInfo';
+import javaPackagePathsReducer from './slices/javaFS/packagePaths';
+
 import {deviceApi} from './services/deviceApi';
 import {appsApi} from './services/appApi';
 import {testingApi} from './services/testingApi';
 import {shellApiWs} from './services/shellApiWs';
-import shellReducer from './slices/shellSlice';
-import dirReducer from './slices/dirSlice';
-import fileReducer from './slices/fileSlice';
 import {fileApiWs} from './services/fileApiWs';
-import downloadableFilesReducer from './slices/downloadableFiles';
-import avaiableScripts from './slices/avaiableScripts';
 import {processApi} from './services/processApi';
-import fridaConsoleStateReducer from './slices/fridaConsoleState';
 import {staticAnalyzeApi} from './services/staticAnalyzeApi';
+import {javaFilesApi} from './services/javaFileApiHttp';
 
 export const store = configureStore({
 	reducer: {
@@ -23,8 +32,13 @@ export const store = configureStore({
 		files: dirReducer,
 		fileContents: fileReducer,
 		downloadLinks: downloadableFilesReducer,
-		scripts: avaiableScripts,
+		scripts: availableScripts,
 		fridaConsoleState: fridaConsoleStateReducer,
+		currentDevice: currentDeviceReducer,
+		javaFiles: javaFilesReducer,
+		packagePaths: javaPackagePathsReducer,
+		package: javaPackageInfoReducer,
+
 		[deviceApi.reducerPath]: deviceApi.reducer,
 		[appsApi.reducerPath]: appsApi.reducer,
 		[testingApi.reducerPath]: testingApi.reducer,
@@ -32,6 +46,7 @@ export const store = configureStore({
 		[fileApiWs.reducerPath]: fileApiWs.reducer,
 		[processApi.reducerPath]: processApi.reducer,
 		[staticAnalyzeApi.reducerPath]: staticAnalyzeApi.reducer,
+		[javaFilesApi.reducerPath]: javaFilesApi.reducer
 	},
 	middleware: getDefaultMiddleware =>
 		getDefaultMiddleware()
@@ -41,6 +56,8 @@ export const store = configureStore({
 			.concat(shellApiWs.middleware)
 			.concat(fileApiWs.middleware)
 			.concat(processApi.middleware)
+			.concat(javaFilesApi.middleware)
+			.concat(staticAnalyzeApi.middleware)
 	// .concat(qwe.middleware) // another middleware
 });
 

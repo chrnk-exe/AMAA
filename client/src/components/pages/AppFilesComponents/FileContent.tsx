@@ -73,12 +73,12 @@ const FileContent: FC<props> = ({data, size, filename}) => {
 				</ToggleButton>
 			</ToggleButtonGroup>
 
-			{
-				error && <Typography sx={{ color: 'yellow' }}>
-					Во время декодирования произошла ошибка, содержимое файла может быть искажено.
-				</Typography>
+			{/*{*/}
+			{/*	error && <Typography sx={{ color: 'yellow' }}>*/}
+			{/*		Во время декодирования произошла ошибка, содержимое файла может быть искажено.*/}
+			{/*	</Typography>*/}
 
-			}
+			{/*}*/}
 			{
 				sizeError && <Typography sx={{ color: 'red' }}>
 					Файл слишком велик для отображения.

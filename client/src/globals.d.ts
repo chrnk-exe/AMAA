@@ -125,3 +125,69 @@ declare interface DownloadLink {
 	filename: string,
 	link: string,
 }
+
+type IsFileResponseJava = boolean;
+
+type ReadFileResponseJava = ArrayBuffer; // Данные файла в виде бинарного буфера
+
+type FileExistsResponseJava = boolean;
+
+type DbQueryResponseJava = Array<Array<string>> // Первая строка - название колонок, вторая и дальше - строчки
+
+interface PackageInfoResponseJava {
+	package_name: string;  // Имя пакета приложения
+	package_version: string; // Версия приложения
+	directories: DirectoryInfoJava[]; // Список директорий, связанных с приложением
+}
+
+interface DirectoryInfoJava {
+	isDirectory: boolean;
+	isFile: boolean;
+	isHidden: boolean;
+	lastModified: number;  // Последнее изменение в миллисекундах с эпохи Unix
+	size: number;          // Размер файла/директории
+	path: string;          // Абсолютный путь
+	readable: boolean;
+	writeable: boolean;
+	executable: boolean;
+	file_type: string | null; // Тип файла (если доступно)
+}
+
+interface LsResponseJava {
+	path: string;          // Путь к директории
+	readable: boolean;     // Может ли процесс читать директорию
+	writeable: boolean;    // Может ли процесс записывать в директорию
+	files: FileInfoJava[]; // Список файлов в директории
+}
+
+interface FileInfoJava {
+	isDirectory: boolean;
+	isFile: boolean;
+	isHidden: boolean;
+	lastModified: number;  // Последнее изменение в миллисекундах с эпохи Unix
+	size: number;          // Размер файла/директории
+	path: string;          // Абсолютный путь
+	readable: boolean;     // Доступен ли файл для чтения
+	writeable: boolean;    // Доступен ли файл для записи
+	executable: boolean;   // Доступен ли файл для выполнения
+}
+
+type RpcResponseJavaTyped<T> = {
+	success: boolean;
+	data: T;
+};
+
+type RpcResponseJava =
+	| IsFileResponseJava
+	| ReadFileResponseJava
+	| FileExistsResponseJava
+	| DbQueryResponseJava
+	| PackageInfoResponseJava
+	| LsResponseJava;
+
+interface RpcRequestJava {
+	command: string;      // Название команды, например "ls", "readFile", и т.д.
+	args?: any[];         // Аргументы команды
+}
+
+

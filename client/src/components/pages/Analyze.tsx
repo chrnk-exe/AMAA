@@ -20,11 +20,12 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import CircularProgress from '@mui/material/CircularProgress';
 import AppsTable from './AnalyzeComponents/AppsTable';
 import ProcessesTable from './AnalyzeComponents/ProcessesTable';
+import { setCurrentDevice } from '../../store/slices/currentDeviceSlice';
 
 
 const Analyze: FC = () => {
 	// React states
-	const [deviceLabel, setDeviceLabel] = useState<string>('');
+	// const [deviceLabel, setDeviceLabel] = useState<string>('');
 	const [showProcesses, setShowProcesses] = useState<boolean>(false);
 	const [devices, setDevices] = useState<Device[]>([]);
 
@@ -43,6 +44,7 @@ const Analyze: FC = () => {
 	const dispatch = useAppDispatch();
 	const apps = useAppSelector(state => state.apps.apps);
 	const processes = useAppSelector(state => state.apps.processes);
+	const currentDevice = useAppSelector(state => state.currentDevice);
 	// const device = useAppSelector(state => state.device) as Device;
 
 	useEffect(() => {
@@ -71,7 +73,8 @@ const Analyze: FC = () => {
 			const deviceToSet = data.find(device => device.impl.id === deviceId);
 			if (deviceToSet) {
 				dispatch(setDevice(deviceToSet));
-				setDeviceLabel(deviceId);
+				dispatch(setCurrentDevice(deviceId));
+				// setDeviceLabel(deviceId);
 				await selectDevice({deviceId, type: showProcesses ? 'processes' : 'apps'});
 				// просто получу скрипты и всё.
 				getScripts();
@@ -113,7 +116,7 @@ const Analyze: FC = () => {
 					<Select
 						labelId="SelectDevice"
 						id="SelectDevice"
-						value={deviceLabel}
+						value={currentDevice}
 						label="Select device"
 						onChange={onSelectDevice}
 						sx={{bgcolor: '#FFFFFF'}}

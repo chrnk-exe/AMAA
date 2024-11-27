@@ -9,14 +9,16 @@ import ShellPanel from './pages/shellExecComponents/shellPanel';
 import socket from '../utils/socket';
 import {useAppDispatch, useAppSelector} from '../hooks/typedReduxHooks';
 import {addShell, recieveCommandOutput, removeShell, setShells} from '../store/slices/shellSlice';
-import {addToFilesystem} from '../store/slices/dirSlice';
+import {addToFilesystem} from '../store/slices/lsFS/dirSlice';
 import AppFiles from './pages/AppFiles';
 import Files from './pages/AppFilesComponents/Files';
-import {appendFileData} from '../store/slices/fileSlice';
+import {appendFileData} from '../store/slices/lsFS/fileSlice';
 import {addConsoleState} from '../store/slices/fridaConsoleState';
 import FridaScripting from './pages/FridaScripting';
 import HTTPSProxy from './pages/HTTPSProxy';
 import StaticAnalyzer from './pages/StaticAnalyzer';
+import AppFilesJava from './pages/AppFilesJava';
+import FilesJava from './pages/AppFilesJavaComponents/JavaFiles';
 
 function AppRoutes() {
 	const dispatch = useAppDispatch();
@@ -111,6 +113,9 @@ function AppRoutes() {
 				</Route>
 				<Route path={'/filesystem'} element={<AppFiles/>}>
 					<Route path={'/filesystem/:path'} element={<Files/>}/>
+				</Route>
+				<Route path={'/filesystemJava'} element={<AppFilesJava/>}>
+					<Route path={'/filesystemJava/:appIdentifier/files'} element={<FilesJava/>}/>
 				</Route>
 				<Route path="/shellExec" element={<ShellExec/>}>
 					<Route path={'/shellExec/:pid'} element={<ShellPanel/>}></Route>

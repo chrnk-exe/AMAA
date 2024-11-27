@@ -9,8 +9,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import {useParams} from 'react-router';
 import {useGetFileMutation, useDeleteFileMutation} from '../../../../store/services/fileApiWs';
 import {useAppDispatch, useAppSelector} from '../../../../hooks/typedReduxHooks';
-import {deleteFile} from '../../../../store/slices/fileSlice';
-import {deleteFileOrDirectory} from '../../../../store/slices/dirSlice';
+import {deleteFile} from '../../../../store/slices/lsFS/fileSlice';
+import {deleteFileOrDirectory} from '../../../../store/slices/lsFS/dirSlice';
 import generateFilename from '../../../../utils/genFilename';
 
 const downloadb64File = (filename: string, data: string) => {

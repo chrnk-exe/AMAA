@@ -1,11 +1,42 @@
+//  This file includes code borrowed from a project distributed under the MIT License:
+//
+//  MIT License
+//  Copyright (c) 2020 0x742
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in all
+//  copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+//  SOFTWARE.
+//
+//  Modifications to the code were made by chrnk-exe, 2024.
+
+
 var SEEK_SET = 0;
 var SEEK_END = 2;
 var nativeApi = {
 	'open': getNativeFunction('open', 'int', ['pointer', 'int']),
 	'lseek': getNativeFunction(exportExists('lseek64') ? 'lseek64' : 'lseek', 'int64', ['int', 'int64', 'int']),
 	'read': getNativeFunction('read', 'uint64',['int', 'pointer', 'uint64']),
-	'close': getNativeFunction('close', 'int', ['int'])
+	'close': getNativeFunction('close', 'int', ['int']),
+	'write': getNativeFunction('write', 'ssize_t', ['int', 'pointer', 'size_t']),
 };
+
+var O_WRONLY = 1;  // Открытие файла для записи
+var O_CREAT = 64;  // Создание файла, если он не существует
+var O_TRUNC = 512; // Обрезка файла до нулевой длины, если он существует
 
 function getApplicationContext() {
 	var ActivityThread = Java.use('android.app.ActivityThread');
@@ -28,6 +59,30 @@ function unsigned_file_size(size) {
 	return size + (size < 0) * (Number.MAX_SAFE_INTEGER - Number.MIN_SAFE_INTEGER + 1);
 }
 
+function readFile(path, size) {
+	var pathStr = Memory.allocUtf8String(path);
+	var fd = nativeApi.open(pathStr, 0);
+	if (fd === -1)
+		throw new Error('error open file');
+	var fileSize = nativeApi.lseek(fd, 0, SEEK_END).valueOf();
+	fileSize = unsigned_file_size(fileSize);
+	nativeApi.lseek(fd, 0, SEEK_SET);
+	if(size === 0 || size > fileSize) {
+		size = fileSize;
+	}
+
+	var buf = Memory.alloc(size);
+	var readResult;
+	readResult = nativeApi.read(fd, buf, size);
+
+	if (readResult === -1)
+		throw new Error('error read');
+
+	nativeApi.close(fd);
+	// console.log(buf.readByteArray(size));
+	return buf.readByteArray(size);
+}
+
 
 rpc.exports = {
 	isFile: function(path) {
@@ -45,29 +100,7 @@ rpc.exports = {
 			}
 		});
 	},
-	readFile: function(path, size) {
-		var pathStr = Memory.allocUtf8String(path);
-		var fd = nativeApi.open(pathStr, 0);
-		if (fd === -1)
-			throw new Error('error open file');
-		var fileSize = nativeApi.lseek(fd, 0, SEEK_END).valueOf();
-		fileSize = unsigned_file_size(fileSize);
-		nativeApi.lseek(fd, 0, SEEK_SET);
-		if(size === 0 || size > fileSize) {
-			size = fileSize;
-		}
-
-		var buf = Memory.alloc(size);
-		var readResult;
-		readResult = nativeApi.read(fd, buf, size);
-
-		if (readResult === -1)
-			throw new Error('error read');
-
-		nativeApi.close(fd);
-		// console.log(buf.readByteArray(size));
-		return buf.readByteArray(size);
-	},
+	readFile,
 	fileExists: function(path) {
 		return new Promise(function(resolve) {
 			if(Java.available) {
@@ -210,19 +243,21 @@ rpc.exports = {
 					resp.readable = directory.canRead();
 					resp.writeable = directory.canWrite();
 					var files = directory.listFiles();
-					files.forEach(function (item) {
-						resp.files.push({
-							'isDirectory': item.isDirectory(),
-							'isFile': item.isFile(),
-							'isHidden': item.isHidden(),
-							'lastModified': item.lastModified(),
-							'size': item.length(),
-							'path': item.getAbsolutePath(),
-							'readable': item.canRead(),
-							'writeable': item.canWrite(),
-							'executable': item.canExecute()
+					if (files) {
+						files.forEach(function (item) {
+							resp.files.push({
+								'isDirectory': item.isDirectory(),
+								'isFile': item.isFile(),
+								'isHidden': item.isHidden(),
+								'lastModified': item.lastModified(),
+								'size': item.length(),
+								'path': item.getAbsolutePath(),
+								'readable': item.canRead(),
+								'writeable': item.canWrite(),
+								'executable': item.canExecute()
+							});
 						});
-					});
+					}
 					resolve(resp);
 				});
 			}
@@ -257,5 +292,30 @@ rpc.exports = {
 				resolve(resp);
 			}
 		});
+	},
+	editFile: function editFile(path, newData) {
+		var pathStr = Memory.allocUtf8String(path);
+
+		// Создавать новый не надо, я лишь редактирую старый, поэтому третий параметр не нужен!!!!!!!!!!!!!!!!!
+		var fd = nativeApi.open(pathStr, O_WRONLY | O_TRUNC);
+		if (fd === -1) {
+			throw new Error(`Opening file error. Path: ${path}, newData: ${newData}, fd: ${fd}`);
+		}
+
+		// выделяем память куда чтоб вписать
+		var buf = Memory.allocUtf8String(newData);
+		var size = newData.length;
+
+		// Записываем данные в файл!!!!!!!!!!!!
+		var writeResult = nativeApi.write(fd, buf, size);
+		if (writeResult === -1) {
+			throw new Error('Write file error');
+		}
+
+		// Закрываем файл
+		nativeApi.close(fd);
+
+		// оК!!!!!!!!!!!!!!!!
+		return 'ok';
 	}
 };

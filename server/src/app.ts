@@ -11,6 +11,7 @@ import shellRoutes from './routes/http/shellApiHttp';
 import processRoutes from './routes/http/processApi';
 import staticAnalyzeRoute from './routes/http/staticAnalyzeRoute';
 import SocketSingleton from './utils/socketSingleton';
+import filesOverFridaApi from './routes/http/filesOverFridaApi';
 
 
 const app: Express = express();
@@ -59,6 +60,7 @@ app.use('/api',
 	staticAnalyzeRoute,
 	deviceRoute,
 	deviceController,
+	filesOverFridaApi,
 	processRoutes,
 	shellRoutes,
 	appRoutes,

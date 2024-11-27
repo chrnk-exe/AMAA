@@ -7,7 +7,7 @@ import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutli
 import {useParams, useNavigate} from 'react-router';
 import {useDeleteDirectoryMutation} from '../../../../store/services/fileApiWs';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
-import {deleteFileOrDirectory} from '../../../../store/slices/dirSlice';
+import {deleteFileOrDirectory} from '../../../../store/slices/lsFS/dirSlice';
 import {useAppDispatch} from '../../../../hooks/typedReduxHooks';
 import generateFilename from '../../../../utils/genFilename';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
