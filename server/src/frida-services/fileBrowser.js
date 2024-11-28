@@ -59,29 +59,27 @@ function unsigned_file_size(size) {
 	return size + (size < 0) * (Number.MAX_SAFE_INTEGER - Number.MIN_SAFE_INTEGER + 1);
 }
 
-function readFile(path, size) {
-	var pathStr = Memory.allocUtf8String(path);
-	var fd = nativeApi.open(pathStr, 0);
-	if (fd === -1)
-		throw new Error('error open file');
-	var fileSize = nativeApi.lseek(fd, 0, SEEK_END).valueOf();
-	fileSize = unsigned_file_size(fileSize);
-	nativeApi.lseek(fd, 0, SEEK_SET);
-	if(size === 0 || size > fileSize) {
-		size = fileSize;
+const readFile = function(path, size, offset = 0) {
+	const SEEK_SET = 0;
+	if(offset === null){
+		offset = 0;
 	}
+	const pathStr = Memory.allocUtf8String(path);
+	const fd = nativeApi.open(pathStr, 0);
+	if (fd === -1) throw new Error('error open file');
 
-	var buf = Memory.alloc(size);
-	var readResult;
-	readResult = nativeApi.read(fd, buf, size);
+	const fileSize = nativeApi.lseek(fd, 0, SEEK_END).valueOf();
+	nativeApi.lseek(fd, offset, SEEK_SET);
 
-	if (readResult === -1)
-		throw new Error('error read');
+	size = size > 0 ? Math.min(size, fileSize - offset) : fileSize - offset;
+
+	const buf = Memory.alloc(size);
+	const bytesRead = nativeApi.read(fd, buf, size);
+	if (bytesRead === -1) throw new Error('error read');
 
 	nativeApi.close(fd);
-	// console.log(buf.readByteArray(size));
 	return buf.readByteArray(size);
-}
+};
 
 
 rpc.exports = {

@@ -1,6 +1,17 @@
 import React, {useState, useEffect} from 'react';
 import {useParams} from 'react-router';
-import { Box, TableBody, TableCell, TableHead, Typography, Table, TableRow, Button } from '@mui/material';
+import {
+	Box,
+	TableBody,
+	TableCell,
+	TableHead,
+	Typography,
+	Table,
+	TableRow,
+	Button,
+	IconButton,
+	LinearProgress
+} from '@mui/material';
 import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
 
 import {
@@ -9,7 +20,9 @@ import {
 	useGetPackageInfoMutation,
 	useDbQueryMutation,
 	useFileExistsMutation,
-	useReadFileMutation
+	useReadFileMutation,
+	useDownloadFileMutation,
+	useDownloadDirectoryMutation
 } from '../../../store/services/javaFileApiHttp';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useAppSelector, useAppDispatch } from '../../../hooks/typedReduxHooks';
@@ -18,11 +31,11 @@ import { setPackagePaths } from '../../../store/slices/javaFS/packagePaths';
 import { setFiles } from '../../../store/slices/javaFS/javaFiles';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import ReadMoreIcon from '@mui/icons-material/ReadMore';
 import StorageIcon from '@mui/icons-material/Storage';
+import DownloadIcon from '@mui/icons-material/Download';
+import SearchIcon from '@mui/icons-material/Search';
 import FileView from './FileView';
 import DBView from './DBView';
-
 
 
 
@@ -35,6 +48,10 @@ const JavaFiles = () => {
 	const [currentPath, setCurrentPath] = useState('');
 	const [currentReadFile, setCurrentReadFile] = useState('');
 	const [pathStack, setPathStack] = useState<string[]>([]);
+
+	const [progress, setProgress] = useState(0); // Прогресс в процентах (0-100)
+	const [isDownloading, setIsDownloading] = useState(false);
+	const [downloadingFilename, setDownloadingFilename] = useState('');
 
 	const addToStack = (path: string) => {
 		setPathStack([...pathStack, path]);
@@ -56,7 +73,9 @@ const JavaFiles = () => {
 	// Mutations
 	const [getPackageInfo, {isLoading}] = useGetPackageInfoMutation();
 	const [ls] = useLsMutation();
-	const [readFile, readFileState] = useReadFileMutation();
+	const [readFile] = useReadFileMutation();
+	const [downloadFile] = useDownloadFileMutation();
+	const [downloadDirectory] = useDownloadDirectoryMutation();
 
 	// For notifications
 	const [open, setOpen] = React.useState(false);
@@ -150,6 +169,50 @@ const JavaFiles = () => {
 		}
 	};
 
+	const downloadBuffer = (buffer: Buffer, filename: string) => {
+		const blob = new Blob([buffer], { type: 'application/octet-stream' });
+		const url = window.URL.createObjectURL(blob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = filename; // Укажите имя файла
+		document.body.appendChild(a);
+		a.click();
+		document.body.removeChild(a);
+		window.URL.revokeObjectURL(url);
+	};
+
+	const onDownloadFileHandler = async (path: string, size: string) => {
+		if (appIdentifier) {
+			const filename = path.split('/')[path.split('/').length - 1];
+			setDownloadingFilename(filename);
+			const downloadableSize = +(size) + 1;
+			const chunkSize = 8 * 1024 * 1024;
+			if (downloadableSize > chunkSize) {
+				downloadFile({identifier: appIdentifier, path, size: +size});
+			} else {
+				// just download file, small size
+				const fileData = await readFile({ identifier: appIdentifier, path, size: ((+size) + 1) });
+				if ('data' in fileData) {
+					const buffer = Buffer.from(fileData.data.data);
+					downloadBuffer(buffer, filename);
+				} else {
+					alert('Error reading file');
+				}
+			}
+		}
+	};
+
+	const onDownloadDirectoryHandler = async (path: string) => {
+		if (appIdentifier) {
+			try {
+				downloadDirectory({identifier: appIdentifier, path });
+			}
+			catch {
+				alert('Some error occured... sorry...');
+			}}
+		
+	};
+
 
 	return (
 		<Box display={'flex'} justifyContent={'center'} alignItems={'center'} flexDirection={'column'} >
@@ -197,9 +260,19 @@ const JavaFiles = () => {
 										{packageDirectory.readable ? 'r' : '-'}{packageDirectory.writeable ? 'w' : '-'}{packageDirectory.executable ? 'x' : '-'}
 									</TableCell>
 									<TableCell>
-										<Button variant={'contained'} onClick={() => onSelectApplicationPath(packageDirectory.path)}>
-											Select
-										</Button>
+										<Box display={'flex'} flexDirection={'column'} gap={2}>
+											<Button variant={'contained'} onClick={() => onSelectApplicationPath(packageDirectory.path)}>
+												Select
+											</Button>
+											<Button
+												startIcon={<DownloadIcon/>}
+												variant={'contained'}
+												color={'info'}
+												onClick={() => onDownloadDirectoryHandler(packageDirectory.path)}>
+												Download
+											</Button>
+										</Box>
+
 									</TableCell>
 								</TableRow>
 							))
@@ -210,6 +283,16 @@ const JavaFiles = () => {
 				<Typography variant={'h5'}>
 					Файлы/Директории:
 				</Typography>
+
+				{
+					isDownloading &&
+					<Box display={'flex'}>
+						<Typography>
+							{downloadingFilename}
+						</Typography>
+						<LinearProgress variant={'determinate'} value={progress} />
+					</Box>
+				}
 
 				<Table sx={{bgcolor: '#FFFFFF', my: 1, borderRadius:2}}>
 					<TableHead>
@@ -223,7 +306,15 @@ const JavaFiles = () => {
 						{
 							javaFiles.map(file => (
 								<TableRow key={file.path}>
-									<TableCell>{file.path}</TableCell>
+									<TableCell>
+										<Typography sx={{
+											wordWrap: 'break-word',
+											wordBreak: 'break-word',
+											overflowWrap: 'break-word',
+										}}>
+											{file.path}
+										</Typography>
+									</TableCell>
 									<TableCell>{new Date(+file.lastModified).toLocaleString()}</TableCell>
 									<TableCell>{file.size} B</TableCell>
 									<TableCell>
@@ -235,20 +326,29 @@ const JavaFiles = () => {
 									<TableCell>
 										{
 											file.isDirectory
-												? <Button
-													onClick={() => onForwardButtonClickHandler(file.path)}
-													variant={'contained'}
-													startIcon={<ArrowForwardIcon/>}/>
+												? <Box display={'flex'} gap={2}>
+													<IconButton
+														size={'large'}
+														onClick={() => onForwardButtonClickHandler(file.path)}
+													><ArrowForwardIcon/></IconButton>
+													<IconButton
+														size={'large'}
+														onClick={() => onDownloadDirectoryHandler(file.path)}
+													><DownloadIcon/></IconButton>
+												</Box>
 												: <Box display={'flex'} gap={2}>
-													<Button
+													<IconButton
+														size={'large'}
 														onClick={() => onReadButtonClickHandler(file.path, file.size.toString())}
-														variant={'contained'}
-														startIcon={<ReadMoreIcon/>}/>
-													<Button
+													><SearchIcon/></IconButton>
+													<IconButton
+														size={'large'}
 														onClick={() => onDBClickHandler(file.path)}
-														variant={'contained'}
-														startIcon={<StorageIcon/>}/>
-
+													><StorageIcon/></IconButton>
+													<IconButton
+														size={'large'}
+														onClick={() => onDownloadFileHandler(file.path, file.size.toString())}
+													><DownloadIcon/></IconButton>
 												</Box>
 										}
 
