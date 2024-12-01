@@ -8,7 +8,6 @@ const __dirname = 'C:\\Users\\i.kotov\\Desktop\\my_projects\\study_research\\wor
 function collectJavaFilesSync(dir) {
 	let files = [];
 	const entries = fs.readdirSync(dir, { withFileTypes: true });
-
 	for (const entry of entries) {
 		const fullPath = path.join(dir, entry.name);
 		if (entry.isDirectory()) {
@@ -17,7 +16,6 @@ function collectJavaFilesSync(dir) {
 			files.push(fullPath);
 		}
 	}
-
 	return files;
 }
 
@@ -33,9 +31,7 @@ function processFileInWorker({file, entropyLevel, sensitivityLevel}) {
 				reject(new Error(`Ошибка обработки файла ${message.file}: ${message.error}`)); // Обрабатываем ошибку
 			}
 		});
-
 		worker.on('error', reject);
-
 		worker.on('exit', (code) => {
 			if (code !== 0) {
 				reject(new Error(`Worker stopped with exit code ${code}`));
@@ -44,18 +40,15 @@ function processFileInWorker({file, entropyLevel, sensitivityLevel}) {
 	});
 }
 
-async function analyzeJavaApkCode(pathToDecompiledDex, entropyLevel = 4.6, sensitivityLevel = 3) {
+async function analyzeJavaApkCode(pathToDecompiledDex, maxThreads = 10, entropyLevel = 4.6, sensitivityLevel = 3) {
 	console.log(pathToDecompiledDex);
 
 	const javaFilenames = collectJavaFilesSync(pathToDecompiledDex);
-
-
 
 	const results = {}
 
 	// try {
 		// Обрабатываем файлы в несколько потоков
-		const maxThreads = 10;
 		const tasks = [];
 		for (const file of javaFilenames) {
 			tasks.push(
@@ -88,10 +81,6 @@ async function analyzeJavaApkCode(pathToDecompiledDex, entropyLevel = 4.6, sensi
 			Object.values(results)
 				.map(res => res.SecretsResult.length ? res.SecretsResult : undefined)
 				.filter(item => item !== undefined).filter(item => item.length > 0))
-	// } catch (error) {
-	// 	console.error(`Ошибка: ${error.message}`);
-	// }
-
 	return {
 		audited: true
 	};

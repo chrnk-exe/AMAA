@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { execSync } from 'child_process';
-import exp from 'node:constants';
 
 function getSignatureVersions(pathToApk: string): [boolean, boolean, boolean, boolean] {
 	let v1 = false, v2 = false, v3 = false, v4 = false;

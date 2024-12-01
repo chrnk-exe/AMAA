@@ -1,33 +1,52 @@
 const unsafePatterns = [
-	// Поиск вызова system
-	/system\s*\(/i,
+	// Вызов метода Runtime.getRuntime().exec()
+	/Runtime\.getRuntime\(\)\.exec\s*\(/i,
 
-	// Поиск использования exec или execSync (часто используется для выполнения команд)
-	/exec\s*\(/i,
-	/execSync\s*\(/i,
+	// Вызов ProcessBuilder
+	/new\s+ProcessBuilder\s*\(/i,
 
-	// Поиск вызова Runtime.exec()
-	/Runtime\.exec\s*\(/i,
+	// Вызов java.lang.System.setProperty
+	/System\.setProperty\s*\(/i,
 
-	// Поиск использования ProcessBuilder
-	/ProcessBuilder\s*\(/i,
+	// Использование Shell-команд через exec
+	/\.exec\s*\(/i,
 
-	// Поиск использования sudo, root или других ключевых слов, указывающих на привилегированные команды
+	// Вызов методов с потенциально небезопасными параметрами (например, SQL или HTTP)
+	/DriverManager\.getConnection\s*\(/i, // Подключение к базе данных
+	/URLConnection\.openConnection\s*\(/i, // Создание URL-соединения
+
+	// Использование команд с повышенными правами (sudo, root)
 	/\b(sudo|root|su)\b/i,
+
+	// Использование Android Log с утечкой данных (например, Log.d, Log.e)
+	// /Log\.[dweiv]\s*\(/i,
+
+	// Вызов небезопасных методов Android для выполнения системных команд
+	/ShellUtils\.execCommand\s*\(/i,
+	/Runtime\.exec\s*\(/i,
 ];
+
 
 // Функция для поиска небезопасных вызовов
 function findUnsafeCalls(code) {
 	const results = [];
+	const lines = code.split('\n'); // Разбиваем код на строки
 
-	unsafePatterns.forEach(pattern => {
-		const matches = code.match(pattern);
-		if (matches) {
-			results.push(...matches);
-		}
+	lines.forEach((line, index) => {
+		unsafePatterns.forEach((pattern) => {
+			if (pattern.test(line)) { // Если строка содержит совпадение
+				results.push({
+					line: index + 1, // Номер строки в файле
+					code: line.trim(), // Сама строка
+					pattern: pattern.source, // Регулярное выражение
+				});
+			}
+		});
 	});
 
 	return results;
 }
+
+
 
 module.exports = findUnsafeCalls;

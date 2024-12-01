@@ -1,6 +1,5 @@
 import { Database } from 'sqlite';
 
-
 export async function updateScanStatus(
 	db: Database,
 	scanId: number,

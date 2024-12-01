@@ -268,10 +268,12 @@ const manifestAnalyze = (pathToManifest) => {
 
 	const exportedEntities = getExportedEntities(application)
 
+	console.log(allIntentFilters)
+
 	return {
 		permissionsAnalyze: dangerousPermissionsInAPK,
 		exportedEntitiesAnalyze: exportedEntities,
-		intentFiltersAnalyze: intentFilters,
+		intentFiltersAnalyze: allIntentFilters,
 		criticalAttributesAnalyze: criticalAttributes,
 		SDKAnalyze: {dangerousTargetSDK, dangerousMinSDK}
 	};
@@ -279,5 +281,5 @@ const manifestAnalyze = (pathToManifest) => {
 };
 
 // manifestAnalyze('./files/AndroidManifestBank.xml')
-// manifestAnalyze('./files/AndroidManifestBSPB.xml')
+manifestAnalyze('./files/AndroidManifestBSPB.xml')
 export default manifestAnalyze;

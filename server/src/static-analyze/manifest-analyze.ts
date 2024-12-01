@@ -36,13 +36,14 @@ const dangerousPermissions: string[] = [
 	'READ_PHONE_NUMBERS'
 ];
 
-const extractIntents = (application: any): any[] => {
-	const allIntentFilters: any[] = [];
-	const categories: string[] = ['activities', 'services', 'receivers', 'providers'];
-	categories.forEach(category => {
-		application[category].forEach((item: any) => {
+const extractIntents = (application: Application): ChildNode[] => {
+	const allIntentFilters: ChildNode[] = [];
+	const categories: Array<keyof Application> = ['activities', 'services', 'receivers', 'providers'];
+
+	categories.forEach((category) => {
+		application[category].forEach((item: Component) => {
 			if (item.childNodes) {
-				item.childNodes.forEach((child: any) => {
+				item.childNodes.forEach((child: ChildNode) => {
 					if (child.nodeName === 'intent-filter') {
 						allIntentFilters.push(child);
 					}
@@ -54,18 +55,19 @@ const extractIntents = (application: any): any[] => {
 	return allIntentFilters;
 };
 
-const extractIntentFilterData = (intentFilterArray: any[]): any => {
+
+const extractIntentFilterData = (intentFilterArray: ChildNode[]): IntentFilterData => {
 	const schemes: string[] = [];
 	const hosts: string[] = [];
 	const paths: string[] = [];
 	const pathPrefixes: string[] = [];
 	const pathPatterns: string[] = [];
 
-	intentFilterArray.forEach(intentFilter => {
+	intentFilterArray.forEach((intentFilter) => {
 		if (intentFilter.nodeName === 'intent-filter' && intentFilter.childNodes) {
-			intentFilter.childNodes.forEach((childNode: any) => {
+			intentFilter.childNodes.forEach((childNode) => {
 				if (childNode.nodeName === 'data' && childNode.attributes) {
-					childNode.attributes.forEach((attribute: any) => {
+					childNode.attributes.forEach((attribute) => {
 						const name = attribute.nodeName;
 						const value = attribute.value;
 
@@ -89,10 +91,11 @@ const extractIntentFilterData = (intentFilterArray: any[]): any => {
 	return { schemes, hosts, paths, pathPrefixes, pathPatterns };
 };
 
-const getExportedEntities = (application: any): any[] => {
-	const exportedEntities: any[] = [];
 
-	const categories: string[] = ['activities', 'services', 'receivers', 'providers'];
+const getExportedEntities = (application: any): any[] => {
+	const exportedEntities: ExportedEntity[] = [];
+
+	const categories: Array<keyof Application> = ['activities', 'services', 'receivers', 'providers'];
 	categories.forEach(category => {
 		application[category].forEach((component: any) => {
 			const exportedAttribute = component.attributes.find((attr: any) => attr.nodeName === 'exported');
@@ -113,7 +116,7 @@ const getExportedEntities = (application: any): any[] => {
 	return exportedEntities;
 };
 
-const manifestAnalyze = (pathToManifest: string): any => {
+const manifestAnalyze = (pathToManifest: string): ManifestAnalyzeResult => {
 	const dangerousPermissionsInAPK: string[] = [];
 
 	const dangerousMinSDK = {
@@ -137,10 +140,16 @@ const manifestAnalyze = (pathToManifest: string): any => {
 	const data = fs.readFileSync(pathToManifest);
 	const reader = new BinaryXML(data);
 	const document = reader.parse();
-	let packageName;
+	let packageName = 'app.example.app';
+	let version: string | undefined;
 
 	if(document.attributes){
-		packageName = document.attributes.find((attr) => attr.nodeName === 'package')?.typedValue.value;
+		console.log(document.attributes);
+		const pkg = document.attributes.find((attr) => attr.nodeName === 'package')?.typedValue.value.toString();
+		if (pkg) {
+			packageName = pkg;
+		}
+		version = document.attributes.find((attr) => attr.nodeName === 'versionName')?.typedValue.value.toString();
 	}
 	const childNodes = document.childNodes;
 
@@ -218,18 +227,15 @@ const manifestAnalyze = (pathToManifest: string): any => {
 
 	const intentFilters = extractIntents(application);
 	const allIntentFilters = extractIntentFilterData(intentFilters);
-	console.log(allIntentFilters);
-
 	isHttpInSchemes = allIntentFilters.schemes.includes('http');
-
 	const exportedEntities = getExportedEntities(application);
-	console.log(exportedEntities);
 
 	return {
 		packageName,
+		version,
 		permissionsAnalyze: dangerousPermissionsInAPK,
 		exportedEntitiesAnalyze: exportedEntities,
-		intentFiltersAnalyze: intentFilters,
+		intentFiltersAnalyze: allIntentFilters,
 		criticalAttributesAnalyze: criticalAttributes,
 		SDKAnalyze: { dangerousTargetSDK, dangerousMinSDK },
 		isHttpInSchemes

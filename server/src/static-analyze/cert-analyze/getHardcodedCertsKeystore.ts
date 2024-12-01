@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import certFindings from '../utils/findingTypes';
 
 /**
  * Returns the hardcoded certificate keystore.
@@ -7,10 +8,10 @@ import path from 'path';
  * @param {string[]} files - List of file paths in the APK.
  * @returns {Array} List of findings with hardcoded certificates or keystores.
  */
-export default function getHardcodedCertKeystore(files: string[]): Array<{ finding: string; files: string[] }> {
+export default function getHardcodedCertKeystore(files: string[]): Array<{ finding: certFindings; files: string[] }> {
 	try {
 		console.info('Getting Hardcoded Certificates/Keystores');
-		const findings: Array<{ finding: string; files: string[] }> = [];
+		const findings: Array<{ finding: certFindings; files: string[] }> = [];
 		const certz: string[] = [];
 		const keyStore: string[] = [];
 
@@ -31,7 +32,7 @@ export default function getHardcodedCertKeystore(files: string[]): Array<{ findi
 		// Если найдены сертификаты, добавляем их в отчёт
 		if (certz.length > 0) {
 			findings.push({
-				finding: 'Certificate/Key files hardcoded inside the app.',
+				finding: certFindings.HardcodedCertOrKey,
 				files: certz
 			});
 		}
@@ -39,7 +40,7 @@ export default function getHardcodedCertKeystore(files: string[]): Array<{ findi
 		// Если найдены хранилища ключей, добавляем их в отчёт
 		if (keyStore.length > 0) {
 			findings.push({
-				finding: 'Hardcoded Keystore found.',
+				finding: certFindings.HardcodedKeystore,
 				files: keyStore
 			});
 		}

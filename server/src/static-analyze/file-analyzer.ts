@@ -1,14 +1,11 @@
 import fs from 'fs';
 import path from 'path';
-// import * as worker_threads from 'worker_threads';
 import {Worker} from 'node:worker_threads';
 
-// const __dirname = 'C:\\Users\\i.kotov\\Desktop\\my_projects\\study_research\\work\\server\\src\\static-analyze';
 
 function collectJavaFilesSync(dir: string) {
 	let files: string[] = [];
 	const entries = fs.readdirSync(dir, { withFileTypes: true });
-
 	for (const entry of entries) {
 		const fullPath = path.join(dir, entry.name);
 		if (entry.isDirectory()) {
@@ -17,15 +14,13 @@ function collectJavaFilesSync(dir: string) {
 			files.push(fullPath);
 		}
 	}
-
 	return files;
 }
 
 // Функция для обработки файла в воркере
-function processFileInWorker(filePath: string): Promise<{ file: string; result: object }> {
+function processFileInWorker(filePath: string, entropyLevel: number, sensitivityLevel: number, appendAllVarStrings: boolean): Promise<{ file: string; result: object }> {
 	return new Promise((resolve, reject) => {
-		const worker = new Worker(path.join(__dirname, 'analyzeFile.js'), { workerData: filePath });
-
+		const worker = new Worker(path.join(__dirname, 'analyzeFile.js'), { workerData: { file: filePath, entropyLevel, sensitivityLevel } });
 		worker.on('message', (message) => {
 			if (message.success) {
 				resolve({ file: message.file, result: message.result }); // Возвращаем результат анализа
@@ -33,9 +28,7 @@ function processFileInWorker(filePath: string): Promise<{ file: string; result: 
 				reject(new Error(`Ошибка обработки файла ${message.file}: ${message.error}`)); // Обрабатываем ошибку
 			}
 		});
-
 		worker.on('error', reject);
-
 		worker.on('exit', (code) => {
 			if (code !== 0) {
 				reject(new Error(`Worker stopped with exit code ${code}`));
@@ -44,19 +37,16 @@ function processFileInWorker(filePath: string): Promise<{ file: string; result: 
 	});
 }
 
-async function analyzeJavaApkCode(pathToDecompiledDex: string, threads = 4) {
-	console.log(pathToDecompiledDex);
-
+// ВОТ ЭТА ФУНКЦИЯ ИМПОРТИРУЕТСЯ
+async function analyzeJavaApkCode(pathToDecompiledDex: string, threads = 10, entropyLevel = 4.6, sensitivityLevel = 3, appendAllVarStrings = true) {
 	const javaFilenames = collectJavaFilesSync(pathToDecompiledDex);
-
 	const results: Record<string, object> = {};
-
 	try {
 		// Обрабатываем файлы в несколько потоков
 		const tasks = [];
 		for (const file of javaFilenames) {
 			tasks.push(
-				processFileInWorker(file).then(({ file, result }) => {
+				processFileInWorker(file, entropyLevel, sensitivityLevel, appendAllVarStrings).then(({ file, result }) => {
 					results[file] = result; // Сохраняем результат
 				})
 			);
@@ -66,18 +56,14 @@ async function analyzeJavaApkCode(pathToDecompiledDex: string, threads = 4) {
 			}
 		}
 
+		
 		// Дожидаемся завершения оставшихся задач
 		await Promise.all(tasks);
-
-		console.log('Все файлы обработаны.');
-		console.log(results);
 	} catch (error) {
-		console.error('Ошибка!');
+		return false;
 	}
 
-	return {
-		audited: true
-	};
+	return results as unknown as CodeAuditResult;
 }
 
 
