@@ -91,6 +91,10 @@ function AppRoutes() {
 			dispatch(addConsoleState(data));
 		});
 
+		socket.on('staticAnalyzeEv', (data: string) => {
+			console.log(data);
+		});
+
 
 
 
@@ -108,9 +112,7 @@ function AppRoutes() {
 			<Routes>
 				<Route path="/main" element={<AppPage devices={[]}/>}/>
 				<Route path="/device" element={<Analyze/>}/>
-				<Route path="/testing" element={<Testing/>}>
-					<Route path="/testing/1" element={<Testing/>}/>
-				</Route>
+				<Route path="/scanFS" element={<Testing/>}/>
 				<Route path={'/filesystem'} element={<AppFiles/>}>
 					<Route path={'/filesystem/:path'} element={<Files/>}/>
 				</Route>

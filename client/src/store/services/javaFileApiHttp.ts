@@ -175,6 +175,9 @@ export const javaFilesApi = createApi({
 					return { error: undefined, data: undefined };
 				}
 			}
+		}),
+		scanFS: build.query<void, string>({
+			query: (packageName) => `/${packageName}/scan`
 		})
 	}),
 
@@ -189,5 +192,6 @@ export const {
 	useReadFileMutation,
 	useEditFileMutation,
 	useDownloadDirectoryMutation,
-	useDownloadFileMutation
+	useDownloadFileMutation,
+	useLazyScanFSQuery
 } = javaFilesApi;
