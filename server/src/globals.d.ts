@@ -18,3 +18,96 @@ interface FileInfoFrida {
 	writeable: boolean;    // Доступен ли файл для записи
 	executable: boolean;   // Доступен ли файл для выполнения
 }
+
+interface Application {
+	activities: Component[];
+	services: Component[];
+	receivers: Component[];
+	providers: Component[];
+}
+
+interface Component {
+	attributes: Attribute[];
+	childNodes: ChildNode[];
+}
+
+interface ExportedEntity {
+	category: string;
+	name: string;
+}
+
+interface Attribute {
+	nodeName: string;
+	typedValue: {
+		value: boolean;
+	};
+	value?: string;
+}
+
+interface ChildNode {
+	nodeName: string;
+	attributes: Attribute[]
+}
+
+interface IntentFilterData {
+	schemes: string[];
+	hosts: string[];
+	paths: string[];
+	pathPrefixes: string[];
+	pathPatterns: string[];
+}
+
+type CriticalAttributes = {
+	debuggable: boolean,
+	allowBackup: boolean,
+	usesCleartextTraffic: boolean
+}
+
+interface ManifestAnalyzeResult {
+	packageName: string;
+	version?: string;
+	permissionsAnalyze: string[];
+	exportedEntitiesAnalyze: ExportedEntity[];
+	intentFiltersAnalyze: IntentFilterData;
+	criticalAttributesAnalyze: CriticalAttributes;
+	SDKAnalyze: {
+		dangerousTargetSDK: SDKAnalyze;
+		dangerousMinSDK: SDKAnalyze;
+	};
+	isHttpInSchemes: boolean;
+}
+
+interface stringTypes {
+	STRING: 'string',
+	HIGH_ENTROPY:'high_entropy',
+	REGEX: 'regex',
+	SUS_WORD: 'sus_word'
+}
+
+interface CodeAuditResult {
+	filename: string
+	codeLength: number
+	analyzed: boolean
+	domainResult: {
+		domains: string[]
+	}
+	SQLResult: {
+		sqlQueries: string[]
+	}
+	SecretsResult: {
+		type: 'string' | 'high_entropy' | 'regex' | 'sus_word'
+		data: string
+		value?: number
+		keyword?: string
+	}[],
+	unsafeMethods: {
+		line: number
+		code: string
+		pattern: string
+	}[],
+	weakCrypto: {
+		algorithm: string,
+		line: number, // Номер строки
+		code: string, // Содержимое строки
+	}[]
+}

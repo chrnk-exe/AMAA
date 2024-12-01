@@ -1,6 +1,7 @@
 import express, {Express, Response, Request, NextFunction} from 'express';
 import cookieParser from 'cookie-parser';
 import {Server} from 'socket.io';
+import path from 'path';
 import cors from 'cors';
 import {createServer} from 'http';
 import deviceController from './controllers/deviceController';
@@ -9,13 +10,22 @@ import deviceRoute from './routes/http/devicesApi';
 import appRoutes from './routes/http/appApi';
 import shellRoutes from './routes/http/shellApiHttp';
 import processRoutes from './routes/http/processApi';
-import staticAnalyzeRoute from './routes/http/staticAnalyzeRoute';
 import SocketSingleton from './utils/socketSingleton';
 import filesOverFridaApi from './routes/http/filesOverFridaApi';
+import { initializeDatabase } from './db/init';
+import DB_PATH from './db/DB_PATH';
+import multer from 'multer';
+import fs from 'fs';
+import staticAnalyze from './static-analyze/static-analyze';
 
 
 const app: Express = express();
 const server = createServer(app);
+
+
+const DB = initializeDatabase(DB_PATH);
+
+
 
 SocketSingleton.configure(server, {
 	cors: {
@@ -51,13 +61,35 @@ if (SocketSingleton.io) {
 	});
 }
 
+const upload = multer({ dest: './static-analyze/raw_apks' }); // путь относительно app.ts
+
+app.post('/api/static-analyze', upload.single('file') , async (req: Request, res: Response) => {
+	console.log(req.file);
+	if( req.file ) {
+		const name = req.file.originalname;
+		const path = req.file.path;
+		const data = fs.readFileSync(path);
+
+		fs.appendFileSync(`./static-analyze/apks/${name}`, data);
+
+
+
+		if (SocketSingleton.io) {
+			staticAnalyze(`./static-analyze/apks/${name}`, await DB);
+			res.status(200).send();
+		} else {
+			res.status(500).send();
+		}
+	}
+});
+
+
 /**
  * Api main route
  * deviceRoute - with no cookie
  * app, shell, testing, (files) routes - only with cookie deviceId
  */
 app.use('/api',
-	staticAnalyzeRoute,
 	deviceRoute,
 	deviceController,
 	filesOverFridaApi,
