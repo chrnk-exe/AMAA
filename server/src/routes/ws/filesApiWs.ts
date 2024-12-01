@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import myCookieParse from '../../utils/cookieParse';
+import myCookieParse from '../../globalUtils/cookieParse';
 import DeviceFileBrowser from './DeviceFileBrowser';
 
 // emit events:

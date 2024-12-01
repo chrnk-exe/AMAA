@@ -3,9 +3,9 @@ import getDeviceApps from '../../frida-services/getDeviceApps';
 import getDeviceProcesses from '../../frida-services/getDeviceProcesses';
 import spawnApplication from '../../frida-services/spawnApplication';
 import applicationController from '../../controllers/applicationController';
-import SocketSingleton from '../../utils/socketSingleton';
+import SocketSingleton from '../../globalUtils/socketSingleton';
 import getApkFile from '../../frida-services/getApkFile.js';
-import { getAvailableScripts, getScriptByName } from '../../utils/scripts';
+import { getAvailableScripts, getScriptByName } from '../../globalUtils/scripts';
 
 
 

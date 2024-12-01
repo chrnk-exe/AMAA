@@ -138,10 +138,10 @@ export async function initializeDatabase(DB_PATH: string) {
 		CREATE TABLE IF NOT EXISTS high_entropy_strings (
 		  id INTEGER PRIMARY KEY AUTOINCREMENT,
 		  static_result_id INTEGER NOT NULL,
-		  string TEXT NOT NULL,
-		  entropy REAL, -- Делается необязательной
-		  string_type TEXT NOT NULL CHECK (string_type IN ('string', 'high_entropy', 'regex', 'sus_word')), -- Добавляем тип строки
 		  file_path TEXT NOT NULL,
+		  entropy REAL, -- Делается необязательной
+		  string TEXT NOT NULL,
+		  string_type TEXT NOT NULL CHECK (string_type IN ('string', 'high_entropy', 'regex', 'sus_word')), -- Добавляем тип строки
 		  FOREIGN KEY (static_result_id) REFERENCES static_results (id)
 		);
 
@@ -161,8 +161,9 @@ export async function initializeDatabase(DB_PATH: string) {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         dynamic_result_id INTEGER NOT NULL,
         file_path TEXT NOT NULL,
-        secret TEXT NOT NULL,
-        comment TEXT,
+        entropy REAL, -- Делается необязательной
+        string TEXT NOT NULL,
+        string_type TEXT NOT NULL CHECK (string_type IN ('string', 'high_entropy', 'regex', 'sus_word')), -- Добавляем тип строки
         FOREIGN KEY (dynamic_result_id) REFERENCES dynamic_results (id)
       );
     `);

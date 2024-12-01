@@ -1,22 +1,22 @@
 import express, {Express, Response, Request, NextFunction} from 'express';
 import cookieParser from 'cookie-parser';
 import {Server} from 'socket.io';
-import path from 'path';
 import cors from 'cors';
 import {createServer} from 'http';
 import deviceController from './controllers/deviceController';
-import onConnection from './utils/onConnection';
+import onConnection from './globalUtils/onConnection';
 import deviceRoute from './routes/http/devicesApi';
 import appRoutes from './routes/http/appApi';
 import shellRoutes from './routes/http/shellApiHttp';
 import processRoutes from './routes/http/processApi';
-import SocketSingleton from './utils/socketSingleton';
 import filesOverFridaApi from './routes/http/filesOverFridaApi';
+import SocketSingleton from './globalUtils/socketSingleton';
 import { initializeDatabase } from './db/init';
 import DB_PATH from './db/DB_PATH';
 import multer from 'multer';
 import fs from 'fs';
 import staticAnalyze from './static-analyze/static-analyze';
+import dynamicAnalyze from './dynamic-analyze/dynamicAnalyze';
 
 
 const app: Express = express();
@@ -69,11 +69,7 @@ app.post('/api/static-analyze', upload.single('file') , async (req: Request, res
 		const name = req.file.originalname;
 		const path = req.file.path;
 		const data = fs.readFileSync(path);
-
 		fs.appendFileSync(`./static-analyze/apks/${name}`, data);
-
-
-
 		if (SocketSingleton.io) {
 			staticAnalyze(`./static-analyze/apks/${name}`, await DB);
 			res.status(200).send();
@@ -81,6 +77,14 @@ app.post('/api/static-analyze', upload.single('file') , async (req: Request, res
 			res.status(500).send();
 		}
 	}
+});
+
+app.get('/api/dynamic-analyze/:packageName',  async (req: Request, res: Response) => {
+	const { packageName } = req.params;
+	const { deviceId } = req.cookies;
+	const result = dynamicAnalyze(packageName, deviceId, await DB);
+
+	res.status(200).send();
 });
 
 

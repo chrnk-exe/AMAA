@@ -33,6 +33,8 @@ swagger/
 /server/src/static-analyze/files/
 /server/src/static-analyze/decompiled/
 /server/src/static-analyze./
+
+/server/src/dynamic-analyze/package-files
 /server/src/test/
 
 npm-debug.log*

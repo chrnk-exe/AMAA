@@ -1,15 +1,16 @@
 import {Router, Request, Response } from 'express';
-import { Session } from 'frida';
-import * as frida from 'frida';
+import { Script, Session } from 'frida';
 import fs from 'fs';
-import fileType from 'file-type';
-import { join, relative } from 'path';
-import spawnApplication from '../../frida-services/spawnApplication';
+import { join } from 'path';
 import JSZip from 'jszip';
+import createSession from '../../globalUtils/createFridaSession';
+import { ls } from '../../globalUtils/filesOverFridaUtils/ls';
+import {readAnyFile} from '../../globalUtils/filesOverFridaUtils/readFile';
+import {addFilesToZip} from '../../globalUtils/filesOverFridaUtils/addFilesToZip';
 
 const router = Router();
 
-const fridaScriptCommands = {
+export const fridaScriptCommands = {
 	readFile: 'readFile',
 	ls: 'ls',
 	isFile: 'isFile',
@@ -34,14 +35,6 @@ interface RpcResponse<T = any> {
 
 // Сессии Frida хранятся в памяти
 const sessions: Map<string, Session> = new Map();
-
-const createSession = async (identifier: string, deviceId: string) => {
-	const { pid, device } = await spawnApplication(deviceId, identifier);
-	const currentPid = +(await pid);
-	await device.resume(currentPid);
-	const session = await device.attach(currentPid);
-	return session;
-};
 
 // Основной маршрут для команд
 router.post('/package/:identifier', async (req: Request, res: Response) => {
@@ -178,68 +171,11 @@ router.post('/package/:identifier/download-directory', async (req: Request, res:
 		const scriptContent = fs.readFileSync(fridaBrowserPath, 'utf-8');
 		const currentSession = sessions.get(identifier);
 		if (currentSession) {
-			const script = await currentSession.createScript(scriptContent);
+			const script: Script = await currentSession.createScript(scriptContent);
 			await script.load();
 
-			const ls = (path: string): Promise<LsResponseFrida> => {
-				return script.exports[fridaScriptCommands.ls](...([path] || []));
-			};
-
-			const readAnyFile = async (file: FileInfoFrida) => {
-				const { path, size } = file;
-				if (+size === 0) {
-					return Buffer.from('0');
-				}
-				const chunkSize = 8 * 1024 * 1024;
-				const downloadableSize = +size + 1;
-				const chunks = Math.ceil(downloadableSize / chunkSize);
-				if (chunks > 1) {
-					const buffers = [];
-
-					for (let chunkNumber = 0; chunkNumber < chunks; chunkNumber++) {
-						const offset = chunkSize * chunkNumber;
-						const chunk = await script.exports[fridaScriptCommands.readFile](...([path, chunkSize, offset] || []));
-						buffers.push(chunk);
-					}
-					return Buffer.concat(buffers);
-				} else {
-					return await script.exports[fridaScriptCommands.readFile](...([path, downloadableSize] || []));
-				}
-			};
-
-
-			const addFilesToZip = async (
-				zip: JSZip,
-				path: string,
-				listFunction: (path: string) => Promise<LsResponseFrida>,
-				readFunction: (file: FileInfoFrida) => Promise<Buffer> ) => 
-			{
-				const directoryInfo = await listFunction(path);
-
-				if (!directoryInfo.readable) {
-					console.warn(`Директория ${path} недоступна для чтения`);
-					return;
-				}
-
-				for (const file of directoryInfo.files) {
-					const relativePath = relative(directoryInfo.path, file.path);
-					if (file.isFile && file.readable) {
-						// Читаем содержимое файла
-						const fileData = await readFunction(file);
-						// Добавляем файл в архив
-						zip.file(relativePath, Buffer.from(fileData));
-					} else if (file.isDirectory) {
-						// Рекурсивно обрабатываем директории
-						const folder = zip.folder(relativePath);
-						if (folder) {
-							await addFilesToZip(folder, file.path, listFunction, readFunction);
-						}
-					}
-				}
-
-			};
 			const zip = new JSZip();
-			await addFilesToZip(zip, path, ls, readAnyFile);
+			await addFilesToZip(zip, path, ls, readAnyFile, script);
 			const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
 
 			const archName = `${path.split('/')[path.split('/').length - 1]}.zip`;

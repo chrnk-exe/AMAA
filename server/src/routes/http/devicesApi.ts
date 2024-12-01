@@ -1,8 +1,8 @@
 import {Router, Response, Request} from 'express';
 import {enumerateDevices} from 'frida';
-import SocketSingleton from '../../utils/socketSingleton';
+import SocketSingleton from '../../globalUtils/socketSingleton';
 import fs from 'fs';
-import { getAvailableScripts } from '../../utils/scripts';
+import { getAvailableScripts } from '../../globalUtils/scripts';
 
 // creating folders
 

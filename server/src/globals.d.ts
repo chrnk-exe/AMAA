@@ -1,10 +1,18 @@
 declare type enumerateTypes = 'apps' | 'processes'
 
+type DbQueryResponseJava = Array<Array<string>>
+
 interface LsResponseFrida {
 	path: string;          // Путь к директории
 	readable: boolean;     // Может ли процесс читать директорию
 	writeable: boolean;    // Может ли процесс записывать в директорию
 	files: FileInfoJava[]; // Список файлов в директории
+}
+
+interface PackageInfoResponseJava {
+	package_name: string;  // Имя пакета приложения
+	package_version: string; // Версия приложения
+	directories: DirectoryInfoJava[]; // Список директорий, связанных с приложением
 }
 
 interface FileInfoFrida {
@@ -82,6 +90,13 @@ interface stringTypes {
 	HIGH_ENTROPY:'high_entropy',
 	REGEX: 'regex',
 	SUS_WORD: 'sus_word'
+}
+
+interface secretResult {
+	type: 'string' | 'high_entropy' | 'regex' | 'sus_word'
+	data: string
+	value?: number
+	keyword?: string
 }
 
 interface CodeAuditResult {

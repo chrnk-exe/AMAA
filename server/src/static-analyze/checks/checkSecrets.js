@@ -90,7 +90,7 @@ module.exports = function findSensitiveData(
 				const regex = new RegExp(`\\b${word}\\b`, 'gi'); // Ищем слово в контексте строки
 				if (regex.test(line)) { // Если слово найдено в строке
 					foundData.push({
-						type: 'suspicious_word',
+						type: 'sus_word',
 						data: line.trim(),
 						keyword: word, // Сохраняем ключевое слово, которое вызвало подозрение
 					});

@@ -1,6 +1,6 @@
 import {Server, Socket} from 'socket.io';
 import {ChildProcess, fork} from 'child_process';
-import myCookieParse from '../../utils/cookieParse';
+import myCookieParse from '../../globalUtils/cookieParse';
 
 interface shell {
 	subprocess: ChildProcess;

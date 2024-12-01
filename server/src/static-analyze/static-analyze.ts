@@ -19,7 +19,7 @@ import certAnalyze from './cert-analyze/cert-analyze';
 import fileAnalyzer from './file-analyzer';
 import getHardcodedCertKeystore from './cert-analyze/getHardcodedCertsKeystore';
 
-import SocketSingleton from '../utils/socketSingleton';
+import SocketSingleton from '../globalUtils/socketSingleton';
 
 import { writeFile } from 'fs/promises';
 
