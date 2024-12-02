@@ -63,7 +63,7 @@ async function analyzeJavaApkCode(pathToDecompiledDex: string, threads = 10, ent
 		return false;
 	}
 
-	return results as unknown as CodeAuditResult;
+	return results as unknown as Record<string, CodeAuditResult>;
 }
 
 

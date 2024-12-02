@@ -16,7 +16,7 @@ const unsafePatterns = [
 	/URLConnection\.openConnection\s*\(/i, // Создание URL-соединения
 
 	// Использование команд с повышенными правами (sudo, root)
-	/\b(sudo|root|su)\b/i,
+	/\b(sudo|su)\b/i,
 
 	// Использование Android Log с утечкой данных (например, Log.d, Log.e)
 	// /Log\.[dweiv]\s*\(/i,

@@ -21,11 +21,31 @@ export const scanApi = createApi({
 		startDynamicAnalyze: build.query<void, string>({
 			query: (packageName) => `/dynamic-analyze/${packageName}`
 		}),
-		getDynamicAnalyzeReport: build.query<void, number>({
-			query: (scanId) => `/dynamic-analyze/report/${scanId}`
+		getDynamicAnalyzeReport: build.query<Blob, number>({
+			query: (scanId) => ({
+				url: `/dynamic-analyze/report/${scanId}`,
+				method: 'GET',
+				responseHandler: async (response) => {
+					// Проверяем, что ответ содержит бинарные данные (PDF)
+					if (!response.ok) {
+						throw new Error('Failed to fetch PDF report');
+					}
+					return await response.blob(); // Возвращаем Blob для обработки на клиенте
+				},
+			})
 		}),
-		getStaticAnalyzeReport: build.query<void, number>({
-			query: (scanId) => `/static-analyze/report/${scanId}`
+		getStaticAnalyzeReport: build.query<Blob, number>({
+			query: (scanId) => ({
+				url: `/static-analyze/report/${scanId}`,
+				method: 'GET',
+				responseHandler: async (response) => {
+					// Проверяем, что ответ содержит бинарные данные (PDF)
+					if (!response.ok) {
+						throw new Error('Failed to fetch PDF report');
+					}
+					return await response.blob(); // Возвращаем Blob для обработки на клиенте
+				},
+			})
 		})
 	}),
 });

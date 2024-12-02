@@ -144,7 +144,6 @@ const manifestAnalyze = (pathToManifest: string): ManifestAnalyzeResult => {
 	let version: string | undefined;
 
 	if(document.attributes){
-		console.log(document.attributes);
 		const pkg = document.attributes.find((attr) => attr.nodeName === 'package')?.typedValue.value.toString();
 		if (pkg) {
 			packageName = pkg;

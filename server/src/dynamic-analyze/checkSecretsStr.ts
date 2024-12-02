@@ -9,11 +9,12 @@ import {
 } from '../static-analyze/checks/regexes';
 
 const suspiciousWords = [
-	'secret', 'password', 'api_key', 'access_token', 'private_key', 'credentials',
+	'secret', 'password', 'api_key', 'access_token', 'private_key',
 	'apikey', 'client_secret', 'auth_token', 'authorization', 'confidential',
-	'token', 'key', 'login', 'user', 'username', 'secret_key', 'oauth', 'user_token',
-	'access', 'private_data', 'app_secret', 'salt', 'hash', 'login_data', 'login_info',
-	'authentication', 'user_secret', 'encryption', 'decrypt', 'protected', 'login_pass',
+	'secret_key',
+	'private_data', 'app_secret',
+	'authentication', 'user_secret', 'encryption',
+	'Bearer'
 ];
 
 export const checkSecretsStr = (str: string, entropyLevel = 4.5): secretResult[] => {

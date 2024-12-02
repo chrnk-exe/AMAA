@@ -5,7 +5,7 @@ import SocketSingleton from '../../globalUtils/socketSingleton';
 import staticAnalyze from '../../static-analyze/static-analyze';
 import { db } from '../../db/init';
 import dynamicAnalyze from '../../dynamic-analyze/dynamicAnalyze';
-import createStaticAnalyzeReport from '../../static-analyze/createStaticAnalyzeReport';
+import createStaticAnalyzeReport from '../../static-analyze/report/createStaticAnalyzeReport';
 import createDynamicReport from '../../dynamic-analyze/createDynamicReport';
 import { getAllScans } from '../../db/services/scan/getScans';
 import deviceController from '../../controllers/deviceController';
@@ -37,16 +37,42 @@ router.post('/scans/static-analyze', upload.single('file') , async (req: Request
 
 router.get('/scans/static-analyze/report/:scanId',  async (req: Request, res: Response) => {
 	const { scanId } = req.params;
-	const PDFReport = createStaticAnalyzeReport(+scanId);
+	const PDFReportPath = await createStaticAnalyzeReport(+scanId);
 
-	res.status(200).send();
+	if (!fs.existsSync(PDFReportPath)) {
+		return res.status(404).send('Report not found');
+	}
+
+	// Отправляем файл
+	res.sendFile(PDFReportPath, (err) => {
+		if (err) {
+			console.error('Error sending file:', err);
+			res.status(500).send('Error sending the report');
+		} else {
+			console.log(`Report sent: ${PDFReportPath}`);
+		}
+	});
+	// res.status(200).send();
 });
 
 router.get('/scans/dynamic-analyze/report/:scanId',  async (req: Request, res: Response) => {
 	const { scanId } = req.params;
-	const PDFReport = createDynamicReport(+scanId);
+	const PDFReport = await createDynamicReport(+scanId);
 
-	res.status(200).send();
+	if (!fs.existsSync(PDFReport)) {
+		return res.status(404).send('Report not found');
+	}
+
+	// Отправляем файл
+	res.sendFile(PDFReport, (err) => {
+		if (err) {
+			console.error('Error sending file:', err);
+			res.status(500).send('Error sending the report');
+		} else {
+			console.log(`Report sent: ${PDFReport}`);
+		}
+	});
+	// res.status(200).send();
 });
 
 router.use(deviceController);

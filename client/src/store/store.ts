@@ -7,6 +7,7 @@ import downloadableFilesReducer from './slices/lsFS/downloadableFiles';
 import availableScripts from './slices/avaiableScripts';
 import fridaConsoleStateReducer from './slices/fridaConsoleState';
 import currentDeviceReducer from './slices/currentDeviceSlice';
+import scansReducer from './slices/scanStates';
 
 import dirReducer from './slices/lsFS/dirSlice';
 import fileReducer from './slices/lsFS/fileSlice';
@@ -39,6 +40,7 @@ export const store = configureStore({
 		javaFiles: javaFilesReducer,
 		packagePaths: javaPackagePathsReducer,
 		package: javaPackageInfoReducer,
+		scans: scansReducer,
 
 		[deviceApi.reducerPath]: deviceApi.reducer,
 		[appsApi.reducerPath]: appsApi.reducer,

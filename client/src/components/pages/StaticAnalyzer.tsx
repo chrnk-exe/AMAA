@@ -39,6 +39,8 @@ const VisuallyHiddenInput = styled('input')({
 	width: 1,
 });
 
+
+
 function StaticAnalyzer() {
 	const [file, setFile] = useState<File | null>(null);
 	const [selectedApp, setSelectedApp] = useState('');
@@ -46,6 +48,18 @@ function StaticAnalyzer() {
 	const {data} = useGetScansQuery();
 	const [getDynamicReport] = useLazyGetDynamicAnalyzeReportQuery();
 	const [getStaticReport] = useLazyGetStaticAnalyzeReportQuery();
+
+
+	const savePdf = (pdfBlob: Blob, scanId: number) => {
+		if (!pdfBlob) return;
+
+		const url = window.URL.createObjectURL(pdfBlob);
+		const a = document.createElement('a');
+		a.href = url;
+		a.download = `report_${scanId}.pdf`;
+		a.click();
+		window.URL.revokeObjectURL(url);
+	};
 
 	const handleChangeApp = (event: SelectChangeEvent<string>) => {
 		const {
@@ -56,6 +70,7 @@ function StaticAnalyzer() {
 	};
 
 	const apps = useAppSelector(state => state.apps.apps);
+	const {dynamicState, staticState} = useAppSelector(state => state.scans);
 
 	const [startStaticAnalyze] = useStartStaticAnalyzeMutation();
 	const [startDynamicAnalyze] = useLazyStartDynamicAnalyzeQuery();
@@ -76,12 +91,21 @@ function StaticAnalyzer() {
 		}
 	};
 
+	const handleDownloadDynamicReport = async (scanId: number) => {
+		const blob = await getDynamicReport(scanId).unwrap();
+		savePdf(blob, scanId);
+	};
+
+	const handleDownloadStaticReport = async (scanId: number) => {
+		const blob = await getStaticReport(scanId).unwrap();
+		savePdf(blob, scanId);
+	};
 
 
 	return (
 		<Box m={1} display={'flex'} justifyContent={'space-evenly'} alignItems={'center'} flexDirection={'column'}>
 			<Box display={'flex'} justifyContent={'space-evenly'} alignItems={'center'} sx={{width: '100%'}}>
-				<Box>
+				<Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} gap={2}>
 					<Typography variant={'h4'}>
 						Static analyzer
 					</Typography>
@@ -93,31 +117,34 @@ function StaticAnalyzer() {
 							multiple
 						/>
 					</Button>
+					<Typography>
+						{staticState}
+					</Typography>
 				</Box>
-				<Box>
+				<Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} gap={2}>
 					<Typography variant={'h4'}>
 						Dynamic analyzer
 					</Typography>
-					<FormControl fullWidth sx={{bgcolor: '#FFF'}}>
-						<InputLabel>Application</InputLabel>
-						<Select
-							value={selectedApp}
-							label="Application"
-							onChange={handleChangeApp}
-						>
-							{
-								apps.map(app => (<MenuItem key={app.identifier} value={app.identifier}>{app.name}</MenuItem>))
-							}
-						</Select>
-					</FormControl>
-					<Button onClick={() => startDynamicAnalyze(selectedApp)}>Start Dynamic Analyze </Button>
+					<Box display={'flex'} justifyContent={'center'} alignItems={'center'} gap={2} sx={{width: '100%'}}>
+						<FormControl fullWidth sx={{bgcolor: '#FFF'}}>
+							<InputLabel>Application</InputLabel>
+							<Select
+								value={selectedApp}
+								label="Select application"
+								onChange={handleChangeApp}
+							>
+								{
+									apps.map(app => (<MenuItem key={app.identifier} value={app.identifier}>{app.name}</MenuItem>))
+								}
+							</Select>
+						</FormControl>
+						<Button variant={'contained'} onClick={() => startDynamicAnalyze(selectedApp)}>Start Analyze </Button>
+					</Box>
+					<Typography>
+						{dynamicState}
+					</Typography>
 				</Box>
 			</Box>
-			{/*appName: string;
-	packageName: string;
-	version: string;
-	scanType: 'static' | 'dynamic';
-	status: 'in_process' | 'finished' | 'cancelled';*/}
 			<Box>
 				<Table>
 					<TableHead>
@@ -139,8 +166,8 @@ function StaticAnalyzer() {
 									<TableCell>{scanItem.scanType}</TableCell>
 									<TableCell>
 										<IconButton size={'large'} onClick={() => {
-											if (scanItem.scanType === 'static') getStaticReport(scanItem.id);
-											if (scanItem.scanType === 'dynamic') getDynamicReport(scanItem.id);
+											if (scanItem.scanType === 'static') handleDownloadStaticReport(scanItem.id);
+											if (scanItem.scanType === 'dynamic') handleDownloadDynamicReport(scanItem.id);
 										}}>
 											<DownloadIcon/>
 										</IconButton>

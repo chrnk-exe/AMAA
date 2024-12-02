@@ -35,6 +35,10 @@ swagger/
 /server/src/static-analyze./
 /server/src/db/analysis_results.sqlite
 /server/src/db/analysis_results.sqlite-journal
+/server/src/static-analyze/report/reports
+/server/src/dynamic-analyze/reports
+/server/src/static-analyze/report/reports/
+/server/src/dynamic-analyze/reports/
 unnamed.patch
 
 /server/src/dynamic-analyze/package-files

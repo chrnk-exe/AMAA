@@ -3,17 +3,16 @@ import { Database } from 'sqlite';
 export async function createHighEntropyString(
 	db: Database,
 	staticResultId: number,
+	filePath: string,
 	string: string,
-	entropy: number,
-	filePath: string
-): Promise<number> {
-	const result = await db.run(
+	stringType: 'string' | 'high_entropy' | 'regex' | 'sus_word',
+	entropy?: number
+): Promise<void> {
+	await db.run(
 		`
-      INSERT INTO high_entropy_strings (static_result_id, string, entropy, file_path)
-      VALUES (?, ?, ?, ?);
+    INSERT INTO high_entropy_strings (static_result_id, file_path, string, string_type, entropy)
+    VALUES (?, ?, ?, ?, ?);
     `,
-		[staticResultId, string, entropy, filePath]
+		[staticResultId, filePath, string, stringType, entropy ?? null]
 	);
-
-	return result.lastID as number; // Возвращаем ID строки с высокой энтропией
 }

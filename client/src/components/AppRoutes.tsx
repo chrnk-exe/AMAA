@@ -19,6 +19,7 @@ import HTTPSProxy from './pages/HTTPSProxy';
 import StaticAnalyzer from './pages/StaticAnalyzer';
 import AppFilesJava from './pages/AppFilesJava';
 import FilesJava from './pages/AppFilesJavaComponents/JavaFiles';
+import { setDynamicState, setStaticState } from '../store/slices/scanStates';
 
 function AppRoutes() {
 	const dispatch = useAppDispatch();
@@ -92,11 +93,11 @@ function AppRoutes() {
 		});
 
 		socket.on('staticAnalyzeEv', (data: string) => {
-			console.log(data);
+			dispatch(setStaticState(data));
 		});
 
 		socket.on('dynamicAnalyzeEv', (data: string) => {
-			console.log(data);
+			dispatch(setDynamicState(data));
 		});
 
 

@@ -100,7 +100,7 @@ interface secretResult {
 }
 
 interface CodeAuditResult {
-	filename: string
+	fileName: string
 	codeLength: number
 	analyzed: boolean
 	domainResult: {
@@ -126,3 +126,18 @@ interface CodeAuditResult {
 		code: string, // Содержимое строки
 	}[]
 }
+
+type ReportDetail = {
+	section: string; // Название секции
+	content: string[]; // Список строк с деталями секции
+};
+
+type ReportData = {
+	title: string; // Заголовок отчёта
+	date: string; // Дата генерации отчёта
+	summary: string; // Краткое описание
+	appName: string; // Название приложения
+	packageName: string; // Имя пакета
+	scanType: string; // Тип сканирования (static/dynamic)
+	details: ReportDetail[]; // Массив секций с их содержимым
+};
