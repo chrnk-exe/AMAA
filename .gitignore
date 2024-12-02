@@ -33,6 +33,7 @@ swagger/
 /server/src/static-analyze/files/
 /server/src/static-analyze/decompiled/
 /server/src/static-analyze./
+/server/src/db/analysis_results.sqlite
 
 /server/src/dynamic-analyze/package-files
 /server/src/test/
