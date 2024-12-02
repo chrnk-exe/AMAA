@@ -95,6 +95,10 @@ function AppRoutes() {
 			console.log(data);
 		});
 
+		socket.on('dynamicAnalyzeEv', (data: string) => {
+			console.log(data);
+		});
+
 
 
 
@@ -124,7 +128,7 @@ function AppRoutes() {
 				</Route>
 				<Route path="/custom-scripts" element={<FridaScripting />}/>
 				<Route path="/proxy" element={<HTTPSProxy />}/>
-				<Route path="/static-analyzer" element={<StaticAnalyzer />}/>
+				<Route path="/scanner" element={<StaticAnalyzer />}/>
 				<Route path="*" element={<Navigate to={'/main'}/>}/>
 
 			</Routes>

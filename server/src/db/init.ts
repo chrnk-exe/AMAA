@@ -2,6 +2,7 @@ import sqlite3 from 'sqlite3';
 import { open } from 'sqlite';
 import path from 'path';
 import fs from 'fs';
+import DB_PATH from './DB_PATH';
 
 export const stringTypes = {
 	STRING: 'string' as const,
@@ -26,7 +27,7 @@ export const hardcodedCertType = {
 	HARDCODED_KEYSTORE: 'keystore'  as const
 };
 
-export async function initializeDatabase(DB_PATH: string) {
+async function initializeDatabase(DB_PATH: string) {
 	// Проверяем и создаём директорию, если требуется
 	const dbDir = path.dirname(DB_PATH);
 	if (!fs.existsSync(dbDir)) {
@@ -179,4 +180,8 @@ export async function initializeDatabase(DB_PATH: string) {
 
 	return db;
 }
+
+export const db = initializeDatabase(DB_PATH);
+
+
 

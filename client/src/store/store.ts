@@ -23,6 +23,7 @@ import {fileApiWs} from './services/fileApiWs';
 import {processApi} from './services/processApi';
 import {staticAnalyzeApi} from './services/staticAnalyzeApi';
 import {javaFilesApi} from './services/javaFileApiHttp';
+import {scanApi} from './services/scanApi';
 
 export const store = configureStore({
 	reducer: {
@@ -46,7 +47,8 @@ export const store = configureStore({
 		[fileApiWs.reducerPath]: fileApiWs.reducer,
 		[processApi.reducerPath]: processApi.reducer,
 		[staticAnalyzeApi.reducerPath]: staticAnalyzeApi.reducer,
-		[javaFilesApi.reducerPath]: javaFilesApi.reducer
+		[javaFilesApi.reducerPath]: javaFilesApi.reducer,
+		[scanApi.reducerPath]: scanApi.reducer
 	},
 	middleware: getDefaultMiddleware =>
 		getDefaultMiddleware()
@@ -58,6 +60,7 @@ export const store = configureStore({
 			.concat(processApi.middleware)
 			.concat(javaFilesApi.middleware)
 			.concat(staticAnalyzeApi.middleware)
+			.concat(scanApi.middleware)
 	// .concat(qwe.middleware) // another middleware
 });
 

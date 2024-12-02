@@ -12,23 +12,26 @@ const {
 
 // Список подозрительных ключевых слов
 const suspiciousWords = [
-	'secret', 'password', 'api_key', 'access_token', 'private_key', 'credentials',
+	'secret', 'password', 'api_key', 'access_token', 'private_key',
 	'apikey', 'client_secret', 'auth_token', 'authorization', 'confidential',
-	'token', 'key', 'login', 'user', 'username', 'secret_key', 'oauth', 'user_token',
-	'access', 'private_data', 'app_secret', 'salt', 'hash', 'login_data', 'login_info',
-	'authentication', 'user_secret', 'encryption', 'decrypt', 'protected', 'login_pass',
+	'secret_key',
+	'private_data', 'app_secret',
+	'authentication', 'user_secret', 'encryption',
+	'Bearer'
 ];
 
 module.exports = function findSensitiveData(
 	code,
 	sensitivityLevel = 1,
-	entropyLevel = 3.5,
-	appendAllVarStrings = true) {
+	entropyLevel = 4.5,
+	appendAllVarStrings = false) {
 	const foundData = [];
 	const lines = code.split('\n');
 
 	// Уровень 1: Поиск строк с высокой энтропией
 	for (let line of lines) {
+		if (line.slice(0,2) === '//') continue;
+		if (line.includes('JADX INFO')) continue;
 		const matches = line.matchAll(STRINGS_REGEX); // Извлекаем строки из кавычек
 		for (let match of matches) {
 			const string = match[0];
@@ -74,7 +77,7 @@ module.exports = function findSensitiveData(
 				matches.forEach((match) => {
 					if (match) {
 						foundData.push({
-							type: type,
+							type: 'regex',
 							data: match.trim(),
 						});
 					}
@@ -86,6 +89,8 @@ module.exports = function findSensitiveData(
 	// Уровень 3: Поиск подозрительных слов в каждой строке
 	if (sensitivityLevel >= 3) {
 		lines.forEach((line) => {
+			if (line.slice(0,2) === '//') return;
+			if (line.includes('JADX INFO')) return;
 			suspiciousWords.forEach((word) => {
 				const regex = new RegExp(`\\b${word}\\b`, 'gi'); // Ищем слово в контексте строки
 				if (regex.test(line)) { // Если слово найдено в строке

@@ -26,10 +26,9 @@ export default async function(packageName: string, deviceId: string) {
 		}
 	}
 	for(const folderToScan of foldersToScan) {
+		console.log(`Scanning ${folderToScan}`);
 		const scanFolderResult = await scanCurrentFolder(script, folderToScan);
-		foundSecrets.concat(scanFolderResult);
+		foundSecrets.push(...scanFolderResult);
 	}
-
-
 	return foundSecrets;
 }

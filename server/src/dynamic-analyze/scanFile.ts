@@ -14,17 +14,27 @@ async function scanCurrentFile(content: Buffer): Promise<secretResult[]> {
 }
 
 export default async function scanFile(script: Script, file: FileInfoFrida) {
-	const content = Buffer.from(await readAnyFile(file, script));
+	let content;
+	try {
+		content = Buffer.from(await readAnyFile(file, script));
+	} catch {
+		console.log(`Error reading ${file.path}`);
+		return {
+			filename: file.path,
+			secrets: []
+		};
+	}
 	if (isSQLiteDB(content)) {
+		// console.log('Scanning DB:', file.path);
 		return {
 			filename: file.path,
 			secrets: await scanDatabase(script, file.path)
 		};
 	} else {
+		// console.log('Scanning File:', file.path);
 		return {
 			filename: file.path,
 			secrets: await scanCurrentFile(content)
 		};
 	}
-
 }

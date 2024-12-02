@@ -5,7 +5,7 @@ const BASE64_REGEX = /^[A-Za-z0-9+/]*={0,3}$/;
 const MD5_REGEX = /^[0-9a-f]{32}$/;
 
 // Регулярное выражение для строк в кавычках или в теге <string>
-const STRINGS_REGEX = /(?<=\")(.+?)(?=\")|(?<=\<string>)(.+?)(?=\<)/;
+const STRINGS_REGEX = /(?<=\")(.+?)(?=\")|(?<=\<string>)(.+?)(?=\<)/g;
 
 // Регулярное выражение для поиска URI-строк
 const URL_REGEX = /((?:https?:\/\/|s?ftps?:\/\/|file:\/\/|javascript:|data:|www\d{0,3}[.])[\w().=\/;,#:@?&~*+!$%'{}-]+)/;

@@ -16,7 +16,14 @@ interface Props {
 	open: boolean
 }
 
-export const NavigationList = [
+interface navItem {
+	text: string,
+	link: string,
+	icon: any,
+	subitems?: navItem[]
+}
+
+export const NavigationList: navItem[] = [
 	{
 		text: 'Main Page',
 		link: '/main',
@@ -27,21 +34,21 @@ export const NavigationList = [
 		link: '/device',
 		icon: <VideoSettingsIcon/>
 	},
-	{
-		text: 'Testing',
-		link: '/testing',
-		icon: <QuizIcon />,
-		subitems: Array.from([...Array(10).keys()], (x) => ({
-			link: `/testing/${x+1}`,
-			text: `M${x+1}`
-		}))
-
-	},
-	{
-		text: 'Pre-scan results',
-		link: '/pre-scan',
-		icon: <CompareArrowsIcon />
-	},
+	// {
+	// 	text: 'Testing',
+	// 	link: '/testing',
+	// 	icon: <QuizIcon />,
+	// 	subitems: Array.from([...Array(10).keys()], (x) => ({
+	// 		link: `/testing/${x+1}`,
+	// 		text: `M${x+1}`
+	// 	}))
+	//
+	// },
+	// {
+	// 	text: 'Pre-scan results',
+	// 	link: '/pre-scan',
+	// 	icon: <CompareArrowsIcon />
+	// },
 	{
 		text: 'Frida-scripting',
 		link: '/custom-scripts',
@@ -63,13 +70,13 @@ export const NavigationList = [
 		icon: <ArrowForwardIosIcon/>
 	},
 	{
-		text: 'Proxy',
+		text: 'Proxy (Arriving soon)',
 		link: '/proxy',
 		icon: <MultipleStopIcon/>
 	},
 	{
-		text: 'Static Analyzer',
-		link: '/static-analyzer',
+		text: 'Scanner',
+		link: '/scanner',
 		icon: <SourceIcon/>
 	}
 ];

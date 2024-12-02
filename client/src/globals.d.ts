@@ -190,4 +190,14 @@ interface RpcRequestJava {
 	args?: any[];         // Аргументы команды
 }
 
-
+interface ScanRecord {
+	id: number;
+	appName: string;
+	packageName: string;
+	version: string;
+	scanType: 'static' | 'dynamic';
+	status: 'in_process' | 'finished' | 'cancelled';
+	createdAt: string;
+	finishedAt: string | null;
+	currentStep: string | null;
+}
