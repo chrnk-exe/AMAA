@@ -22,9 +22,12 @@ const suspiciousWords = [
 
 module.exports = function findSensitiveData(
 	code,
-	sensitivityLevel = 1,
 	entropyLevel = 4.5,
-	appendAllVarStrings = false) {
+	includeHighEntropy,
+	includeKeywords,
+	includeRegexes,
+	includeAllStrings
+) {
 	const foundData = [];
 	const lines = code.split('\n');
 
@@ -39,7 +42,7 @@ module.exports = function findSensitiveData(
 				const entropy = calculateEntropy(string);
 
 				// Сохраняем строку и её энтропию
-				if (appendAllVarStrings) {
+				if (includeAllStrings) {
 					foundData.push({
 						type: 'string',
 						data: string.trim(),
@@ -48,7 +51,7 @@ module.exports = function findSensitiveData(
 				}
 
 				// Если уровень чувствительности ≥ 1 и энтропия выше порога
-				if (sensitivityLevel >= 1 && entropy > entropyLevel) {
+				if (includeHighEntropy && entropy > entropyLevel) {
 					foundData.push({
 						type: 'high_entropy',
 						data: string.trim(),
@@ -60,7 +63,7 @@ module.exports = function findSensitiveData(
 	}
 
 	// Уровень 2: Проверка регулярных выражений
-	if (sensitivityLevel >= 2) {
+	if (includeRegexes) {
 		const regexes = [
 			{ type: 'base64', regex: BASE64_REGEX },
 			{ type: 'md5', regex: MD5_REGEX },
@@ -87,7 +90,7 @@ module.exports = function findSensitiveData(
 	}
 
 	// Уровень 3: Поиск подозрительных слов в каждой строке
-	if (sensitivityLevel >= 3) {
+	if (includeKeywords) {
 		lines.forEach((line) => {
 			if (line.slice(0,2) === '//') return;
 			if (line.includes('JADX INFO')) return;

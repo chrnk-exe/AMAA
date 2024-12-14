@@ -23,7 +23,7 @@ const AppFiles = () => {
 			{/*Header*/}
 			<Box m={1}>
 				<Typography variant={'h6'}>Браузер файлов приложения</Typography>
-				<TextField onChange={(e) => setSearch(e.target.value)} placeholder={'Application name'} sx={{backgroundColor: '#fff'}}/>
+				<TextField onChange={(e) => setSearch(e.target.value)} placeholder={'Имя приложения'} sx={{backgroundColor: '#fff'}}/>
 			</Box>
 			{/*Applications*/}
 			<Box>

@@ -218,14 +218,20 @@ const JavaFiles = () => {
 		<Box display={'flex'} justifyContent={'center'} alignItems={'center'} flexDirection={'column'} >
 			{/*Header*/}
 			<Box>
-				<Typography variant={'h3'}>
-					{currentDevice} - {appIdentifier}
+				<Typography variant={'h4'}>
+					Файловый менеджер приложения
 				</Typography>
 			</Box>
 			{/*Main*/}
 			<Box sx={{maxWidth: '80%'}}>
-				<Typography>
-					Session status: {}
+				{/*<Typography>*/}
+				{/*	Состояние сессии: {}*/}
+				{/*</Typography>*/}
+				<Typography variant={'h6'}>
+					Текущее устройство: {currentDevice}
+				</Typography>
+				<Typography variant={'h6'}>
+					Текущее приложение: {appIdentifier}
 				</Typography>
 
 				<Typography variant={'h6'}>
@@ -261,15 +267,15 @@ const JavaFiles = () => {
 									</TableCell>
 									<TableCell>
 										<Box display={'flex'} flexDirection={'column'} gap={2}>
-											<Button variant={'contained'} onClick={() => onSelectApplicationPath(packageDirectory.path)}>
-												Select
+											<Button startIcon={<SearchIcon/>} variant={'contained'} onClick={() => onSelectApplicationPath(packageDirectory.path)}>
+												Открыть
 											</Button>
 											<Button
 												startIcon={<DownloadIcon/>}
 												variant={'contained'}
 												color={'info'}
 												onClick={() => onDownloadDirectoryHandler(packageDirectory.path)}>
-												Download
+												Скачать (.zip)
 											</Button>
 										</Box>
 
@@ -300,7 +306,14 @@ const JavaFiles = () => {
 						<TableCell>Последнее изменение</TableCell>
 						<TableCell>Размер</TableCell>
 						<TableCell>Флаги</TableCell>
-						<TableCell><Button onClick={() => onBackButtonClickHandler()} startIcon={<ArrowBackIcon/>}>Назад</Button></TableCell>
+						<TableCell>
+							<Button
+								variant={'contained'}
+								onClick={() => onBackButtonClickHandler()}
+								startIcon={<ArrowBackIcon/>}>
+								Назад
+							</Button>
+						</TableCell>
 					</TableHead>
 					<TableBody>
 						{

@@ -55,28 +55,28 @@ const DirectoryMenu: FC<props> = ({filename, onClose}) => {
 	const menuItems = [
 		{
 			onClickFunction: onOpenDirHandler,
-			text: 'Open',
+			text: 'Открыть',
 			icon: <FolderOpenIcon/>
 		},
 		{
 			onClickFunction: onCopyNameHandler,
-			text: 'Copy name',
+			text: 'Скопировать имя',
 			icon: <ContentCopyIcon/>
 		},
 		{
 			onClickFunction: onRemoveFolderHandler,
-			text: 'Remove',
+			text: 'Удалить',
 			icon: <ClearIcon sx={{color: 'red'}}/>,
 			color: 'red'
 		},
 		{
 			onClickFunction: onDownloadFolderHandler,
-			text: 'Download (tar.gz)',
+			text: 'Скачать (tar.gz)',
 			icon: <DownloadIcon/>,
 		},
 		{
 			onClickFunction: onRenameFolderHandler,
-			text: 'Rename',
+			text: 'Переименовать',
 			icon: <DriveFileRenameOutlineIcon/>
 		}
 	];

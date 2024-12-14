@@ -25,12 +25,12 @@ interface navItem {
 
 export const NavigationList: navItem[] = [
 	{
-		text: 'Main Page',
+		text: 'Главная',
 		link: '/main',
 		icon: <DescriptionIcon/>
 	},
 	{
-		text: 'Analyze',
+		text: 'Менеджер устройств',
 		link: '/device',
 		icon: <VideoSettingsIcon/>
 	},
@@ -50,32 +50,32 @@ export const NavigationList: navItem[] = [
 	// 	icon: <CompareArrowsIcon />
 	// },
 	{
-		text: 'Frida-scripting',
+		text: 'Дин. тестирование',
 		link: '/custom-scripts',
 		icon: <JavascriptIcon />
 	},
 	{
-		text: 'App files (ls)',
+		text: 'Файловый менеджер (ls)',
 		link: '/filesystem',
 		icon: <FolderIcon />
 	},
 	{
-		text: 'App files (Java)',
+		text: 'Файловый менеджер (Java)',
 		link: '/filesystemJava',
 		icon: <FolderIcon />
 	},
 	{
-		text: 'Shell exec',
+		text: 'Исполнение команд',
 		link: '/shellExec',
 		icon: <ArrowForwardIosIcon/>
 	},
 	{
-		text: 'Proxy (Arriving soon)',
+		text: 'Прокси-сервер',
 		link: '/proxy',
 		icon: <MultipleStopIcon/>
 	},
 	{
-		text: 'Scanner',
+		text: 'Сканнеры',
 		link: '/scanner',
 		icon: <SourceIcon/>
 	}
@@ -114,8 +114,8 @@ const NavigationBar: FC<Props> = ({open}) => {
 									}
 								}>
 									<ListItemButton onClick={() => navigate(item.link)} selected={item.link === location.pathname.split('/')[0]}>
-										<ListItemIcon>{item.icon}</ListItemIcon>
-										<ListItemText sx={{whiteSpace: 'nowrap'}}>{item.text}</ListItemText>
+										<ListItemIcon sx={{minWidth:'30px'}}>{item.icon}</ListItemIcon>
+										<ListItemText sx={{whiteSpace: 'nowrap', wordWrap: 'break-word'}}>{item.text}</ListItemText>
 									</ListItemButton>
 								</ListItem>)
 								: (<React.Fragment key={item.link}>

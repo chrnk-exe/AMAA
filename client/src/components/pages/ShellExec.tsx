@@ -113,10 +113,10 @@ const ShellExec: FC = () => {
 					? <Outlet />
 					:<Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} mt={10} gap={2}>
 						<Typography>
-							To use shell click {'+'} button!
+							Чтобы создать оболочку sh нажмите на {'+'}!
 						</Typography>
 						<Button variant={'contained'} onClick={getShellsHandler}>
-							Click here to receive all shells
+							Получить все доступные оболочки
 						</Button>
 						<Typography color={'red'}>
 							Ввод {'"http://localhost:31337/shellExec"'} в строку URI приводит к потере почти всего вывода всех команд!

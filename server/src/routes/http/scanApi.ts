@@ -9,10 +9,12 @@ import createStaticAnalyzeReport from '../../static-analyze/report/createStaticA
 import createDynamicReport from '../../dynamic-analyze/createDynamicReport';
 import { getAllScans } from '../../db/services/scan/getScans';
 import deviceController from '../../controllers/deviceController';
+import { join } from 'path';
 
 const router = Router();
 
-const upload = multer({ dest: './static-analyze/raw_apks' }); // путь относительно app.ts
+
+const upload = multer({ dest: join(__dirname, '..' , '..' , 'static-analyze', 'raw_apks') }); // путь относительно текущей диры
 
 router.get('/scans', async (req: Request, res: Response) => {
 	const scans = await getAllScans(await db);
@@ -20,14 +22,15 @@ router.get('/scans', async (req: Request, res: Response) => {
 });
 
 router.post('/scans/static-analyze', upload.single('file') , async (req: Request, res: Response) => {
-	console.log(req.file);
+	console.log(req.body);
 	if( req.file ) {
 		const name = req.file.originalname;
 		const path = req.file.path;
 		const data = fs.readFileSync(path);
-		fs.appendFileSync(`./static-analyze/apks/${name}`, data);
+		const apkFilename = join(__dirname, '..' , '..' , 'static-analyze', 'apks', name);
+		fs.appendFileSync(apkFilename, data);
 		if (SocketSingleton.io) {
-			staticAnalyze(`./static-analyze/apks/${name}`, await db);
+			staticAnalyze(apkFilename, await db);
 			res.status(200).send();
 		} else {
 			res.status(500).send();

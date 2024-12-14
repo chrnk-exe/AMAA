@@ -46,77 +46,92 @@ export default async function(scanId: number) {
 	const domains = await getDomainsFoundByScanId(await db, scanId);
 	const hardcodedCerts = await getHardcodedCertByScanId(await db, scanId);
 
-
-	const reportData = {
-		title: `Security Scan Report for Scan ID: ${scanId}`,
+	const reportData: ReportData = {
+		title: `Результат сканирования для скана с номером: ${scanId}`,
 		date: new Date().toLocaleString(),
-		summary: `This report contains the results of the security scan (ID: ${scanId}). Below are the detected issues and their details.`,
+		summary: `Этот отчет содержит результаты сканирования безопасности  (ID: ${scanId}). Ниже приведены обнаруженные проблемы и их подробности.`,
 		appName,
 		packageName,
 		scanType,
 		details: [
 			{
-				section: 'Intent Filters',
-				content: intentFilters.map(
-					(filter) =>
-						`Path Patterns: ${filter.pathPatterns || 'N/A'}, Hosts: ${
-							filter.hosts || 'N/A'
-						}, Schemes: ${filter.schemes || 'N/A'}`
+				section: 'Интент-фильтры',
+				content: intentFilters.map((filter) =>
+					`<table style="width: 100%; table-layout: fixed; border: 1px solid #ddd; border-collapse: collapse;">
+                        <tr><th style="width: 25%; padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">Шаблоны путей</th><td style="padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">${filter.pathPatterns || 'N/A'}</td></tr>
+                        <tr><th style="width: 25%; padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">Упоминаемые хосты</th><td style="padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">${filter.hosts || 'N/A'}</td></tr>
+                        <tr><th style="width: 25%; padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">Используемые схемы</th><td style="padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">${filter.schemes || 'N/A'}</td></tr>
+                    </table>`
 				),
 			},
 			{
-				section: 'Weak Crypto Method / Algorithm',
-				content: weakCrypto.map(
-					(crypto) =>
-						`Method: ${crypto.method}, File Path: ${crypto.filePath}`
+				section: 'Использование слабого криптографического алгоритма (OWASP M8, M10)',
+				content: weakCrypto.map((crypto) =>
+					`<table style="width: 100%; table-layout: fixed; border: 1px solid #ddd; border-collapse: collapse;">
+                        <tr><th style="width: 25%; padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">Метод</th><td style="padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">${crypto.method}</td></tr>
+                        <tr><th style="width: 25%; padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">Путь до файла</th><td style="padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">${crypto.filePath}</td></tr>
+                    </table>`
 				),
 			},
 			{
-				section: 'Unsafe Methods',
-				content: unsafeMethods.map(
-					(method) =>
-						`Method: ${method.method}, File Path: ${method.filePath}`
+				section: 'Использование небезопасных методов/функций (OWASP M8, M9)',
+				content: unsafeMethods.map((method) =>
+					`<table style="width: 100%; table-layout: fixed; border: 1px solid #ddd; border-collapse: collapse;">
+                        <tr><th style="width: 25%; padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">Метод</th><td style="padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">${method.method}</td></tr>
+                        <tr><th style="width: 25%; padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">Путь до файла</th><td style="padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">${method.filePath}</td></tr>
+                    </table>`
 				),
 			},
 			{
-				section: 'Found Secrets',
-				content: secrets.map(
-					(secret) =>
-						`String: ${secret.string}, Type: ${secret.stringType}, Entropy: ${
-							secret.entropy || 'N/A'
-						}, File Path: ${secret.filePath}`
+				section: 'Секреты, содержащиеся в коде APK или файлах приложения (OWASP M1, M3, M8)',
+				content: secrets.map((secret) =>
+					`<table style="width: 100%; table-layout: fixed; border: 1px solid #ddd; border-collapse: collapse;">
+                        <tr><th style="width: 25%; padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">Подозрительная строка</th><td style="padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">${secret.string}</td></tr>
+                        <tr><th style="width: 25%; padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">Тип поиска</th><td style="padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">${secret.stringType === 'sus_word' ? 'keyword': secret.stringType}</td></tr>
+                        <tr><th style="width: 25%; padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">Путь до файла</th><td style="padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">${secret.filePath || 'N/A'}</td></tr>
+                        <tr><th style="width: 25%; padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">Энтропия</th><td style="padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">${secret.entropy || 'N/A'}</td></tr>
+                    </table>`
 				),
 			},
 			{
-				section: 'Possible SQL Injection',
-				content: possibleSQLInjection.map(
-					(sql) =>
-						`Expression: ${sql.expression}, File Path: ${sql.filePath}`
+				section: 'Возможная SQL-инъекция OWASP (M4, M8)',
+				content: possibleSQLInjection.map((sql) =>
+					`<table style="width: 100%; table-layout: fixed; border: 1px solid #ddd; border-collapse: collapse;">
+                        <tr><th style="width: 25%; padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">Выражение</th><td style="padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">${sql.expression}</td></tr>
+                        <tr><th style="width: 25%; padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">Путь до файла</th><td style="padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">${sql.filePath}</td></tr>
+                    </table>`
 				),
 			},
 			{
-				section: 'Exported Components',
-				content: exportedComponents.map(
-					(component) =>
-						`Category: ${component.category}, Name: ${component.name}`
+				section: 'Экспортируемые компоненты (OWASP M1)',
+				content: exportedComponents.map((component) =>
+					`<table style="width: 100%; table-layout: fixed; border: 1px solid #ddd; border-collapse: collapse;">
+                        <tr><th style="width: 25%; padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">Категория</th><td style="padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">${component.category}</td></tr>
+                        <tr><th style="width: 25%; padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">Имя</th><td style="padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">${component.name}</td></tr>
+                    </table>`
 				),
 			},
 			{
-				section: 'Domains Found',
-				content: domains.map(
-					(domain) =>
-						`Domain: ${domain.domain}, File Path: ${domain.filePath}`
+				section: 'Используемые домены (OWASP M1)',
+				content: domains.map((domain) =>
+					`<table style="width: 100%; table-layout: fixed; border: 1px solid #ddd; border-collapse: collapse;">
+                        <tr><th style="width: 25%; padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">Домен</th><td style="padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">${domain.domain}</td></tr>
+                        <tr><th style="width: 25%; padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">Путь до файла</th><td style="padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">${domain.filePath}</td></tr>
+                    </table>`
 				),
 			},
 			{
-				section: 'Hardcoded Certificates or Keystores',
-				content: hardcodedCerts.map(
-					(cert) =>
-						`Type: ${cert.type}, File Path: ${cert.filePath}`
+				section: 'Жестко запрограммированные сертификаты или хранилища ключей (OWASP M1, M8, M10)',
+				content: hardcodedCerts.map((cert) =>
+					`<table style="width: 100%; table-layout: fixed; border: 1px solid #ddd; border-collapse: collapse;">
+                        <tr><th style="width: 25%; padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">Тип</th><td style="padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">${cert.type}</td></tr>
+                        <tr><th style="width: 25%; padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">Путь до файла</th><td style="padding: 8px; border: 1px solid #ddd; word-wrap: break-word;">${cert.filePath}</td></tr>
+                    </table>`
 				),
 			},
 		],
 	};
+
 
 	const reportFolderPath = path.join(__dirname, 'reports');
 
@@ -130,7 +145,6 @@ export default async function(scanId: number) {
 
 	const pdfPath = path.join(reportFolderPath, 'report.pdf');
 	await generatePdfFromHtml(htmlPath, pdfPath);
-
 
 	return pdfPath;
 }

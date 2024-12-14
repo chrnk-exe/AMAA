@@ -170,7 +170,7 @@ const FridaScripting: FC = () => {
 						<InputLabel>Application</InputLabel>
 						<Select
 							value={selectedApp}
-							label="Application"
+							label="Приложение"
 							onChange={handleChangeApp}
 						>
 							{
@@ -180,7 +180,7 @@ const FridaScripting: FC = () => {
 					</FormControl>
 					<Box mt={1}>
 						<Button variant={'contained'} onClick={handleStart}>
-							Start application!
+							Запустить приложение!
 						</Button>
 					</Box>
 				</Box>

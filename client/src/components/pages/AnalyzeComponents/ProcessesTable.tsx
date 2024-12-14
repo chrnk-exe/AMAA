@@ -31,16 +31,16 @@ const ProcessesTable: FC<props> = () => {
 		<Table sx={{bgcolor: '#FFFFFF', my: 1, borderRadius:2}}>
 			<TableHead>
 				<TableCell>№</TableCell>
-				<TableCell>PID</TableCell>
+				<TableCell>Идентификатор процесса</TableCell>
 				<TableCell>
 					<Box display={'flex'} justifyContent={'flex-start'} alignItems={'center'} gap={2}>
-						Process Name
+						Имя процесса
 						<TextField
-							placeholder={'Process name filter'}
+							placeholder={'Фильтр'}
 							onChange={(e) => setFilterString(e.target.value)}/>
 					</Box> </TableCell>
 				{/*<TableCell>Parameters</TableCell>*/}
-				<TableCell>Actions</TableCell>
+				<TableCell>Действия</TableCell>
 			</TableHead>
 			<TableBody>
 				{
@@ -51,7 +51,7 @@ const ProcessesTable: FC<props> = () => {
 							<TableCell>{process.name}</TableCell>
 							<TableCell>
 								{/*todo: start app*/}
-								<Tooltip title={'Try to kill'} placement={'top'}>
+								<Tooltip title={'Попробовать завершить процесс'} placement={'top'}>
 									<IconButton onClick={() => killProcessFn(process.pid)}>
 										<img src={skullLogo} alt={''} height={24}/>
 										{/*<SvgIcon htmlColor={'lightgreen'}/>*/}

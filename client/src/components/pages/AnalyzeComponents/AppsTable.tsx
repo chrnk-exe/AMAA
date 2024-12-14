@@ -25,10 +25,10 @@ const AppsTable: FC<props> = ({ apps }) => {
 		<Table sx={{bgcolor: '#FFFFFF', my: 1, borderRadius:2}}>
 			<TableHead>
 				<TableCell>№</TableCell>
-				<TableCell>PID</TableCell>
-				<TableCell>App</TableCell>
-				<TableCell>Package name</TableCell>
-				<TableCell>Actions</TableCell>
+				<TableCell>Идентификатор процесса</TableCell>
+				<TableCell>Имя приложения</TableCell>
+				<TableCell>Имя пакета</TableCell>
+				<TableCell>Действия</TableCell>
 				{/*<TableCell>Parameters</TableCell>*/}
 			</TableHead>
 			<TableBody>
@@ -48,24 +48,24 @@ const AppsTable: FC<props> = ({ apps }) => {
 								</Tooltip>
 								{/*todo: send to frida-scripting folder*/}
 								<Tooltip title={'Send to frida-scripts'} placement={'top'}>
-									<IconButton onClick={() => alert('Not implemented')}>
+									<IconButton onClick={() => alert('Будет скоро')}>
 										<SendIcon htmlColor={'lightgreen'}/>
 									</IconButton>
 								</Tooltip>
 								{/*todo: start with default objection script (ssl-pinning)*/}
 								<Tooltip title={'Start with SSL-Unpinning'} placement={'top'}>
-									<IconButton onClick={() => alert('Not implemented!')}>
+									<IconButton onClick={() => alert('Будет скоро!')}>
 										<LockOpenIcon htmlColor={'lightgreen'}/>
 									</IconButton>
 								</Tooltip>
 								{/*todo: start with default objection script (root)*/}
 								<Tooltip title={'Start with Root-undetect script'} placement={'top'}>
-									<IconButton onClick={() => alert('Not implemented!')}>
+									<IconButton onClick={() => alert('Будет скоро!')}>
 										<AdbIcon htmlColor={'lightgreen'}/>
 									</IconButton>
 								</Tooltip>
 								<Tooltip title={'Start with both bypasses'} placement={'top'}>
-									<IconButton onClick={() => alert('Not implemented!')}>
+									<IconButton onClick={() => alert('Будет скоро!')}>
 										<img src={skullLogo} alt={''} height={24}/>
 										{/*<SvgIcon htmlColor={'lightgreen'}/>*/}
 									</IconButton>

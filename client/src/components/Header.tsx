@@ -36,7 +36,7 @@ const Header: FC<props> = ({drawerToggle, open}) => {
 					variant="h5"
 					noWrap
 					component="div">
-					Analyze your app!
+					Комплекс тестирования мобильного приложения
 				</Typography>
 			</Box>
 		</Box>

@@ -82,24 +82,24 @@ const FileMenu: FC<props> = ({filename, onClose}) => {
 
 	const menuItems = [{
 		onClickFunction: onOpenFileHandler,
-		text: 'Open',
+		text: 'Открыть',
 		icon: <FolderOpenIcon/>
 	}, {
 		onClickFunction: onDownloadFileHandler,
-		text: 'Download',
+		text: 'Скачать',
 		icon: <DownloadIcon sx={{color: 'orange'}}/>,
 		color: 'orange'
 	}, {
 		onClickFunction: onEditFileHandler,
-		text: 'Edit',
+		text: 'Редактировать',
 		icon: <EditIcon/>
 	}, {
 		onClickFunction: onRenameFileHandler,
-		text: 'Rename',
+		text: 'Переименовать',
 		icon: <DriveFileRenameOutlineIcon/>
 	}, {
 		onClickFunction: onRemoveFileHandler,
-		text: 'Remove',
+		text: 'Удалить',
 		icon: <ClearIcon sx={{color: 'red'}}/>,
 		color: 'red'
 	}];

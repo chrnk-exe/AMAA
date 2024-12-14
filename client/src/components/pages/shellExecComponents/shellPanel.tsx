@@ -45,7 +45,7 @@ function ShellPanel() {
 					<Box sx={{
 						borderBottom: 1, borderColor: 'divider'
 					}}>
-						<Typography>Shell device id: {shell && shell.deviceId}</Typography>
+						<Typography>Идентификатор устройства: {shell && shell.deviceId}</Typography>
 					</Box>
 					{shell && shell.output.map((outputString, index) => (
 						<pre key={index}>
@@ -58,7 +58,7 @@ function ShellPanel() {
 				</Box>
 			);
 		} else {
-			return <Box>Shell not found</Box>;
+			return <Box>Оболочка не найдена</Box>;
 		}
 
 	} else {

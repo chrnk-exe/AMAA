@@ -1,8 +1,9 @@
-import express, {Express, Response, Request, NextFunction} from 'express';
+import express, {Express} from 'express';
 import cookieParser from 'cookie-parser';
 import {Server} from 'socket.io';
 import cors from 'cors';
 import {createServer} from 'http';
+import path from 'path';
 import deviceController from './controllers/deviceController';
 import onConnection from './globalUtils/onConnection';
 import deviceRoute from './routes/http/devicesApi';
@@ -21,11 +22,13 @@ const server = createServer(app);
 
 // const DB = initializeDatabase(DB_PATH);
 console.log('Dirname: ', __dirname);
+// Сервируем статические файлы из директории build
+app.use(express.static(path.join(__dirname, 'build')));
 
 
 SocketSingleton.configure(server, {
 	cors: {
-		origin: 'http://localhost:3000',
+		origin: ['http://localhost:3000', 'http://localhost:3000'],
 		credentials: true
 	},
 	serveClient: false
@@ -73,9 +76,8 @@ app.use('/api',
 	appRoutes,
 );
 
-app.get('/', (req: Request, res: Response) => {
-	// console.log(req.cookies);
-	res.send('Hello world!');
+app.get('*', (req, res) => {
+	res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 server.listen(31337, () => {

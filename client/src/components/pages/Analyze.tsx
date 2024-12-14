@@ -112,14 +112,14 @@ const Analyze: FC = () => {
 		<Box sx={{m: 2}}>
 			<Box display={'flex'} justifyContent={'flex-start'} flexDirection={'row'} alignItems={'center'} gap={1}>
 				<FormControl sx={{minWidth: '180px'}} onClick={refreshDevicesHandler} >
-					<InputLabel id="SelectDevice">Select Device</InputLabel>
+					<InputLabel id="SelectDevice">Выберете устройство</InputLabel>
 					<Select
 						labelId="SelectDevice"
 						id="SelectDevice"
 						value={currentDevice}
 						label="Select device"
 						onChange={onSelectDevice}
-						sx={{bgcolor: '#FFFFFF'}}
+						sx={{bgcolor: '#FFFFFF', width: '220px'}}
 					>
 						{
 							devices.length !== 0
@@ -139,10 +139,10 @@ const Analyze: FC = () => {
 					control={
 						<Switch value={showProcesses} onChange={showProcessesHandler}/>
 					}
-					label="Show Processes"
+					label="Показать процессы"
 				/>
 				<Button onClick={refreshHandler} startIcon={<RefreshIcon/>} variant="contained">
-					Refresh all
+					Обновить
 				</Button>
 				{
 					(selectedDevice.isFetching || getAppsState.isFetching || getProcessesState.isFetching) &&

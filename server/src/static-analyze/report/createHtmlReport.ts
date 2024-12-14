@@ -55,10 +55,10 @@ export function generateHTMLReport(reportData: ReportData): string {
 		<div class="header">
 			<h1>${title}</h1>
 			<p>${summary}</p>
-			<p><strong>Date:</strong> ${date}</p>
-			<p><strong>App Name:</strong> ${appName}</p>
-			<p><strong>Package Name:</strong> ${packageName}</p>
-			<p><strong>Scan Type:</strong> ${scanType}</p>
+			<p><strong>Дата:</strong> ${date}</p>
+			<p><strong>Название приложения/путь до файла:</strong> ${appName}</p>
+			<p><strong>Название пакета:</strong> ${packageName}</p>
+			<p><strong>Тип сканирования:</strong> ${scanType}</p>
 		</div>
 	`;
 
@@ -70,7 +70,7 @@ export function generateHTMLReport(reportData: ReportData): string {
 			${detail.content.length > 0 ? `
 			<div class="table-container">
 				<table>
-					<tr><th>Details</th></tr>
+					<tr><th>Детали</th></tr>
 					${detail.content.map(item => `<tr><td>${item}</td></tr>`).join('')}
 				</table>
 			</div>` : '<p class="no-data">No data found</p>'}

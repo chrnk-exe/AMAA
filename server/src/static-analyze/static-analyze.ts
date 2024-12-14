@@ -22,6 +22,7 @@ import getHardcodedCertKeystore from './cert-analyze/getHardcodedCertsKeystore';
 import SocketSingleton from '../globalUtils/socketSingleton';
 
 import { writeFile } from 'fs/promises';
+import { raw } from 'express';
 
 async function saveObjectToFile(filePath: string, data: any): Promise<void> {
 	try {
@@ -40,45 +41,67 @@ async function saveObjectToFile(filePath: string, data: any): Promise<void> {
 interface staticAnalyzeSettings {
 	threads?: number,
 	entropyLevel?: number,
-	sensitivityLevel?: number
-	appendAllVarStrings?: boolean
+	includeHighEntropy?: boolean,
+	includeKeywords?: boolean,
+	includeRegexes?: boolean,
+	includeAllStrings?: boolean
 }
 
-const decompileDex = async (pathToFolderWithClassesDex: string) => {
-	const regex = /^classes(\d*)\.dex$/;
+// const decompileDex = async (pathToFolderWithClassesDex: string) => {
+// 	const regex = /^classes(\d*)\.dex$/;
+// 	const jadxCLI = path.join(__dirname, 'tools', 'jadx-cli.jar');
+// 	const outputDirectory = path.join(__dirname, 'decompiled');
+// 	const classesFiles = fs.readdirSync(pathToFolderWithClassesDex).filter(file => regex.test(file));
+// 	const resultClassesFiles = classesFiles.map(classesFilename => path.join(__dirname, 'files', classesFilename));
+// 	// decompile with jadx
+//
+// 	const args = ['java', '-cp', jadxCLI, 'jadx.cli.JadxCLI',
+// 		'--deobf', '--show-bad-code', '--escape-unicode', '--threads-count 10',
+// 		'-d', outputDirectory ,...resultClassesFiles];
+// 	console.log(`command: ${args.join(' ')}`);
+// 	execSync(args.join(' '), { stdio: 'pipe' }).toString('utf-8');
+// 	return 0;
+// };
+
+const decompileDex = async (pathToApk: string) => {
 	const jadxCLI = path.join(__dirname, 'tools', 'jadx-cli.jar');
 	const outputDirectory = path.join(__dirname, 'decompiled');
-	const classesFiles = fs.readdirSync(pathToFolderWithClassesDex).filter(file => regex.test(file));
-	const resultClassesFiles = classesFiles.map(classesFilename => path.join(__dirname, 'files', classesFilename));
-	// decompile with jadx
-	const args = ['java', '-cp', jadxCLI, 'jadx.cli.JadxCLI',
-		'--deobf', '--show-bad-code', '--escape-unicode', '--threads-count 10',
-		'-d', outputDirectory ,...resultClassesFiles];
 
-	execSync(args.join(' '), { stdio: 'pipe' }).toString('utf-8');
+	const args = ['java', '-cp', jadxCLI, 'jadx.cli.JadxCLI',
+		'--deobf', '--show-bad-code', '--escape-unicode', '--threads-count 8',
+		'-d', outputDirectory ,pathToApk];
+	try {
+		execSync(args.join(' '), { stdio: 'pipe' }).toString('utf-8');
+	} catch (e) {
+		console.error((e as Error).message);
+	}
 	return 0;
 };
 
 const staticAnalyze = async (filename: string, db: Database, settings?: staticAnalyzeSettings) => {
+	console.log(`Started static analyze: ${filename}`);
 	const apkFilename = filename.split('/')[filename.split('/').length - 1];
 	const apkData = fs.readFileSync(filename);
 	const zip = await JSZip.loadAsync(apkData);
 
 	const outputDir = path.join(__dirname, 'files');
 	const decompiledDir = path.join(__dirname, 'decompiled');
+	// const apksDir = path.join(__dirname, 'apks');
+	// const rawApksDir = path.join(__dirname, 'raw_apks');
 
+	const allTempDirs = [
+		outputDir,
+		decompiledDir,
+		// apksDir,
+		// rawApksDir
+	];
 
-	if (!fs.existsSync(outputDir)) {
-		fs.mkdirSync(outputDir, { recursive: true });
-	}
-
-	if (!fs.existsSync(decompiledDir)) {
-		fs.mkdirSync(decompiledDir, { recursive: true });
-	}
-
-	// Очистить перед распаковкой нового apk
-	cleanDirectory(outputDir);
-	cleanDirectory(decompiledDir);
+	allTempDirs.forEach(directory => {
+		if (!fs.existsSync(directory)) {
+			fs.mkdirSync(directory, { recursive: true });
+		}
+		cleanDirectory(directory);
+	});
 
 	const filenamesInApk: string[] = [];
 	if (SocketSingleton.io) SocketSingleton.io.emit('staticAnalyzeEv', 'Unpacking...');
@@ -109,6 +132,7 @@ const staticAnalyze = async (filename: string, db: Database, settings?: staticAn
 	);
 
 	const androidManifestPath = __dirname + '/files/AndroidManifest.xml';
+	console.log(`AndroidManifest path: ${androidManifestPath}`);
 	if (SocketSingleton.io) SocketSingleton.io.emit('staticAnalyzeEv', 'Analyzing AndroidManifest.xml...');
 	const manifestAnalyzingResult = manifestAnalyze(androidManifestPath);
 
@@ -150,8 +174,10 @@ const staticAnalyze = async (filename: string, db: Database, settings?: staticAn
 	appendManifestAnalysisToDB(db, StaticResultId, hardcodedCerts, exportedEntitiesAnalyze, intentFiltersAnalyze);
 
 	if (SocketSingleton.io) SocketSingleton.io.emit('staticAnalyzeEv', 'decompiling dex...');
-	await decompileDex(__dirname + '/files');
+	// await decompileDex(__dirname + '/files');
+	await decompileDex(filename);
 
+	// именно sources
 	const decompiledPath = path.join(__dirname, 'decompiled', 'sources');
 	if (SocketSingleton.io) SocketSingleton.io.emit('staticAnalyzeEv', 'Analyzing code...');
 	if (settings) {
@@ -159,8 +185,10 @@ const staticAnalyze = async (filename: string, db: Database, settings?: staticAn
 			decompiledPath,
 			settings.threads,
 			settings.entropyLevel,
-			settings.sensitivityLevel,
-			settings.appendAllVarStrings
+			settings.includeHighEntropy,
+			settings.includeKeywords,
+			settings.includeRegexes,
+			settings.includeAllStrings
 		);
 		if (codeAuditResult) {
 			await appendCodeAnalysisToDB(db, StaticResultId, codeAuditResult);

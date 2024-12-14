@@ -15,7 +15,7 @@ interface AppBarProps extends MuiAppBarProps {
 	open?: boolean;
 }
 
-const drawerWidth = 270;
+const drawerWidth = 280;
 
 const AppBar = styled(MuiAppBar, {
 	shouldForwardProp: prop => prop !== 'open',

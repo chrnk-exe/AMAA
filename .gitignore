@@ -28,6 +28,8 @@ other/
 /other
 swagger/
 
+
+/client/build
 /server/src/static-analyze/apks/
 /server/src/static-analyze/raw_apks/
 /server/src/static-analyze/files/

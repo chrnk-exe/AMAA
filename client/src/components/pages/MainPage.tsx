@@ -12,10 +12,11 @@ import { FormControl, InputLabel, List, ListItem, ListItemIcon, ListItemText, Me
 interface Props {
 	devices: Device[]
 }
-const AppRoutes: FC<Props> = ({devices}) => {
+const AppRoutes: FC<Props> = () => {
 	return (
 		<Box display={'flex'} alignItems={'flex-start'} justifyContent={'center'} height={'100%'} flexDirection={'column'} sx={{
-			ml: 5
+			pl: 5,
+			bgcolor: '#FFFFFF'
 		}}>
 			{/* Main title */}
 			<Box>
@@ -30,7 +31,7 @@ const AppRoutes: FC<Props> = ({devices}) => {
 					<List>
 						<ListItem>
 							<ListItemIcon><TerminalIcon/></ListItemIcon>
-							<ListItemText><Link href={'https://github.com/LSPosed/MagiskOnWSALocal'}>Rooted WSA</Link>
+							<ListItemText><Link href={'https://github.com/LSPosed/MagiskOnWSALocal'}>WSA с Root-правами</Link>
 								{' '}(Рекомендуется Windows 11)</ListItemText>
 						</ListItem>
 						<ListItem>

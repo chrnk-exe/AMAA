@@ -88,7 +88,7 @@ const DbView: FC<props> = ({open, handleClose, filename, identifier}) => {
 			<Box sx={style} display={'flex'} flexDirection={'column'}>
 				<Box display={'flex'} justifyContent={'flex-start'} alignItems={'center'} gap={2}>
 					<Typography id="modal-modal-title" variant="h6" component="h2">
-						File: {filename}
+						Имя файла: {filename}
 					</Typography>
 				</Box>
 				<Box display={'flex'} gap={1} >

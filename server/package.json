@@ -38,8 +38,17 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "startjs": "npm run build && npm run start-server",
-    "startts": "cd src && nodemon --files app.ts",
+    "startts": "nodemon --files .\\src\\app.ts -d 1000",
     "start-server": "cd server && node index.js",
-    "build": "cd src && npx tsc"
+    "build": "cd src && npx tsc",
+    "start-prod": "ts-node --files ./src/app.ts"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "./src/static-analyze/apks/**/*",
+      "./src/static-analyze/raw_apks/**/*",
+      "./src/static-analyze/files/**/*",
+      "./src/static-analyze/decompiled/**/*"
+    ]
   }
 }

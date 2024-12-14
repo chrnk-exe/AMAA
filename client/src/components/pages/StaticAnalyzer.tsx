@@ -14,7 +14,8 @@ import {
 	TableBody,
 	TableCell,
 	TableRow,
-	IconButton
+	IconButton, Checkbox, FormControlLabel,
+	TextField
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {
@@ -44,6 +45,57 @@ const VisuallyHiddenInput = styled('input')({
 function StaticAnalyzer() {
 	const [file, setFile] = useState<File | null>(null);
 	const [selectedApp, setSelectedApp] = useState('');
+	const [settings, setSettings] = useState({
+		includeHighEntropy: true,
+		includeKeywords: true,
+		includeRegexes: true,
+		includeAllStrings: false,
+		entropyLevel: 4.6,
+		threads: 4
+	});
+
+	const toggleHighEntropy = () => {
+		setSettings(settings => ({
+			...settings,
+			includeHighEntropy: !settings.includeHighEntropy
+		}));
+	};
+
+	const toggleKeywords = () => {
+		setSettings(settings => ({
+			...settings,
+			includeKeywords: !settings.includeKeywords
+		}));
+	};
+
+	const toggleRegexes = () => {
+		setSettings(settings => ({
+			...settings,
+			includeRegexes: !settings.includeRegexes
+		}));
+	};
+
+	const toggleAllStrings = () => {
+		setSettings(settings => ({
+			...settings,
+			includeAllStrings: !settings.includeAllStrings
+		}));
+	};
+
+	const setEntropyLevel = (newEntrypyLevel: number) => (
+		setSettings(settings => ({
+			...settings,
+			entropyLevel: newEntrypyLevel
+		}))
+	);
+
+	const setThreads = (threads: number) => (
+		setSettings(settings => ({
+			...settings,
+			threads
+		}))
+	);
+
 
 	const {data} = useGetScansQuery();
 	const [getDynamicReport] = useLazyGetDynamicAnalyzeReportQuery();
@@ -83,6 +135,12 @@ function StaticAnalyzer() {
 		const formData = new FormData();
 		if (selectedFile) {
 			formData.append('file', selectedFile);
+			formData.append('includeHighEntropy', settings.includeHighEntropy.toString());
+			formData.append('includeKeywords', settings.includeKeywords.toString());
+			formData.append('includeRegexes', settings.includeRegexes.toString());
+			formData.append('includeAllStrings', settings.includeAllStrings.toString());
+			formData.append('entropyLevel', settings.entropyLevel.toString());
+			formData.append('threads', settings.threads.toString());
 			try {
 				const response = await startStaticAnalyze(formData);
 			} catch (error) {
@@ -103,34 +161,50 @@ function StaticAnalyzer() {
 
 
 	return (
-		<Box m={1} display={'flex'} justifyContent={'space-evenly'} alignItems={'center'} flexDirection={'column'}>
-			<Box display={'flex'} justifyContent={'space-evenly'} alignItems={'center'} sx={{width: '100%'}}>
-				<Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} gap={2}>
-					<Typography variant={'h4'}>
-						Static analyzer
+		<Box m={1} display={'flex'} justifyContent={'space-evenly'} alignItems={'flex-start'}>
+			<Box
+				display={'flex'}
+				justifyContent={'space-evenly'}
+				alignItems={'flex-start'}
+				p={1}
+				mr={1}
+				gap={2}
+				sx={{width: '100%', bgcolor:'#FFFFFF'}}
+				flexDirection={'column'}>
+				<Typography variant={'h5'}>
+					Сканнеры
+				</Typography>
+				<Box display={'flex'} flexDirection={'column'} justifyContent={'flex-start'} alignItems={'flex-start'} gap={2}>
+					<Typography>
+						Статический анализатор
 					</Typography>
 					<Button variant={'contained'} startIcon={<CloudUploadIcon/>} component="label" >
-						Upload your apk
+						Загрузить .APK для статического анализа
 						<VisuallyHiddenInput
 							type="file"
 							onChange={handleFileChange}
 							multiple
 						/>
 					</Button>
-					<Typography>
-						{staticState}
-					</Typography>
+					{
+						staticState &&
+						(<Typography>
+							Состояние анализа: {staticState}
+						</Typography>)
+					}
+
 				</Box>
-				<Box display={'flex'} flexDirection={'column'} justifyContent={'center'} alignItems={'center'} gap={2}>
-					<Typography variant={'h4'}>
-						Dynamic analyzer
-					</Typography>
-					<Box display={'flex'} justifyContent={'center'} alignItems={'center'} gap={2} sx={{width: '100%'}}>
+				<Box display={'flex'} flexDirection={'column'} justifyContent={'flex-start'} alignItems={'center'} gap={2}>
+					<Box display={'flex'} justifyContent={'flex-start'} alignItems={'flex-start'} gap={2} sx={{width: '100%'}}
+						 flexDirection={'column'}>
+						<Typography>
+							Динамический анализатор
+						</Typography>
 						<FormControl fullWidth sx={{bgcolor: '#FFF'}}>
-							<InputLabel>Application</InputLabel>
+							<InputLabel>Выберите приложение </InputLabel>
 							<Select
 								value={selectedApp}
-								label="Select application"
+								label="Выберите приложение"
 								onChange={handleChangeApp}
 							>
 								{
@@ -138,22 +212,76 @@ function StaticAnalyzer() {
 								}
 							</Select>
 						</FormControl>
-						<Button variant={'contained'} onClick={() => startDynamicAnalyze(selectedApp)}>Start Analyze </Button>
+						<Button variant={'contained'} onClick={() => startDynamicAnalyze(selectedApp)}>Начать динамический анализ</Button>
 					</Box>
-					<Typography>
-						{dynamicState}
+					{
+						dynamicState &&
+						(<Typography>
+							Состояние анализа: {dynamicState}
+						</Typography>)
+					}
+
+				</Box>
+				<Box display={'flex'} flexDirection={'column'} gap={2}>
+					<Typography variant={'h5'}>
+						Настройки поиска секретов
 					</Typography>
+					<FormControlLabel
+						control={<Checkbox
+							checked={settings.includeHighEntropy}
+							onChange={toggleHighEntropy}
+						/>}
+						label={'Сохранять строки с высокой энтропией'}/>
+					<FormControlLabel
+						control={<Checkbox
+							checked={settings.includeKeywords}
+							onChange={toggleKeywords}
+						/>}
+						label={'Сохранять строки с подходящими ключевыми словами'}/>
+					<FormControlLabel
+						control={<Checkbox
+							checked={settings.includeRegexes}
+							onChange={toggleRegexes}
+						/>}
+						label={'Сохранять подозрительные строки (regex)'}/>
+					<FormControlLabel
+						control={<Checkbox
+							checked={settings.includeAllStrings}
+							onChange={toggleAllStrings}
+						/>}
+						label={'Сохранять все строки'}/>
+					<TextField
+						type={'number'}
+						label={'Уровень энтропии'}
+						value={settings.entropyLevel}
+						onChange={(e) => setEntropyLevel(+e.target.value)}
+						inputProps={{
+							step: '0.1'
+						}}/>
+					<TextField
+						type={'number'}
+						label={'Количество потоков'}
+						value={settings.threads}
+						onChange={(e) => setThreads(+e.target.value)}
+						inputProps={{
+							step: '1'
+						}}/>
+
+
 				</Box>
 			</Box>
-			<Box>
+			<Box p={2} sx={{bgcolor: '#FFFFFF'}}>
+				<Typography variant={'h6'}>
+					Результаты сканирований
+				</Typography>
 				<Table>
 					<TableHead>
 						<TableCell>ID</TableCell>
-						<TableCell>Application/filename</TableCell>
-						<TableCell>Package name</TableCell>
-						<TableCell>Version</TableCell>
-						<TableCell>Scan type</TableCell>
-						<TableCell>Report</TableCell>
+						<TableCell>Название файла/приложения</TableCell>
+						<TableCell>Имя пакета</TableCell>
+						<TableCell>Версия</TableCell>
+						<TableCell>Тип сканирования</TableCell>
+						<TableCell>Отчёт</TableCell>
 					</TableHead>
 					<TableBody>
 						{
